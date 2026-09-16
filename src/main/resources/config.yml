@@ -1,0 +1,624 @@
+# =====================================================================
+#                        Stone Chat - config.yml
+#                        A plugin by Stone Plugins
+# =====================================================================
+#
+# This file contains SETTINGS ONLY (switches, colors, times, sounds,
+# channels). All player-facing TEXT lives in messages.yml instead, per
+# language, under plugins/Stone Chat/languages/<language>/messages.yml.
+#
+# Several features below have a "notification-type" option. It picks
+# WHERE that specific message is shown - CHAT, ACTIONBAR or TITLE - and
+# messages.yml already contains ready-made text for all three channels,
+# so you can switch anytime without writing new text.
+#
+# Missing options are added automatically on plugin updates. Existing
+# values you changed are never overwritten, even in nested sections.
+# =====================================================================
+config-version: 1
+
+general:
+  # Default language used for a fresh install. Existing installs keep their chosen language.
+  # Available: en, de (folder name under languages/)
+  default-language: en
+
+# Stone Chat always removes the vanilla "X joined/left the game" message.
+# Joins and leaves are completely silent - no message is sent at all.
+
+word-filter:
+  enabled: true
+  # Words are matched case-insensitively as whole words
+  filtered-words:
+    - "badword1"
+    - "badword2"
+  # block = message is cancelled completely, censor = matched word is replaced with asterisks
+  action: block
+  notify-admins: true
+  # Catches players trying to sneak a forbidden word past the filter using
+  # unicode tricks: invisible characters inserted between letters, look-alike
+  # letters from other alphabets (Cyrillic а, Greek α, fullwidth Ａ, ...), or
+  # accented characters (café -> cafe). The word is still matched even though
+  # it looks different to a human. Virtually no false-positive risk, on by default.
+  evasion-detection:
+    enabled: true
+    # Also folds common leetspeak substitutions (4->a, 3->e, 1->i, 0->o, 5->s,
+    # $->s, @->a, 7->t, +->t) into the check. Off by default since this has a
+    # higher chance of false positives (e.g. usernames or numbers in normal chat).
+    normalize-leetspeak: false
+  # Command executed as console when a player triggers the word filter, %player% is
+  # replaced with their name. Runs in the background, invisible to the player. Leave
+  # empty to disable. Example: "mute %player% 10m Wortfilter" (needs a mute plugin) or
+  # simply "warn %player% Please watch your language" (needs a warning plugin).
+  punish-command: ""
+  # Where the "message blocked" notice is shown to the player. CHAT, ACTIONBAR, TITLE or BOSSBAR.
+  notification-type: CHAT
+  # Played to the player when their message gets blocked/censored. Any vanilla Minecraft
+  # sound name works, see https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html
+  sound:
+    enabled: true
+    sound-name: "ENTITY_VILLAGER_NO"
+    volume: 1.0
+    pitch: 1.0
+
+chat-mute:
+  # Players/console with this permission can still chat & use commands while muted
+  bypass-permission: "stonechat.mute.bypass"
+  # If true (default), commands are also blocked while the chat is muted, not just chat itself.
+  # Set to false to let players keep using normal commands while only chat is silenced.
+  block-commands: true
+  # Where the "chat muted/unmuted" broadcast is shown to everyone online. CHAT, ACTIONBAR, TITLE or BOSSBAR.
+  notification-type: CHAT
+  # Played to everyone online when an admin toggles the mute on/off.
+  sound-toggle:
+    enabled: true
+    sound-name: "BLOCK_ANVIL_LAND"
+    volume: 0.6
+    pitch: 1.0
+  # Played to a player who tries to chat/use a command while the chat is muted.
+  sound-blocked:
+    enabled: true
+    sound-name: "ENTITY_VILLAGER_NO"
+    volume: 1.0
+    pitch: 1.0
+
+link-blocker:
+  enabled: true
+  bypass-permission: "stonechat.links.bypass"
+  patterns:
+    - "http://"
+    - "https://"
+    - "www."
+    - ".com"
+    - ".net"
+    - ".org"
+    - ".de"
+    - ".gg"
+    - ".io"
+    - ".to"
+  # Command executed as console when a player's link gets blocked, %player% is
+  # replaced with their name. Leave empty to disable.
+  punish-command: ""
+  # Where the "link blocked" notice is shown to the player. CHAT, ACTIONBAR, TITLE or BOSSBAR.
+  notification-type: CHAT
+  # Played to the player when their link gets blocked.
+  sound:
+    enabled: true
+    sound-name: "ENTITY_VILLAGER_NO"
+    volume: 1.0
+    pitch: 1.0
+
+ping:
+  enabled: true
+  # Character that triggers a ping, e.g. @PlayerName
+  trigger-symbol: "@"
+  # Full template for how the mentioned name looks in chat. %player% is replaced with
+  # the trigger symbol + player name (e.g. "@Steve"). Supports &-codes, hex and
+  # MiniMessage tags (e.g. wrap it in a gradient, add brackets/arrows around it, etc.)
+  highlight-template: "<yellow><bold>%player%</bold></yellow>"
+  allow-self-ping: false
+  # Players with this permission cannot be pinged by others
+  immune-permission: "stonechat.ping.immune"
+  # If true, players can toggle ignoring pings via /stonechat togglepings
+  ignorable: true
+  # Where the mentioned player is notified. CHAT, ACTIONBAR, TITLE or BOSSBAR.
+  notification-type: CHAT
+  sound:
+    enabled: true
+    sound-name: "ENTITY_EXPERIENCE_ORB_PICKUP"
+    volume: 1.0
+    pitch: 1.0
+
+cooldown:
+  enabled: true
+  chat-seconds: 5
+  command-seconds: 3
+  bypass-permission: "stonechat.cooldown.bypass"
+  # Only these commands (without leading /) are put on cooldown. Leave empty (the
+  # default) to cooldown ALL commands. Editable in /sc editor -> Cooldown.
+  cooldown-commands: []
+  # Where the "please wait" notice is shown. CHAT, ACTIONBAR, TITLE or BOSSBAR.
+  notification-type: CHAT
+  # Played to the player when they hit a chat/command cooldown.
+  sound:
+    enabled: true
+    sound-name: "BLOCK_NOTE_BLOCK_BASS"
+    volume: 0.7
+    pitch: 0.8
+
+anti-caps:
+  enabled: true
+  # Percentage of uppercase letters allowed before action is taken
+  max-percentage: 60
+  # Messages shorter than this are ignored entirely
+  min-length: 5
+  # block = message is cancelled, autocorrect = message is lowercased automatically
+  mode: block
+  bypass-permission: "stonechat.caps.bypass"
+  # Command executed as console when a player's message is blocked for excessive
+  # caps (not triggered in autocorrect mode), %player% is replaced with their name.
+  # Leave empty to disable.
+  punish-command: ""
+  # Where the "too many caps" notice is shown (not shown in autocorrect mode). CHAT, ACTIONBAR, TITLE or BOSSBAR.
+  notification-type: CHAT
+  # Played to the player when their message is blocked for excessive caps (not played in autocorrect mode).
+  sound:
+    enabled: true
+    sound-name: "ENTITY_VILLAGER_NO"
+    volume: 1.0
+    pitch: 1.0
+
+join-delay:
+  enabled: true
+  seconds: 5
+  bypass-permission: "stonechat.joindelay.bypass"
+  # Where the "please wait" notice is shown. CHAT, ACTIONBAR, TITLE or BOSSBAR.
+  notification-type: CHAT
+  # Played to the player when they try to chat before the join delay has passed.
+  sound:
+    enabled: true
+    sound-name: "BLOCK_NOTE_BLOCK_BASS"
+    volume: 0.7
+    pitch: 0.8
+
+max-message-length:
+  enabled: true
+  max-length: 100
+  # Where the "too long" notice is shown. CHAT, ACTIONBAR, TITLE or BOSSBAR.
+  notification-type: CHAT
+  # Played to the player when their message is blocked for being too long.
+  sound:
+    enabled: true
+    sound-name: "ENTITY_VILLAGER_NO"
+    volume: 1.0
+    pitch: 1.0
+
+# Chat format settings (the whole look of a public chat message, including
+# placeholders) live in their own chatformat.yml file, not here.
+
+# Shared title timing, used by /broadcast (type TITLE) as well as by every
+# other feature above whose notification-type is set to TITLE.
+title-timing:
+  fade-in-ticks: 10
+  stay-ticks: 60
+  fade-out-ticks: 10
+
+broadcast:
+  # Which channel the in-game editor shows settings for by default. Purely a UI
+  # convenience - /broadcast always still requires you to pick a channel explicitly.
+  # CHAT, ACTIONBAR, TITLE or BOSSBAR.
+  default-type: CHAT
+  # Whether the "[Broadcast]" prefix (text in messages.yml -> broadcast.prefix) is
+  # prepended to CHAT-type broadcasts. Has no effect on actionbar/title/bossbar,
+  # which don't really have room for a prefix.
+  use-prefix: true
+  bossbar:
+    # Color: PINK, BLUE, RED, GREEN, YELLOW, PURPLE, WHITE
+    color: BLUE
+    # Style: PROGRESS, NOTCHED_6, NOTCHED_10, NOTCHED_12, NOTCHED_20
+    style: PROGRESS
+    duration-seconds: 10
+  # Optional sound played to everyone online whenever /broadcast is used. Disabled by default
+  # since broadcasts already have a dedicated channel (chat/actionbar/title/bossbar).
+  sound:
+    enabled: false
+    sound-name: "ENTITY_EXPERIENCE_ORB_PICKUP"
+    volume: 1.0
+    pitch: 1.0
+
+# /chatcolor opens a GUI where players pick the color of their own chat
+# messages. Every color is a fully independent entry below - add, remove or
+# recolor as you like. "color-code" accepts &-codes, &#RRGGBB hex AND
+# MiniMessage tags (e.g. gradients), same as everywhere else in this plugin.
+# Leave "color-code" empty to make an entry act as a "reset to default" option.
+# Give an entry a "permission" to gate it behind a permission node (e.g. so
+# only donors can pick red) - leave it empty so everyone can use that color.
+chat-color-gui:
+  enabled: true
+  # Leave empty so every player can open /chat color at all.
+  use-permission: ""
+  # Titles, button materials, names and lore for this GUI now live in
+  # gui/chatcolor-gui.yml instead - this section only controls whether the
+  # GUI is enabled at all and who's allowed to open it.
+  sound-select:
+    enabled: true
+    sound-name: "UI_BUTTON_CLICK"
+    volume: 1.0
+    pitch: 1.2
+  sound-denied:
+    enabled: true
+    sound-name: "ENTITY_VILLAGER_NO"
+    volume: 1.0
+    pitch: 1.0
+  colors:
+    default:
+      display-name: "&7Default"
+      color-code: ""
+      material: GRAY_DYE
+      permission: ""
+    white:
+      display-name: "&fWhite"
+      color-code: "&f"
+      material: WHITE_DYE
+      permission: ""
+    gray:
+      display-name: "&7Gray"
+      color-code: "&7"
+      material: LIGHT_GRAY_DYE
+      permission: ""
+    dark_gray:
+      display-name: "&8Dark Gray"
+      color-code: "&8"
+      material: GRAY_DYE
+      permission: ""
+    black:
+      display-name: "&0Black"
+      color-code: "&0"
+      material: BLACK_DYE
+      permission: ""
+    yellow:
+      display-name: "&eYellow"
+      color-code: "&e"
+      material: YELLOW_DYE
+      permission: ""
+    green:
+      display-name: "&aGreen"
+      color-code: "&a"
+      material: LIME_DYE
+      permission: ""
+    dark_green:
+      display-name: "&2Dark Green"
+      color-code: "&2"
+      material: GREEN_DYE
+      permission: ""
+    aqua:
+      display-name: "&bAqua"
+      color-code: "&b"
+      material: LIGHT_BLUE_DYE
+      permission: ""
+    dark_aqua:
+      display-name: "&3Dark Aqua"
+      color-code: "&3"
+      material: CYAN_DYE
+      permission: ""
+    blue:
+      display-name: "&9Blue"
+      color-code: "&9"
+      material: BLUE_DYE
+      permission: ""
+    dark_blue:
+      display-name: "&1Dark Blue"
+      color-code: "&1"
+      material: BLUE_DYE
+      permission: ""
+    pink:
+      display-name: "&dPink"
+      color-code: "&d"
+      material: PINK_DYE
+      permission: ""
+    magenta:
+      display-name: "&#FF00FFMagenta"
+      color-code: "&#FF00FF"
+      material: MAGENTA_DYE
+      permission: ""
+    dark_purple:
+      display-name: "&5Purple"
+      color-code: "&5"
+      material: PURPLE_DYE
+      permission: ""
+    orange:
+      display-name: "&#FFA500Orange"
+      color-code: "&#FFA500"
+      material: ORANGE_DYE
+      permission: ""
+    teal:
+      display-name: "&#008080Teal"
+      color-code: "&#008080"
+      material: CYAN_DYE
+      permission: ""
+    lime:
+      display-name: "&#32CD32Lime"
+      color-code: "&#32CD32"
+      material: LIME_DYE
+      permission: ""
+    # Example of permission-gated colors: players need the matching permission below
+    # to pick these. All three default to OP in plugin.yml, so admins get them right
+    # away, while regular players need it granted explicitly (e.g. as a donor perk).
+    gold:
+      display-name: "&6Gold"
+      color-code: "&6"
+      material: ORANGE_DYE
+      permission: "stonechat.color.gold"
+    red:
+      display-name: "&cRed"
+      color-code: "&c"
+      material: RED_DYE
+      permission: "stonechat.color.red"
+    dark_red:
+      display-name: "&4Dark Red"
+      color-code: "&4"
+      material: RED_DYE
+      permission: "stonechat.color.red"
+    # Examples of MiniMessage gradients, also permission-gated behind the same rainbow permission.
+    rainbow:
+      display-name: "<gradient:#ff0000:#ffab00:#fff700:#38ff00:#00fff2:#0033ff:#8f00ff>Rainbow</gradient>"
+      color-code: "<gradient:#ff0000:#ffab00:#fff700:#38ff00:#00fff2:#0033ff:#8f00ff>"
+      material: NETHER_STAR
+      permission: "stonechat.color.rainbow"
+    fire:
+      display-name: "<gradient:#ff4500:#ffd700>Fire</gradient>"
+      color-code: "<gradient:#ff4500:#ffd700>"
+      material: BLAZE_POWDER
+      permission: "stonechat.color.rainbow"
+    ocean:
+      display-name: "<gradient:#00c6ff:#0072ff>Ocean</gradient>"
+      color-code: "<gradient:#00c6ff:#0072ff>"
+      material: HEART_OF_THE_SEA
+      permission: "stonechat.color.rainbow"
+    galaxy:
+      display-name: "<gradient:#8e2de2:#4a00e0>Galaxy</gradient>"
+      color-code: "<gradient:#8e2de2:#4a00e0>"
+      material: ENDER_PEARL
+      permission: "stonechat.color.rainbow"
+    mint:
+      display-name: "&#98FF98Mint"
+      color-code: "&#98FF98"
+      material: LIME_DYE
+      permission: ""
+    lavender:
+      display-name: "&#B57EDCLavender"
+      color-code: "&#B57EDC"
+      material: PURPLE_DYE
+      permission: ""
+    coral:
+      display-name: "&#FF7F50Coral"
+      color-code: "&#FF7F50"
+      material: PINK_DYE
+      permission: ""
+    sky:
+      display-name: "&#87CEEBSky Blue"
+      color-code: "&#87CEEB"
+      material: LIGHT_BLUE_DYE
+      permission: ""
+    gold_light:
+      display-name: "&#FFD700Bright Gold"
+      color-code: "&#FFD700"
+      material: YELLOW_DYE
+      permission: ""
+    emerald:
+      display-name: "&#50C878Emerald"
+      color-code: "&#50C878"
+      material: EMERALD
+      permission: ""
+    candy:
+      display-name: "<gradient:#ff9a9e:#fecfef>Candy</gradient>"
+      color-code: "<gradient:#ff9a9e:#fecfef>"
+      material: SUGAR
+      permission: ""
+    aurora:
+      display-name: "<gradient:#00c9ff:#92fe9d>Aurora</gradient>"
+      color-code: "<gradient:#00c9ff:#92fe9d>"
+      material: PRISMARINE_CRYSTALS
+      permission: "stonechat.color.rainbow"
+    dragon:
+      display-name: "<gradient:#0f0c29:#302b63:#24243e>Dragon</gradient>"
+      color-code: "<gradient:#0f0c29:#302b63:#24243e>"
+      material: DRAGON_BREATH
+      permission: "stonechat.color.rainbow"
+    sunset:
+      display-name: "<gradient:#ff512f:#dd2476>Sunset</gradient>"
+      color-code: "<gradient:#ff512f:#dd2476>"
+      material: MAGMA_CREAM
+      permission: "stonechat.color.rainbow"
+    lagoon:
+      display-name: "<gradient:#2af598:#009efd>Lagoon</gradient>"
+      color-code: "<gradient:#2af598:#009efd>"
+      material: PRISMARINE_SHARD
+      permission: "stonechat.color.rainbow"
+    peach:
+      display-name: "<gradient:#ffecd2:#fcb69f>Peach</gradient>"
+      color-code: "<gradient:#ffecd2:#fcb69f>"
+      material: GLISTERING_MELON_SLICE
+      permission: "stonechat.color.rainbow"
+    cosmic:
+      display-name: "<gradient:#ff00cc:#333399>Cosmic</gradient>"
+      color-code: "<gradient:#ff00cc:#333399>"
+      material: END_ROD
+      permission: "stonechat.color.rainbow"
+    emerald_gradient:
+      display-name: "<gradient:#0ba360:#3cba92>Jade</gradient>"
+      color-code: "<gradient:#0ba360:#3cba92>"
+      material: EMERALD_BLOCK
+      permission: "stonechat.color.rainbow"
+    royal:
+      display-name: "<gradient:#141e30:#243b55>Royal</gradient>"
+      color-code: "<gradient:#141e30:#243b55>"
+      material: NETHERITE_INGOT
+      permission: "stonechat.color.rainbow"
+    berry:
+      display-name: "<gradient:#c31432:#240b36>Berry</gradient>"
+      color-code: "<gradient:#c31432:#240b36>"
+      material: SWEET_BERRIES
+      permission: "stonechat.color.rainbow"
+    citrus:
+      display-name: "<gradient:#f8ff00:#3ad59f>Citrus</gradient>"
+      color-code: "<gradient:#f8ff00:#3ad59f>"
+      material: GOLDEN_APPLE
+      permission: "stonechat.color.rainbow"
+    frost:
+      display-name: "<gradient:#83a4d4:#b6fbff>Frost</gradient>"
+      color-code: "<gradient:#83a4d4:#b6fbff>"
+      material: BLUE_ICE
+      permission: "stonechat.color.rainbow"
+    volcano:
+      display-name: "<gradient:#ed213a:#93291e>Volcano</gradient>"
+      color-code: "<gradient:#ed213a:#93291e>"
+      material: BLAZE_ROD
+      permission: "stonechat.color.rainbow"
+    mint_choc:
+      display-name: "<gradient:#00b09b:#96c93d>Mint Choc</gradient>"
+      color-code: "<gradient:#00b09b:#96c93d>"
+      material: MELON_SLICE
+      permission: "stonechat.color.rainbow"
+    sky_dive:
+      display-name: "<gradient:#1e3c72:#2a5298>Sky Dive</gradient>"
+      color-code: "<gradient:#1e3c72:#2a5298>"
+      material: FEATHER
+      permission: "stonechat.color.rainbow"
+    watermelon:
+      display-name: "<gradient:#ff5f6d:#ffc371>Watermelon</gradient>"
+      color-code: "<gradient:#ff5f6d:#ffc371>"
+      material: MELON
+      permission: "stonechat.color.rainbow"
+    grape_soda:
+      display-name: "<gradient:#7f00ff:#e100ff>Grape Soda</gradient>"
+      color-code: "<gradient:#7f00ff:#e100ff>"
+      material: AMETHYST_SHARD
+      permission: "stonechat.color.rainbow"
+    seafoam:
+      display-name: "<gradient:#43cea2:#185a9d>Seafoam</gradient>"
+      color-code: "<gradient:#43cea2:#185a9d>"
+      material: TURTLE_EGG
+      permission: "stonechat.color.rainbow"
+    autumn:
+      display-name: "<gradient:#d38312:#a83279>Autumn</gradient>"
+      color-code: "<gradient:#d38312:#a83279>"
+      material: HAY_BLOCK
+      permission: "stonechat.color.rainbow"
+    unicorn:
+      display-name: "<gradient:#f5576c:#f093fb:#4facfe:#43e97b:#f5576c><bold><underlined>Unicorn</underlined></bold></gradient>"
+      color-code: "<gradient:#f5576c:#f093fb:#4facfe:#43e97b:#f5576c><bold><underlined>"
+      material: END_CRYSTAL
+      permission: "stonechat.color.rainbow"
+      premium: true
+    nebula:
+      display-name: "<gradient:#360033:#0b8793:#360033:#8e2de2><bold><underlined>Nebula</underlined></bold></gradient>"
+      color-code: "<gradient:#360033:#0b8793:#360033:#8e2de2><bold><underlined>"
+      material: NETHER_STAR
+      permission: "stonechat.color.rainbow"
+      premium: true
+    inferno:
+      display-name: "<gradient:#f83600:#f9d423:#ff0000:#f83600:#fff700><bold><underlined>Inferno</underlined></bold></gradient>"
+      color-code: "<gradient:#f83600:#f9d423:#ff0000:#f83600:#fff700><bold><underlined>"
+      material: BLAZE_POWDER
+      permission: "stonechat.color.rainbow"
+      premium: true
+    void:
+      display-name: "<gradient:#000000:#8e2de2:#c471ed:#000000:#4a00e0><bold><underlined>Void</underlined></bold></gradient>"
+      color-code: "<gradient:#000000:#8e2de2:#c471ed:#000000:#4a00e0><bold><underlined>"
+      material: ENDER_EYE
+      permission: "stonechat.color.rainbow"
+      premium: true
+    divine:
+      display-name: "<gradient:#f7971e:#ffd200:#fff700:#ffffff:#ffd200:#f7971e><bold><underlined>Divine</underlined></bold></gradient>"
+      color-code: "<gradient:#f7971e:#ffd200:#fff700:#ffffff:#ffd200:#f7971e><bold><underlined>"
+      material: TOTEM_OF_UNDYING
+      permission: "stonechat.color.rainbow"
+      premium: true
+    prismatic:
+      display-name: "<gradient:#ff0000:#ffab00:#38ff00:#00fff2:#8f00ff:#ff00cc:#ff0000><bold><underlined>Prismatic</underlined></bold></gradient>"
+      color-code: "<gradient:#ff0000:#ffab00:#38ff00:#00fff2:#8f00ff:#ff00cc:#ff0000><bold><underlined>"
+      material: NAUTILUS_SHELL
+      permission: "stonechat.color.rainbow"
+      premium: true
+    phoenix:
+      display-name: "<gradient:#ff512f:#dd2476:#ff9a00:#ff512f:#fff700><bold><underlined>Phoenix</underlined></bold></gradient>"
+      color-code: "<gradient:#ff512f:#dd2476:#ff9a00:#ff512f:#fff700><bold><underlined>"
+      material: BLAZE_ROD
+      permission: "stonechat.color.rainbow"
+      premium: true
+    celestial:
+      display-name: "<gradient:#4e54c8:#8f94fb:#00fff2:#4e54c8:#c471ed><bold><underlined>Celestial</underlined></bold></gradient>"
+      color-code: "<gradient:#4e54c8:#8f94fb:#00fff2:#4e54c8:#c471ed><bold><underlined>"
+      material: END_ROD
+      permission: "stonechat.color.rainbow"
+      premium: true
+    chaos:
+      display-name: "<gradient:#ff0000:#ff00cc:#7700ff:#00c9ff:#00ff88:#fff700:#ff0000><bold><underlined><obfuscated>C</obfuscated>haos</underlined></bold></gradient>"
+      color-code: "<gradient:#ff0000:#ff00cc:#7700ff:#00c9ff:#00ff88:#fff700:#ff0000><bold><underlined>"
+      material: DRAGON_HEAD
+      permission: "stonechat.color.rainbow"
+      premium: true
+    supernova:
+      display-name: "<gradient:#ffffff:#fff700:#ff512f:#8f00ff:#00fff2:#ffffff><bold><underlined>Supernova</underlined></bold></gradient>"
+      color-code: "<gradient:#ffffff:#fff700:#ff512f:#8f00ff:#00fff2:#ffffff><bold><underlined>"
+      material: GLOWSTONE_DUST
+      permission: "stonechat.color.rainbow"
+      premium: true
+    galactic:
+      display-name: "<gradient:#0f2027:#203a43:#2c5364:#0f2027><bold><underlined>Galactic</underlined></bold></gradient>"
+      color-code: "<gradient:#0f2027:#203a43:#2c5364:#0f2027><bold><underlined>"
+      material: END_PORTAL_FRAME
+      permission: "stonechat.color.rainbow"
+      premium: true
+    royalty:
+      display-name: "<gradient:#8e2de2:#ffd200:#8e2de2><bold><underlined>Royalty</underlined></bold></gradient>"
+      color-code: "<gradient:#8e2de2:#ffd200:#8e2de2><bold><underlined>"
+      material: GOLDEN_APPLE
+      permission: "stonechat.color.rainbow"
+      premium: true
+    toxic:
+      display-name: "<gradient:#000000:#39ff14:#000000:#39ff14><bold><underlined>Toxic</underlined></bold></gradient>"
+      color-code: "<gradient:#000000:#39ff14:#000000:#39ff14><bold><underlined>"
+      material: SPIDER_EYE
+      permission: "stonechat.color.rainbow"
+      premium: true
+    bloodmoon:
+      display-name: "<gradient:#0d0d0d:#8b0000:#ff0000:#8b0000:#0d0d0d><bold><underlined>Bloodmoon</underlined></bold></gradient>"
+      color-code: "<gradient:#0d0d0d:#8b0000:#ff0000:#8b0000:#0d0d0d><bold><underlined>"
+      material: REDSTONE
+      permission: "stonechat.color.rainbow"
+      premium: true
+
+
+# Replaces vanilla /tell, /msg, /w, /whisper with a nicer, fully formatted
+# private message system, plus /r to reply. Text (formats, hover) lives in
+# messages.yml under "private-message".
+private-messages:
+  enabled: true
+  # Played to the RECEIVER when they get a private message.
+  sound:
+    enabled: true
+    sound-name: "BLOCK_NOTE_BLOCK_BELL"
+    volume: 1.0
+    pitch: 1.5
+
+# /chatclear lets an admin wipe the chat for everyone online.
+chat-clear:
+  # How many blank lines to push through - enough to scroll old messages out of view.
+  lines: 100
+  # Where the "chat cleared by X" notice is shown to everyone. CHAT, ACTIONBAR, TITLE or BOSSBAR.
+  notification-type: CHAT
+  sound:
+    enabled: true
+    sound-name: "ENTITY_ITEM_BREAK"
+    volume: 1.0
+    pitch: 1.0
+
+# Checks https://modrinth.com/project/stone-chat for a newer plugin
+# version. Console feedback is always printed once right on startup and
+# again every check-interval-minutes. If a newer version is found,
+# everyone with stonechat.admin (or OP) is reminded on join, until the
+# plugin is updated.
+update-checker:
+  enabled: true
+  check-interval-minutes: 60

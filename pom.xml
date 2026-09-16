@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>dev.stonechat</groupId>
+    <artifactId>stonechat</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+
+    <name>Stone Chat</name>
+    <description>Stone Chat is a full-featured chat management plugin for Paper servers: word filter,
+        chat mute, link blocker, player pings, cooldowns, anti-caps, join delay, chat games,
+        multi-channel broadcasts and a fully configurable chat format.
+    </description>
+
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>papermc</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <!-- Paper API is provided by the server at runtime -->
+        <dependency>
+            <groupId>io.papermc.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>1.21.4-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>StoneChat-${project.version}</finalName>
+        <defaultGoal>clean package</defaultGoal>
+        <resources>
+            <!-- plugin.yml gets its version substituted from pom.xml (${project.version} -> e.g. 1.0.1) -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>plugin.yml</include>
+                </includes>
+            </resource>
+            <!-- Everything else copied as-is (no filtering, so config.yml/messages.yml text is never touched) -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>plugin.yml</exclude>
+                </excludes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <release>21</release>
+                </configuration>
+            </plugin>
+            <plugin>
+                <!-- Copies resources (config.yml, plugin.yml, languages/) with variable filtering for plugin.yml version -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+            </plugin>
+        </plugins>
+    </build>
+</project>

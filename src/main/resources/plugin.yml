@@ -1,0 +1,100 @@
+name: StoneChat
+version: '${project.version}'
+main: dev.stonechat.plugin.StoneChat
+api-version: '1.21'
+author: Stone Plugins
+description: Stone Chat is a full-featured chat management plugin with word filter, chat mute, link blocker, player pings, cooldowns, anti-caps, join delay, chat games, multi-channel broadcasts and a fully configurable chat format.
+folia-supported: false
+
+commands:
+  stonechat:
+    description: Main Stone Chat command for reloading the plugin, viewing help and checking for updates.
+    usage: /stonechat <reload|help|checkupdate|togglepings>
+    aliases: [sc, stonechatplugin]
+  chatmute:
+    description: Mutes or unmutes the entire server chat.
+    usage: /chatmute
+    permission: stonechat.mute
+  chatgame:
+    description: Starts, stops or lists chat games.
+    usage: /chatgame <start|stop|list> [id]
+    permission: stonechat.chatgame
+  broadcast:
+    description: Sends a broadcast message via chat, action bar, title or boss bar.
+    usage: /broadcast <chat|actionbar|title|bossbar> <message>
+    permission: stonechat.broadcast
+  msg:
+    description: Sends a private message to another player. Replaces the vanilla /tell, /w, /whisper commands.
+    usage: /msg <player> <message>
+    aliases: [tell, w, whisper]
+    permission: stonechat.msg
+  r:
+    description: Replies to the last private message you received or sent.
+    usage: /r <message>
+    aliases: [reply]
+    permission: stonechat.msg
+  chatclear:
+    description: Clears the chat for every online player.
+    usage: /chatclear
+    permission: stonechat.clear
+    aliases: [clearchat]
+  ignore:
+    description: Ignores or un-ignores another player's pings and private messages.
+    usage: /ignore <player|list>
+    permission: stonechat.msg
+  chat:
+    description: Player hub for chat features - settings, color, ignore, private messages.
+    usage: /chat <settings|color|ignore|msg|r> [args]
+
+permissions:
+  stonechat.admin:
+    description: Grants access to the main /stonechat command (reload, help, checkupdate).
+    default: op
+  stonechat.mute:
+    description: Allows muting and unmuting the global chat.
+    default: op
+  stonechat.mute.bypass:
+    description: Allows chatting and using commands while the chat is muted.
+    default: op
+  stonechat.wordfilter.notify:
+    description: Allows receiving notifications when a player triggers the word filter.
+    default: op
+  stonechat.links.bypass:
+    description: Allows sending links in chat even though the link blocker is enabled.
+    default: op
+  stonechat.ping.immune:
+    description: Prevents a player from being pinged/mentioned by other players.
+    default: false
+  stonechat.cooldown.bypass:
+    description: Allows bypassing chat and command cooldowns.
+    default: op
+  stonechat.caps.bypass:
+    description: Allows bypassing the anti-caps limit.
+    default: op
+  stonechat.joindelay.bypass:
+    description: Allows chatting immediately after joining, bypassing the join delay.
+    default: op
+  stonechat.chatgame:
+    description: Allows creating, starting and stopping chat games.
+    default: op
+  stonechat.broadcast:
+    description: Allows sending broadcasts via chat, action bar, title or boss bar.
+    default: op
+  stonechat.color.gold:
+    description: Allows picking the Gold chat color in /chatcolor.
+    default: op
+  stonechat.color.red:
+    description: Allows picking the Red chat color in /chatcolor.
+    default: op
+  stonechat.color.rainbow:
+    description: Allows picking the Rainbow (gradient) chat color in /chatcolor.
+    default: op
+  stonechat.msg:
+    description: Allows sending and replying to private messages (/msg, /tell, /w, /whisper, /r).
+    default: true
+  stonechat.ignore.immune:
+    description: Prevents a player from being added to anyone's /ignore list (e.g. staff members).
+    default: false
+  stonechat.clear:
+    description: Allows clearing the chat for everyone online with /chatclear.
+    default: op

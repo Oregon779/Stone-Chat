@@ -1,0 +1,59 @@
+# =====================================================================
+#        Stone Chat - Chat Color GUI appearance (gui/chatcolor-gui.yml)
+# =====================================================================
+# Every title, item material, display name and lore line shown in the
+# /chat color GUI (both the Normal/Gradient/Premium hub and the color
+# list screens themselves) can be customized here. Material names must
+# be valid Bukkit Material enum names (e.g. WHITE_DYE, NETHER_STAR).
+# Missing keys are added automatically and existing values are never
+# overwritten.
+# =====================================================================
+
+hub:
+  # Shown at the top of the Normal/Gradient/Premium selection screen.
+  title: "<dark_gray>- <gradient:#55A8FE:#00C9FF><bold>Chat Color</bold></gradient> <dark_gray>-"
+
+  normal-button:
+    material: WHITE_DYE
+    name: "&f&lNormal Colors"
+    lore:
+      - "&7Plain colors, no gradients."
+      - "&7Click to open"
+
+  gradient-button:
+    material: FIREWORK_STAR
+    name: "<gradient:#ff0000:#ffab00:#38ff00:#00fff2:#8f00ff><bold>Gradient Colors</bold></gradient>"
+    lore:
+      - "&7Fancy multi-color gradients."
+      - "&7Click to open"
+
+  premium-button:
+    material: NETHER_STAR
+    name: "<gradient:#f7971e:#ffd200:#f7971e><bold>✦ Premium ✦</bold></gradient>"
+    lore:
+      - "&7The fanciest, most elaborate looks."
+      - "&7Click to open"
+
+  back-to-settings-button:
+    material: ARROW
+    name: "&7« Back to Settings"
+
+# ---------------------------------------------------------------------
+# The actual color-picking screens (one per category, paginated).
+# ---------------------------------------------------------------------
+list:
+  title-normal: "<dark_gray>- <gradient:#55A8FE:#00C9FF><bold>Normal Colors</bold></gradient> <dark_gray>-"
+  title-gradient: "<dark_gray>- <gradient:#55A8FE:#00C9FF><bold>Gradient Colors</bold></gradient> <dark_gray>-"
+  title-premium: "<dark_gray>- <gradient:#55A8FE:#00C9FF><bold>Premium Colors</bold></gradient> <dark_gray>-"
+
+  back-button:
+    material: BARRIER
+    name: "&7« Back"
+
+  prev-page-button:
+    material: ARROW
+    name: "&e« Previous Page"
+
+  next-page-button:
+    material: ARROW
+    name: "&eNext Page »"

@@ -1,0 +1,186 @@
+# =====================================================================
+# Stone Chat messages (English)
+#
+# Supported color formats, usable at the same time in any message:
+#   &-codes        e.g. &a, &b, &l
+#   Hex colors     e.g. &#FF00AA
+#   MiniMessage    e.g. <gradient:#ff0000:#0000ff>text</gradient>
+#
+# Most entries below provide chat/actionbar/title+subtitle/bossbar text all
+# at once. Which one is actually shown is picked in config.yml via the
+# matching "notification-type" setting, so you can switch channels later
+# without writing new text.
+# =====================================================================
+messages-version: 1
+
+general:
+  prefix: "<gray>[</gray><gradient:#8e2de2:#4a00e0><bold>Stone Chat</bold></gradient><gray>]</gray> "
+  no-permission: "&c✖ You do not have permission to do this."
+  player-only: "&cOnly players can use this command."
+  player-not-found: "&cPlayer '%player%' was not found."
+  reloaded: "&a✔ Configuration and messages have been reloaded."
+  unknown-command: "&cUnknown subcommand. Use /stonechat help for a list of commands."
+
+word-filter:
+  blocked:
+    chat: "&cYour message was blocked because it contains a forbidden word."
+    actionbar: "&c✖ Message blocked - forbidden word"
+    title: "&c&lBlocked"
+    subtitle: "&7Forbidden word detected"
+    bossbar: "&cYour message was blocked because it contains a forbidden word."
+  admin-notify: "&e[WordFilter] &f%player% &etried to send: &7%message%"
+  admin-notify-evasion: "&e[WordFilter] &f%player% &etried to bypass the filter with special characters: &7%message%"
+
+chat-mute:
+  now-muted:
+    chat: "&cThe chat has been muted by %player%."
+    actionbar: "&c✖ Chat muted by %player%"
+    title: "&c&lChat Muted"
+    subtitle: "&7by %player%"
+    bossbar: "&cThe chat has been muted by %player%."
+  now-unmuted:
+    chat: "&aThe chat has been unmuted by %player%."
+    actionbar: "&a✔ Chat unmuted by %player%"
+    title: "&a&lChat Unmuted"
+    subtitle: "&7by %player%"
+    bossbar: "&aThe chat has been unmuted by %player%."
+  chat-blocked:
+    chat: "&cThe chat is currently muted."
+    actionbar: "&c✖ Chat is muted"
+    title: "&c&lChat Muted"
+    subtitle: "&7You cannot chat right now"
+    bossbar: "&cThe chat is currently muted."
+  command-blocked:
+    chat: "&cCommands are disabled while the chat is muted."
+    actionbar: "&c✖ Commands disabled - chat muted"
+    title: "&c&lChat Muted"
+    subtitle: "&7Commands are disabled"
+    bossbar: "&cCommands are disabled while the chat is muted."
+
+link-blocker:
+  blocked:
+    chat: "&cSending links in chat is not allowed."
+    actionbar: "&c✖ Links are not allowed"
+    title: "&c&lBlocked"
+    subtitle: "&7Links are not allowed"
+    bossbar: "&cSending links in chat is not allowed."
+
+ping:
+  sound-notify:
+    chat: "&e%player% &fmentioned you in chat!"
+    actionbar: "&e➜ %player% mentioned you!"
+    title: "&e&lMentioned!"
+    subtitle: "&7by %player%"
+    bossbar: "&e%player% &fmentioned you in chat!"
+  cannot-ping-immune: "&cYou cannot ping this player."
+  cannot-ping-self: "&cYou cannot ping yourself."
+  toggled-on: "&aYou will no longer receive chat pings."
+  toggled-off: "&aYou will now receive chat pings again."
+
+cooldown:
+  chat-wait:
+    chat: "&cPlease wait %seconds% more second(s) before chatting again."
+    actionbar: "&c✖ Wait %seconds%s before chatting again"
+    title: "&c&lSlow down!"
+    subtitle: "&7Wait %seconds% more second(s)"
+    bossbar: "&cPlease wait %seconds% more second(s) before chatting again."
+  command-wait:
+    chat: "&cPlease wait %seconds% more second(s) before using this command again."
+    actionbar: "&c✖ Wait %seconds%s before using that command again"
+    title: "&c&lSlow down!"
+    subtitle: "&7Wait %seconds% more second(s)"
+    bossbar: "&cPlease wait %seconds% more second(s) before using this command again."
+
+anti-caps:
+  blocked:
+    chat: "&cPlease do not use excessive capital letters."
+    actionbar: "&c✖ Too many capital letters"
+    title: "&c&lBlocked"
+    subtitle: "&7Too many capital letters"
+    bossbar: "&cPlease do not use excessive capital letters."
+
+join-delay:
+  wait:
+    chat: "&cPlease wait %seconds% more second(s) before you can chat."
+    actionbar: "&c✖ Wait %seconds%s before you can chat"
+    title: "&c&lWelcome!"
+    subtitle: "&7You can chat in %seconds% second(s)"
+    bossbar: "&cPlease wait %seconds% more second(s) before you can chat."
+
+max-length:
+  blocked:
+    chat: "&cYour message is too long! Maximum length is %max% characters."
+    actionbar: "&c✖ Message too long (max %max% characters)"
+    title: "&c&lBlocked"
+    subtitle: "&7Message too long"
+    bossbar: "&cYour message is too long! Maximum length is %max% characters."
+
+broadcast:
+  usage: "&cUsage: /broadcast <chat|actionbar|title|bossbar> [seconds] <message>"
+  prefix: "<gray>[</gray><gradient:#ff512f:#f09819><bold>Broadcast</bold></gradient><gray>]</gray> "
+
+chat-format:
+  hover-rank: "&7Rank: &f%rank%"
+  hover-playtime: "&7Playtime: &f%playtime%"
+  hover-deaths: "&7Deaths: &f%deaths%"
+  hover-kills: "&7Kills: &f%kills%"
+  hover-no-rank: "&7Player"
+
+private-message:
+  sender-format: "&7[&dYou &7-> &d%player%&7] &f%message%"
+  receiver-format: "&7[&d%player% &7-> &dYou&7] &f%message%"
+  reply-hover: "&7Click to reply to &d%player%"
+  usage: "&cUsage: /msg <player> <message>"
+  reply-usage: "&cUsage: /r <message>"
+  cannot-message-self: "&cYou cannot message yourself."
+  player-offline: "&cThat player is not online."
+  no-reply-target: "&cYou have no one to reply to yet."
+  ignored: "&cYou cannot message %player% right now."
+
+ignore:
+  usage: "&cUsage: /ignore <player|list>"
+  cannot-ignore-self: "&cYou cannot ignore yourself."
+  cannot-ignore-immune: "&cYou cannot ignore this player."
+  now-ignoring: "&aYou are now ignoring &f%player%&a. You will no longer see their pings or private messages."
+  no-longer-ignoring: "&aYou are no longer ignoring &f%player%&a."
+  list-empty: "&7You are not ignoring anyone."
+  list-header: "&7You are ignoring: &f%players%"
+
+chat-clear:
+  cleared:
+    chat: "&aThe chat has been cleared by %player%."
+    actionbar: "&a✔ Chat cleared by %player%"
+    title: "&a&lChat Cleared"
+    subtitle: "&7by %player%"
+    bossbar: "&aThe chat has been cleared by %player%."
+
+chat-color:
+  gui-disabled: "&cThe chat color menu is currently disabled."
+  no-permission-color: "&cYou don't have permission to use this color."
+  selected: "&aYour chat color has been set to %colorname%&a!"
+  reset: "&aYour chat color has been reset to the default."
+  select-lore: "&7Click to select"
+  selected-lore: "&a✔ Currently selected"
+  locked-lore: "&c✖ Locked - you don't have permission"
+
+update:
+  # %version% %current% %behind%
+  available: "&fA new version is available: &a%version% &7(you're on &c%current%&7, &e%behind% &7behind). Get it at modrinth.com/project/stone-chat"
+  versions-behind: "%count% version(s)"
+  versions-behind-unknown: "an unknown number of versions"
+  check-triggered: "&e⟳ &7Checking Modrinth for updates now... watch the console for the result."
+
+help:
+  header: "&6&l===== Stone Chat Help ====="
+  reload: "&e/stonechat reload &7- Reload config and messages"
+  checkupdate: "&e/stonechat checkupdate &7- Check Modrinth for a new version right now"
+  edit: "&e/sc editor &7- Open the in-game settings editor"
+  settings: "&e/stonechat settings &7or &e/chat &7- Open your personal settings menu (pings, chat color, ignored players)"
+  help: "&e/stonechat help &7- Show this help menu"
+  chatmute: "&e/chatmute &7- Mute or unmute the chat"
+  chatgame: "&e/chatgame <start|stop|list> &7- Manage chat games"
+  broadcast: "&e/broadcast <chat|actionbar|title|bossbar> [seconds] <message> &7- Send a broadcast"
+  chatcolor: "&e/chat color &7- Choose the color of your own chat messages"
+  togglepings: "&e/stonechat togglepings &7- Turn @mentions on/off for yourself"
+  ignore: "&e/ignore <player|list> &7- Ignore/un-ignore a player's pings and messages"
+  footer: "&6&l==========================="

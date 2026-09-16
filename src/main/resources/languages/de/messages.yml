@@ -1,0 +1,186 @@
+# =====================================================================
+# Stone Chat Nachrichten (Deutsch)
+#
+# Unterstützte Farbformate, gleichzeitig nutzbar in jeder Nachricht:
+#   &-Codes        z.B. &a, &b, &l
+#   Hex-Farben     z.B. &#FF00AA
+#   MiniMessage    z.B. <gradient:#ff0000:#0000ff>Text</gradient>
+#
+# Die meisten Einträge unten enthalten Text für Chat, Actionbar, Title+Subtitle
+# und Bossbar gleichzeitig. Welcher Kanal tatsächlich genutzt wird, legst du in
+# der config.yml über die passende "notification-type"-Einstellung fest - so
+# kannst du später den Kanal wechseln, ohne neuen Text zu schreiben.
+# =====================================================================
+messages-version: 1
+
+general:
+  prefix: "<gray>[</gray><gradient:#8e2de2:#4a00e0><bold>Stone Chat</bold></gradient><gray>]</gray> "
+  no-permission: "&c✖ Du hast keine Berechtigung dafür."
+  player-only: "&cNur Spieler können diesen Befehl nutzen."
+  player-not-found: "&cSpieler '%player%' wurde nicht gefunden."
+  reloaded: "&a✔ Konfiguration und Nachrichten wurden neu geladen."
+  unknown-command: "&cUnbekannter Unterbefehl. Nutze /stonechat help für eine Übersicht."
+
+word-filter:
+  blocked:
+    chat: "&cDeine Nachricht wurde blockiert, da sie ein verbotenes Wort enthält."
+    actionbar: "&c✖ Nachricht blockiert - verbotenes Wort"
+    title: "&c&lBlockiert"
+    subtitle: "&7Verbotenes Wort erkannt"
+    bossbar: "&cDeine Nachricht wurde blockiert, da sie ein verbotenes Wort enthält."
+  admin-notify: "&e[Wortfilter] &f%player% &eversuchte zu senden: &7%message%"
+  admin-notify-evasion: "&e[Wortfilter] &f%player% &eversuchte den Filter mit Sonderzeichen zu umgehen: &7%message%"
+
+chat-mute:
+  now-muted:
+    chat: "&cDer Chat wurde von %player% stummgeschaltet."
+    actionbar: "&c✖ Chat stummgeschaltet von %player%"
+    title: "&c&lChat stummgeschaltet"
+    subtitle: "&7von %player%"
+    bossbar: "&cDer Chat wurde von %player% stummgeschaltet."
+  now-unmuted:
+    chat: "&aDer Chat wurde von %player% wieder freigeschaltet."
+    actionbar: "&a✔ Chat freigeschaltet von %player%"
+    title: "&a&lChat freigeschaltet"
+    subtitle: "&7von %player%"
+    bossbar: "&aDer Chat wurde von %player% wieder freigeschaltet."
+  chat-blocked:
+    chat: "&cDer Chat ist derzeit stummgeschaltet."
+    actionbar: "&c✖ Chat ist stummgeschaltet"
+    title: "&c&lChat stummgeschaltet"
+    subtitle: "&7Du kannst gerade nicht schreiben"
+    bossbar: "&cDer Chat ist derzeit stummgeschaltet."
+  command-blocked:
+    chat: "&cBefehle sind während der Stummschaltung deaktiviert."
+    actionbar: "&c✖ Befehle deaktiviert - Chat stummgeschaltet"
+    title: "&c&lChat stummgeschaltet"
+    subtitle: "&7Befehle sind deaktiviert"
+    bossbar: "&cBefehle sind während der Stummschaltung deaktiviert."
+
+link-blocker:
+  blocked:
+    chat: "&cDas Senden von Links im Chat ist nicht erlaubt."
+    actionbar: "&c✖ Links sind nicht erlaubt"
+    title: "&c&lBlockiert"
+    subtitle: "&7Links sind nicht erlaubt"
+    bossbar: "&cDas Senden von Links im Chat ist nicht erlaubt."
+
+ping:
+  sound-notify:
+    chat: "&e%player% &fhat dich im Chat erwähnt!"
+    actionbar: "&e➜ %player% hat dich erwähnt!"
+    title: "&e&lErwähnt!"
+    subtitle: "&7von %player%"
+    bossbar: "&e%player% &fhat dich im Chat erwähnt!"
+  cannot-ping-immune: "&cDu kannst diesen Spieler nicht pingen."
+  cannot-ping-self: "&cDu kannst dich nicht selbst pingen."
+  toggled-on: "&aDu erhältst keine Chat-Pings mehr."
+  toggled-off: "&aDu erhältst wieder Chat-Pings."
+
+cooldown:
+  chat-wait:
+    chat: "&cBitte warte noch %seconds% Sekunde(n), bevor du wieder schreibst."
+    actionbar: "&c✖ Warte noch %seconds%s, bevor du wieder schreibst"
+    title: "&c&lLangsamer!"
+    subtitle: "&7Noch %seconds% Sekunde(n) warten"
+    bossbar: "&cBitte warte noch %seconds% Sekunde(n), bevor du wieder schreibst."
+  command-wait:
+    chat: "&cBitte warte noch %seconds% Sekunde(n), bevor du diesen Befehl erneut nutzt."
+    actionbar: "&c✖ Warte noch %seconds%s, bevor du den Befehl erneut nutzt"
+    title: "&c&lLangsamer!"
+    subtitle: "&7Noch %seconds% Sekunde(n) warten"
+    bossbar: "&cBitte warte noch %seconds% Sekunde(n), bevor du diesen Befehl erneut nutzt."
+
+anti-caps:
+  blocked:
+    chat: "&cBitte verwende nicht zu viele Großbuchstaben."
+    actionbar: "&c✖ Zu viele Großbuchstaben"
+    title: "&c&lBlockiert"
+    subtitle: "&7Zu viele Großbuchstaben"
+    bossbar: "&cBitte verwende nicht zu viele Großbuchstaben."
+
+join-delay:
+  wait:
+    chat: "&cBitte warte noch %seconds% Sekunde(n), bevor du schreiben kannst."
+    actionbar: "&c✖ Warte noch %seconds%s, bevor du schreiben kannst"
+    title: "&c&lWillkommen!"
+    subtitle: "&7Du kannst in %seconds% Sekunde(n) schreiben"
+    bossbar: "&cBitte warte noch %seconds% Sekunde(n), bevor du schreiben kannst."
+
+max-length:
+  blocked:
+    chat: "&cDeine Nachricht ist zu lang! Maximal %max% Zeichen erlaubt."
+    actionbar: "&c✖ Nachricht zu lang (max. %max% Zeichen)"
+    title: "&c&lBlockiert"
+    subtitle: "&7Nachricht zu lang"
+    bossbar: "&cDeine Nachricht ist zu lang! Maximal %max% Zeichen erlaubt."
+
+broadcast:
+  usage: "&cVerwendung: /broadcast <chat|actionbar|title|bossbar> [sekunden] <nachricht>"
+  prefix: "<gray>[</gray><gradient:#ff512f:#f09819><bold>Broadcast</bold></gradient><gray>]</gray> "
+
+chat-format:
+  hover-rank: "&7Rang: &f%rank%"
+  hover-playtime: "&7Spielzeit: &f%playtime%"
+  hover-deaths: "&7Tode: &f%deaths%"
+  hover-kills: "&7Kills: &f%kills%"
+  hover-no-rank: "&7Spieler"
+
+private-message:
+  sender-format: "&7[&dDu &7-> &d%player%&7] &f%message%"
+  receiver-format: "&7[&d%player% &7-> &dDu&7] &f%message%"
+  reply-hover: "&7Klicken, um &d%player% &7zu antworten"
+  usage: "&cVerwendung: /msg <spieler> <nachricht>"
+  reply-usage: "&cVerwendung: /r <nachricht>"
+  cannot-message-self: "&cDu kannst dir nicht selbst schreiben."
+  player-offline: "&cDieser Spieler ist nicht online."
+  no-reply-target: "&cDu hast noch niemanden, dem du antworten kannst."
+  ignored: "&cDu kannst %player% gerade nicht schreiben."
+
+ignore:
+  usage: "&cVerwendung: /ignore <spieler|list>"
+  cannot-ignore-self: "&cDu kannst dich nicht selbst ignorieren."
+  cannot-ignore-immune: "&cDu kannst diesen Spieler nicht ignorieren."
+  now-ignoring: "&aDu ignorierst jetzt &f%player%&a. Du siehst keine Pings oder privaten Nachrichten mehr von dieser Person."
+  no-longer-ignoring: "&aDu ignorierst &f%player% &anicht mehr."
+  list-empty: "&7Du ignorierst aktuell niemanden."
+  list-header: "&7Du ignorierst: &f%players%"
+
+chat-clear:
+  cleared:
+    chat: "&aDer Chat wurde von %player% geleert."
+    actionbar: "&a✔ Chat geleert von %player%"
+    title: "&a&lChat geleert"
+    subtitle: "&7von %player%"
+    bossbar: "&aDer Chat wurde von %player% geleert."
+
+chat-color:
+  gui-disabled: "&cDas Chat-Farben-Menü ist derzeit deaktiviert."
+  no-permission-color: "&cDu hast keine Berechtigung für diese Farbe."
+  selected: "&aDeine Chat-Farbe wurde auf %colorname% &agesetzt!"
+  reset: "&aDeine Chat-Farbe wurde auf den Standard zurückgesetzt."
+  select-lore: "&7Klicken zum Auswählen"
+  selected-lore: "&a✔ Aktuell ausgewählt"
+  locked-lore: "&c✖ Gesperrt - dir fehlt die Berechtigung"
+
+update:
+  # %version% %current% %behind%
+  available: "&fEine neue Version ist verfügbar: &a%version% &7(du nutzt &c%current%&7, &e%behind% &7dahinter). Hol sie dir auf modrinth.com/project/stone-chat"
+  versions-behind: "%count% Version(en)"
+  versions-behind-unknown: "einer unbekannten Anzahl an Versionen"
+  check-triggered: "&e⟳ &7Prüfe Modrinth jetzt auf Updates... schau in die Konsole für das Ergebnis."
+
+help:
+  header: "&6&l===== Stone Chat Hilfe ====="
+  reload: "&e/stonechat reload &7- Config und Nachrichten neu laden"
+  checkupdate: "&e/stonechat checkupdate &7- Modrinth sofort auf ein neues Update prüfen"
+  edit: "&e/sc editor &7- Öffnet den Einstellungs-Editor im Spiel"
+  settings: "&e/stonechat settings &7oder &e/chat &7- Öffnet dein persönliches Einstellungsmenü (Pings, Chat-Farbe, ignorierte Spieler)"
+  help: "&e/stonechat help &7- Diese Hilfe anzeigen"
+  chatmute: "&e/chatmute &7- Chat stummschalten oder freischalten"
+  chatgame: "&e/chatgame <start|stop|list> &7- Chat-Games verwalten"
+  broadcast: "&e/broadcast <chat|actionbar|title|bossbar> [sekunden] <nachricht> &7- Broadcast senden"
+  chatcolor: "&e/chat color &7- Wähle die Farbe deiner eigenen Chat-Nachrichten"
+  togglepings: "&e/stonechat togglepings &7- @Erwähnungen für dich an-/ausschalten"
+  ignore: "&e/ignore <spieler|list> &7- Pings/Nachrichten eines Spielers ignorieren/nicht mehr ignorieren"
+  footer: "&6&l============================"

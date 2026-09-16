@@ -1,0 +1,44 @@
+# =====================================================================
+#                     Stone Chat - chatformat.yml
+# =====================================================================
+# Everything about how a public chat message looks lives here, separate
+# from the general config.yml. Missing options are added automatically on
+# plugin updates, existing values are never overwritten.
+# =====================================================================
+config-version: 1
+
+# Supports &-codes, &#RRGGBB hex and MiniMessage tags (e.g. <gradient>) at the same time.
+# Available placeholders:
+#   %player_name%          player's username (interactive - see name-interactions below)
+#   %player_displayname%   player's display name (nickname plugins etc.)
+#   %player_uuid%          player's UUID
+#   %player_health%        current health, rounded (e.g. "18")
+#   %player_max_health%    max health, rounded (e.g. "20")
+#   %player_level%         current XP level
+#   %player_ping%          connection latency in ms
+#   %player_gamemode%      SURVIVAL, CREATIVE, ADVENTURE or SPECTATOR
+#   %world%                name of the world the player is in
+#   %world_players%        number of players in that world
+#   %online%                number of players online on the whole server
+#   %max_players%          the server's player slot limit
+#   %luckperms_rank%       player's primary LuckPerms group, if LuckPerms is installed
+#   %luckperms_prefix%     player's cached LuckPerms prefix, if installed
+#   %luckperms_suffix%     player's cached LuckPerms suffix, if installed
+#   %prefix% / %suffix%    convenience aliases for the two above (also resolved via LuckPerms)
+#   %date%                 current date, formatted using date-format below
+#   %time%                 current time, formatted using time-format below
+#   %message%              the player's message
+# Plus any PlaceholderAPI placeholder (e.g. %vault_prefix%) if that plugin is installed.
+format: "%prefix%<white>%player_name%</white>%suffix% <dark_gray>»</dark_gray> <white>%message%</white>"
+use-placeholderapi: true
+
+# Pattern used for the %date% and %time% placeholders (Java DateTimeFormatter syntax).
+date-format: "dd.MM.yyyy"
+time-format: "HH:mm"
+
+# Makes %player_name% in chat interactive.
+name-interactions:
+  # Clicking a player's name in chat suggests "/msg <name> " in your own chat box.
+  click-to-message: true
+  # Hovering a player's name in chat shows their rank, playtime, deaths and kills.
+  hover-stats: true

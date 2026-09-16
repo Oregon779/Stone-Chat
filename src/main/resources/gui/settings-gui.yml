@@ -1,0 +1,117 @@
+# =====================================================================
+#         Stone Chat - Player Settings GUI (gui/settings-gui.yml)
+# =====================================================================
+# Every title, item material, display name and lore line shown in the
+# player-facing /chat settings menu (and its ignore-management
+# submenus) can be customized here. Material names must be valid
+# Bukkit Material enum names. Missing keys are added automatically and
+# existing values are never overwritten.
+# =====================================================================
+
+# ---------------------------------------------------------------------
+# Shared pagination/back buttons, reused by "My Ignore List" and "Ignore Someone".
+# ---------------------------------------------------------------------
+nav:
+  prev-page-button:
+    material: ARROW
+    name: "&e« Previous Page"
+  next-page-button:
+    material: ARROW
+    name: "&eNext Page »"
+  back-button:
+    material: ARROW
+    name: "&7« Back"
+
+main:
+  title: "<dark_gray>- <gradient:#55A8FE:#00C9FF><bold>My Stone Chat Settings</bold></gradient> <dark_gray>-"
+
+  ping-button:
+    material-on: LIME_DYE
+    material-off: GRAY_DYE
+    name-on: "&aReceive Pings"
+    name-off: "&7Receive Pings"
+    lore-on:
+      - "&a✔ Currently ON"
+      - "&7Whether @mentions notify you."
+      - "&7Click to toggle"
+    lore-off:
+      - "&7✖ Currently OFF"
+      - "&7Whether @mentions notify you."
+      - "&7Click to toggle"
+
+  color-button:
+    material: FIREWORK_STAR
+    name: "&d&lChat Color"
+    lore:
+      - "&7Pick the color of your own"
+      - "&7chat messages."
+      - "&7Click to open"
+
+  ignore-button:
+    material: BARRIER
+    name: "&c&lManage Ignored Players"
+    # %count% is replaced with how many players you're currently ignoring.
+    lore:
+      - "&7You are ignoring &f%count% &7player(s)."
+      - "&7Click to open"
+
+# ---------------------------------------------------------------------
+# Ignore hub: choice between viewing your list and browsing players to ignore.
+# ---------------------------------------------------------------------
+ignore-hub:
+  title: "<dark_gray>- <gradient:#55A8FE:#00C9FF><bold>Manage Ignored Players</bold></gradient> <dark_gray>-"
+
+  list-button:
+    material: BOOK
+    name: "&e&lMy Ignore List"
+    # %count% is replaced with how many players you're currently ignoring.
+    lore:
+      - "&7View everyone you're ignoring (&f%count%&7)"
+      - "&7and remove them with one click."
+      - "&7Click to open"
+
+  add-button:
+    material: PLAYER_HEAD
+    name: "&a&lIgnore Someone"
+    lore:
+      - "&7Browse everyone currently online"
+      - "&7and ignore them with one click."
+      - "&7Click to open"
+
+  back-button:
+    material: ARROW
+    name: "&7« Back"
+
+# ---------------------------------------------------------------------
+# "My Ignore List" screen.
+# ---------------------------------------------------------------------
+my-ignore-list:
+  title: "<dark_gray>- <gradient:#55A8FE:#00C9FF><bold>My Ignore List</bold></gradient> <dark_gray>-"
+  entry-lore:
+    - "&7Click to stop ignoring this player"
+  empty-item:
+    material: BARRIER
+    name: "&7Nobody here"
+    lore:
+      - "&7You aren't ignoring anyone."
+
+# ---------------------------------------------------------------------
+# "Ignore Someone" screen.
+# ---------------------------------------------------------------------
+ignore-picker:
+  title: "<dark_gray>- <gradient:#55A8FE:#00C9FF><bold>Ignore Someone</bold></gradient> <dark_gray>-"
+  search-button:
+    material: NAME_TAG
+    name: "&e&lSearch by Name"
+  entry-lore-not-ignored:
+    - "&7Click to ignore this player"
+  entry-lore-ignored:
+    - "&a✔ Already ignoring - click to un-ignore"
+  entry-lore-immune:
+    - "&7This player can't be ignored."
+  empty-item:
+    material: BARRIER
+    name: "&7No players found"
+    lore:
+      - "&7Nobody online matches that search."
+      - "&7Click the search button to try again."

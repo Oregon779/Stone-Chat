@@ -1,0 +1,237 @@
+# =====================================================================
+#                  Stone Chat - Chat Games (chatgames.yml)
+# =====================================================================
+# This file configures the entire Chat Games module: global behaviour,
+# rewards, the five built-in games, and any custom games you create
+# through /sc editor -> Chat Games -> Custom Games Management.
+#
+# Missing keys are added automatically when the plugin updates; your
+# existing values are never overwritten or removed.
+# =====================================================================
+config-version: 2
+
+# ---------------------------------------------------------------------
+# Global settings
+# ---------------------------------------------------------------------
+chat-games:
+  # Master switch for the entire module. When false, no game (default or
+  # custom) will ever start, manually or automatically.
+  enabled: true
+
+  # How often a random enabled game is automatically started, in seconds.
+  # Only applies if no game is currently running and at least
+  # min-players-online players are online.
+  interval-seconds: 300
+
+  # Default answer window in seconds, used by any game that doesn't define
+  # its own duration-seconds.
+  answer-time-seconds: 60
+
+  # Minimum time that must pass between one game ending (won or timed out)
+  # and the next one being allowed to start (manual or automatic). Set to 0
+  # to allow games back-to-back.
+  cooldown-after-game-seconds: 0
+
+  # Skip auto-starting a game if fewer than this many players are online.
+  # Manual starts via the editor GUI or /chatgame ignore this.
+  min-players-online: 1
+
+  # If nobody has answered after this many seconds, a hint is broadcast
+  # (the answer's first letter and its length). Only used by games that
+  # have hints enabled (each game can opt out individually).
+  hint:
+    enabled: true
+    after-seconds: 20
+
+  # Where every chat games broadcast is shown. CHAT, ACTIONBAR, TITLE or
+  # BOSSBAR. Each game can override this individually.
+  notification-type: CHAT
+
+  # All broadcast text lives here so it's easy to translate/restyle without
+  # touching any other file. Supported placeholders per message are noted.
+  broadcast:
+    # Prepended to every chat-type chat games message.
+    prefix: "<gray>[</gray><gradient:#f7971e:#ffd200><bold>Chat Game</bold></gradient><gray>]</gray> "
+    # Shown when a round starts. Placeholder: %question%
+    start-message: "&aA new chat game has started! &f%question%"
+    # Shown when a player answers correctly. Placeholders: %player%, %answer%
+    win-message: "&a&l%player% &fwon the chat game! The answer was &e%answer%&f!"
+    # Shown when nobody answers in time.
+    timeout-message: "&cTime's up! Nobody answered the chat game in time."
+    # Shown mid-round as a hint, if hints are enabled. Placeholders: %firstletter%, %length%
+    hint-message: "&eHint: the answer starts with '&f%firstletter%&e' and is &f%length% &echaracters long."
+
+  # The reward every game hands out unless it defines its own override
+  # (see each game's "reward.override" key below).
+  default-reward:
+    # Commands run by the console. %player% is replaced with the winner's name.
+    console-commands:
+      - "say %player% just won a chat game!"
+    # Vault Economy payout. Requires Vault + an economy plugin. 0 disables it.
+    vault-money: 0
+    sound:
+      enabled: true
+      name: "ENTITY_PLAYER_LEVELUP"
+      volume: 1.0
+      pitch: 1.2
+    # Particle effect played at the winner's location.
+    particle:
+      enabled: false
+      name: "TOTEM"
+      count: 20
+
+# ---------------------------------------------------------------------
+# The five built-in games. Each supports the same common keys (enabled,
+# duration-seconds, permission, case-sensitive, min-players-online,
+# hint-enabled, notification-type, reward) plus its own type-specific
+# settings explained below.
+# ---------------------------------------------------------------------
+default-games:
+  math_solver:
+    type: MATH
+    enabled: true
+    # 0 = use chat-games.answer-time-seconds instead.
+    duration-seconds: 0
+    # Extra permission required to manually start this specific game (on top
+    # of stonechat.chatgame). Leave empty to only require stonechat.chatgame.
+    permission: ""
+    case-sensitive: false
+    min-players-online: 0
+    hint-enabled: true
+    notification-type: "DEFAULT"
+    reward:
+      override: false
+      console-commands: []
+      vault-money: 0
+      sound: { enabled: true, name: "ENTITY_PLAYER_LEVELUP", volume: 1.0, pitch: 1.2 }
+      particle: { enabled: false, name: "TOTEM", count: 20 }
+    # The range numbers are picked from, and which operators can appear.
+    # "/" falls back to multiplication whenever it wouldn't produce a whole
+    # number, so the answer is always a simple integer.
+    min-number: 1
+    max-number: 50
+    operators: ["+", "-", "*"]
+
+  unscramble_word:
+    type: UNSCRAMBLE
+    enabled: true
+    duration-seconds: 0
+    permission: ""
+    case-sensitive: false
+    min-players-online: 0
+    hint-enabled: true
+    notification-type: "DEFAULT"
+    reward:
+      override: false
+      console-commands: []
+      vault-money: 0
+      sound: { enabled: true, name: "ENTITY_PLAYER_LEVELUP", volume: 1.0, pitch: 1.2 }
+      particle: { enabled: false, name: "TOTEM", count: 20 }
+    # A random word from this list is scrambled each round (letters shuffled,
+    # shown separated by hyphens, e.g. "e-l-p-p-a").
+    words:
+      - "minecraft"
+      - "diamond"
+      - "emerald"
+      - "creeper"
+      - "enderman"
+      - "obsidian"
+      - "redstone"
+      - "villager"
+      - "skeleton"
+      - "zombie"
+      - "dragon"
+      - "portal"
+      - "netherite"
+      - "furnace"
+      - "bedrock"
+
+  fast_typing:
+    type: FAST_TYPING
+    enabled: true
+    duration-seconds: 0
+    permission: ""
+    case-sensitive: false
+    min-players-online: 0
+    hint-enabled: false
+    notification-type: "DEFAULT"
+    reward:
+      override: false
+      console-commands: []
+      vault-money: 0
+      sound: { enabled: true, name: "ENTITY_PLAYER_LEVELUP", volume: 1.0, pitch: 1.2 }
+      particle: { enabled: false, name: "TOTEM", count: 20 }
+    # A random word or phrase from this list is shown as-is; whoever types it
+    # first (exactly) wins. Keep these short for a genuine speed challenge.
+    phrases:
+      - "speedrunner"
+      - "quick brown fox"
+      - "diamond sword"
+      - "type fast"
+      - "netherite pickaxe"
+      - "enchanted golden apple"
+
+  trivia_quiz:
+    type: TRIVIA
+    enabled: true
+    duration-seconds: 0
+    permission: ""
+    case-sensitive: false
+    min-players-online: 0
+    hint-enabled: true
+    notification-type: "DEFAULT"
+    reward:
+      override: false
+      console-commands: []
+      vault-money: 0
+      sound: { enabled: true, name: "ENTITY_PLAYER_LEVELUP", volume: 1.0, pitch: 1.2 }
+      particle: { enabled: false, name: "TOTEM", count: 20 }
+    # Each entry needs a question and at least one accepted answer. Answers
+    # are matched case-insensitively (unless case-sensitive: true above) and
+    # whitespace-trimmed. Add as many entries and answers as you like.
+    questions:
+      - question: "What year was Minecraft officially released?"
+        answers: ["2011"]
+      - question: "What mob explodes when it gets close to you?"
+        answers: ["creeper"]
+      - question: "What is the strongest armor material in the base game?"
+        answers: ["netherite"]
+      - question: "What is the capital of France?"
+        answers: ["paris"]
+      - question: "How many hearts does a player have by default?"
+        answers: ["10", "ten"]
+
+  fill_blanks:
+    type: FILL_BLANKS
+    enabled: true
+    duration-seconds: 0
+    permission: ""
+    case-sensitive: false
+    min-players-online: 0
+    hint-enabled: true
+    notification-type: "DEFAULT"
+    reward:
+      override: false
+      console-commands: []
+      vault-money: 0
+      sound: { enabled: true, name: "ENTITY_PLAYER_LEVELUP", volume: 1.0, pitch: 1.2 }
+      particle: { enabled: false, name: "TOTEM", count: 20 }
+    # Percentage of each word's letters that get hidden (10-90). The first
+    # and last letter always stay visible so the word's shape is recognizable.
+    blank-percentage: 40
+    words:
+      - "minecraft"
+      - "diamond"
+      - "creeper"
+      - "obsidian"
+      - "redstone"
+      - "enderman"
+      - "villager"
+      - "netherite"
+
+# ---------------------------------------------------------------------
+# Custom games you create via the editor GUI (or by hand here) show up
+# here. Each one behaves like Trivia: a bank of question/answer entries,
+# one picked at random each round.
+# ---------------------------------------------------------------------
+custom-games: {}
