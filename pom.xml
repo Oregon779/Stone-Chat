@@ -16,8 +16,9 @@
     </description>
 
     <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+        <!-- Portierung: Java 25 / Paper API 26.2 (vorher Java 21 / 1.21.4) -->
+        <maven.compiler.source>25</maven.compiler.source>
+        <maven.compiler.target>25</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -30,10 +31,11 @@
 
     <dependencies>
         <!-- Paper API is provided by the server at runtime -->
+        <!-- Portierung: feste Version 26.2.build.124-stable (vorher 1.21.4-R0.1-SNAPSHOT) -->
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.21.4-R0.1-SNAPSHOT</version>
+            <version>26.2.build.124-stable</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -65,7 +67,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.13.0</version>
                 <configuration>
-                    <release>21</release>
+                    <!-- Portierung: release 25 (vorher 21) -->
+                    <release>25</release>
                 </configuration>
             </plugin>
             <plugin>
