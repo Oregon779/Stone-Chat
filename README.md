@@ -1,6 +1,6 @@
 # Stone Chat
 
-Ein modulares Chat-Management-Plugin für Paper 1.21+ (Java 21) - ein Plugin von Stone Plugins.
+Ein modulares Chat-Management-Plugin für Paper 26.2+ (Java 25) - ein Plugin von Stone Plugins.
 
 ## ⚠️ Wichtig: Das hier ist der Quellcode, nicht die fertige .jar
 Dieses ZIP enthält den **Quellcode** des Plugins - er muss einmal kompiliert werden, bevor eine
@@ -14,7 +14,7 @@ einen Minecraft-Server betreibst, oft schon vorhanden):
 ```
 mvn clean package
 ```
-Die fertige Datei liegt danach unter `target/StoneChat-1.0.0.jar` - das ist die eine Datei, die du
+Die fertige Datei liegt danach unter `target/StoneChat-1.1.0.jar` - das ist die eine Datei, die du
 brauchst. In `plugins/` kopieren, Server neu starten, fertig.
 
 **Weg 2 - Ohne eigene Java-Installation, über GitHub Actions** (baut die jar automatisch für dich):
@@ -23,9 +23,10 @@ brauchst. In `plugins/` kopieren, Server neu starten, fertig.
 3. Im Reiter **Actions** auf den letzten Lauf klicken, unter **Artifacts** liegt `StoneChat` zum Download bereit - das ist wieder die eine `.jar`-Datei
 
 ## Versionierung
-Die Version steht zentral in `pom.xml` (`<version>`) und wird automatisch in `plugin.yml` übernommen (Maven-Resource-Filtering). Das gebaute Jar heißt `StoneChat-<version>.jar` (z. B. `StoneChat-1.0.0.jar`), zu finden unter `target/` nach `mvn clean package`. Bei jeder gewünschten Änderung wird die Version in `pom.xml` erhöht - aktueller Stand: **1.0.0**.
+Die Version steht zentral in `pom.xml` (`<version>`) und wird automatisch in `plugin.yml` übernommen (Maven-Resource-Filtering). Das gebaute Jar heißt `StoneChat-<version>.jar` (z. B. `StoneChat-1.0.0.jar`), zu finden unter `target/` nach `mvn clean package`. Bei jeder gewünschten Änderung wird die Version in `pom.xml` erhöht - aktueller Stand: **1.1.0**.
 
 ## Features
+- **Neu in Version 1.1.0:** **Chatformat-Bugfix** - öffentliche Chat-Nachrichten werden nicht mehr abgebrochen und per `Bukkit.broadcast` als Systemnachricht neu verschickt, sondern über Papers `ChatRenderer` als echte Spieler-Chatnachricht ausgeliefert. Dadurch greifen wieder Client-Chateinstellungen und das Ausblenden von Spielern über „Soziale Interaktionen", und Chat-Bridges (z. B. Discord-Plugins), die abgebrochene Chat-Events überspringen, bekommen die Nachrichten wieder mit. **Neu: `/chatlog <spieler> [seite]`** (Permission `stonechat.chatlog`, Standard OP) zeigt, was ein Spieler wann im Chat geschrieben hat - inkl. blockierter Versuche mit Grund (Wortfilter, Link, Caps, Mute, Cooldown, ...). Gespeichert pro Spieler unter `chatlogs/`, Aufbewahrungsdauer und Maximalanzahl in `config.yml` → `chat-log`. **Neu: automatische Nachrichten** (`config.yml` → `auto-messages`, standardmäßig aus) - postet im festen Intervall (z. B. alle 60 Sekunden einen Hinweis auf `/discord`) nacheinander oder zufällig eine Nachricht, per Chat/Actionbar/Title/Bossbar, auch mehrzeilig und klickbar per MiniMessage. Beide Features haben eine eigene Kategorie im In-Game-Editor (`/sc editor`)
 - **Neu in Version 1.0.1:** Bug behoben - `chat-color-gui.enabled` und `use-permission` wurden geladen, aber nirgends geprüft, daher ließ sich das Farben-GUI weder für Spieler ausschalten noch per Permission einschränken; jetzt korrekt geprüft in `ChatColorGuiManager.open()`. Neuer vollständig anpassbarer `gui/`-Ordner (`gui/chatcolor-gui.yml`, `gui/settings-gui.yml`) - jeder Titel, jedes Material, jeder Name und jede Lore-Zeile im Farben-GUI und im Spieler-Settings-Menü ist jetzt ohne Code-Änderung konfigurierbar
 - **Version 1.2.0 - Editor-Redesign:** neues, einheitliches Small-Caps-Header-System (echte Unicode-Small-Caps-Glyphen über neues `SmallCaps`-Utility) mit blau-cyanem Marken-Gradient (`#55A8FE` → `#00C9FF`) für alle Menü-Titel im Admin-Editor, Farben-GUI und Spieler-Settings-Menü; Tooltips überarbeitet - jetzt mit dezenten Trennlinien, aktuellem Wert in Gold-Gradient hervorgehoben, Default-Wert-Anzeige bei Schaltern, und klar strukturierten Klick-Hinweisen (▶ Left-Click / Right-Click)
 - **Neu in Version 1.1.2:** Zurück-Button im Chat-Games-"Settings & Timers"-Menü ging fälschlich zum Hauptmenü statt zur Chat-Games-Übersicht - benutzte versehentlich das normale `renderMenu()` statt der Custom-Back-Variante, jetzt korrekt auf `openChatGamesMenu()` gesetzt
@@ -108,13 +109,13 @@ src/main/resources/
 ```
 
 ## Kompilieren
-Benötigt JDK 21 und Maven.
+Benötigt JDK 25 und Maven.
 
 ```
 mvn clean package
 ```
 
-Die fertige jar liegt danach unter `target/StoneChat-1.0.0.jar`. Einfach in den `plugins/`-Ordner deines Paper-Servers legen und neu starten.
+Die fertige jar liegt danach unter `target/StoneChat-1.1.0.jar`. Einfach in den `plugins/`-Ordner deines Paper-Servers legen und neu starten.
 
 > Hinweis: Dieses Projekt wurde von Hand geschrieben und geprüft, konnte in der Umgebung, in der es
 > entstanden ist, aber nicht selbst kompiliert werden (kein Zugriff auf Maven Central / das

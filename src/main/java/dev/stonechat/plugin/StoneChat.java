@@ -3,6 +3,7 @@ package dev.stonechat.plugin;
 import dev.stonechat.plugin.command.BroadcastCommand;
 import dev.stonechat.plugin.command.ChatClearCommand;
 import dev.stonechat.plugin.command.ChatGameCommand;
+import dev.stonechat.plugin.command.ChatLogCommand;
 import dev.stonechat.plugin.command.ChatMuteCommand;
 import dev.stonechat.plugin.command.IgnoreCommand;
 import dev.stonechat.plugin.command.MessageCommand;
@@ -17,10 +18,12 @@ import dev.stonechat.plugin.listener.PlayerCommandListener;
 import dev.stonechat.plugin.listener.PlayerJoinListener;
 import dev.stonechat.plugin.listener.PlayerQuitListener;
 import dev.stonechat.plugin.manager.AnvilInputManager;
+import dev.stonechat.plugin.manager.AutoMessageManager;
 import dev.stonechat.plugin.manager.BroadcastManager;
 import dev.stonechat.plugin.manager.CapsManager;
 import dev.stonechat.plugin.manager.ChatColorGuiManager;
 import dev.stonechat.plugin.manager.ChatFormatManager;
+import dev.stonechat.plugin.manager.ChatLogManager;
 import dev.stonechat.plugin.manager.GuiConfigManager;
 import dev.stonechat.plugin.chatgame.ChatGameManager;
 import dev.stonechat.plugin.manager.ConfigManager;
@@ -70,6 +73,8 @@ public final class StoneChat extends JavaPlugin {
     private AnvilInputManager anvilInputManager;
     private SettingsEditorManager settingsEditorManager;
     private UpdateChecker updateChecker;
+    private ChatLogManager chatLogManager;
+    private AutoMessageManager autoMessageManager;
 
     @Override
     public void onEnable() {
@@ -106,7 +111,10 @@ public final class StoneChat extends JavaPlugin {
         this.anvilInputManager = new AnvilInputManager(this);
         this.settingsEditorManager = new SettingsEditorManager(this);
         this.updateChecker = new UpdateChecker(this);
-        getLogger().info("Managers initialized (word filter, mute, links, notifications, sounds, ping, cooldown, anti-caps, join delay, chat format, broadcast, chat games, chat colors).");
+        this.chatLogManager = new ChatLogManager(this);
+        this.autoMessageManager = new AutoMessageManager(this);
+        this.autoMessageManager.start();
+        getLogger().info("Managers initialized (word filter, mute, links, notifications, sounds, ping, cooldown, anti-caps, join delay, chat format, broadcast, chat games, chat colors, chat log, auto messages).");
 
         getLogger().info("Registering listeners...");
         registerListeners();
@@ -135,6 +143,12 @@ public final class StoneChat extends JavaPlugin {
         if (updateChecker != null) {
             updateChecker.stop();
         }
+        if (autoMessageManager != null) {
+            autoMessageManager.stop();
+        }
+        if (chatLogManager != null) {
+            chatLogManager.shutdown();
+        }
         getLogger().info("Stone Chat has been disabled.");
     }
 
@@ -151,6 +165,7 @@ public final class StoneChat extends JavaPlugin {
         soundManager.reload();
         chatFormatManager.reload();
         updateChecker.start();
+        autoMessageManager.start();
     }
 
     private void registerListeners() {
@@ -197,7 +212,11 @@ public final class StoneChat extends JavaPlugin {
         getCommand("chat").setExecutor(chatCommand);
         getCommand("chat").setTabCompleter(chatCommand);
 
-        getLogger().info("Commands registered (/stonechat, /chatmute, /chatgame, /broadcast, /chatcolor, /msg, /r, /chatclear, /ignore, /settings, /chat).");
+        ChatLogCommand chatLogCommand = new ChatLogCommand(this);
+        getCommand("chatlog").setExecutor(chatLogCommand);
+        getCommand("chatlog").setTabCompleter(chatLogCommand);
+
+        getLogger().info("Commands registered (/stonechat, /chatmute, /chatgame, /broadcast, /chatcolor, /msg, /r, /chatclear, /ignore, /settings, /chat, /chatlog).");
     }
 
     public ConfigManager getConfigManager() {
@@ -298,5 +317,13 @@ public final class StoneChat extends JavaPlugin {
 
     public UpdateChecker getUpdateChecker() {
         return updateChecker;
+    }
+
+    public ChatLogManager getChatLogManager() {
+        return chatLogManager;
+    }
+
+    public AutoMessageManager getAutoMessageManager() {
+        return autoMessageManager;
     }
 }

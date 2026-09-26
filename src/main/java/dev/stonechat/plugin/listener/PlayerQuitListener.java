@@ -28,6 +28,7 @@ public class PlayerQuitListener implements Listener {
         plugin.getPrivateMessageManager().clear(uuid);
         plugin.getAnvilInputManager().cancelPending(uuid);
         plugin.getPendingBroadcastManager().cancel(uuid);
+        plugin.getChatLogManager().forget(uuid);
         suppress(event);
     }
 

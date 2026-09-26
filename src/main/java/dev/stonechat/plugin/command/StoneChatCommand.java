@@ -106,6 +106,9 @@ public class StoneChatCommand implements CommandExecutor, TabCompleter {
             if (sender.hasPermission("stonechat.broadcast")) {
                 sender.sendMessage(lm.get("help.broadcast"));
             }
+            if (sender.hasPermission("stonechat.chatlog")) {
+                sender.sendMessage(lm.get("help.chatlog"));
+            }
             if (canUseChatColor(sender)) {
                 sender.sendMessage(lm.get("help.chatcolor"));
             }

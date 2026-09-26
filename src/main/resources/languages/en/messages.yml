@@ -154,6 +154,32 @@ chat-clear:
     subtitle: "&7by %player%"
     bossbar: "&aThe chat has been cleared by %player%."
 
+chat-log:
+  usage: "&cUsage: /chatlog <player> [page]"
+  disabled: "&cThe chat log is disabled in config.yml."
+  unknown-player: "&cThe server doesn't know a player named &f%player%&c."
+  empty: "&7There are no chat log entries for &f%player%&7."
+  # %player% %page% %pages% %total% - page 1 always shows the newest messages
+  header: "&7Chat log of &f%player% &8(&7page &f%page%&7/&f%pages% &8- &f%total% &7entries)"
+  # %time% %status% %message%
+  entry: "&8[&7%time%&8] %status%&f%message%"
+  older: "&e« Older"
+  newer: "&eNewer »"
+  separator: " &8| "
+  nav-hover: "&7Open page %page%"
+  # Shown in front of an entry, depending on what happened to the message.
+  status:
+    sent: ""
+    censored: "&6[Censored] "
+    chat-game: "&e[Chat game answer] "
+    word-filter: "&c[Blocked: word filter] "
+    link: "&c[Blocked: link] "
+    caps: "&c[Blocked: caps] "
+    mute: "&c[Blocked: chat muted] "
+    cooldown: "&c[Blocked: cooldown] "
+    join-delay: "&c[Blocked: join delay] "
+    length: "&c[Blocked: too long] "
+
 chat-color:
   gui-disabled: "&cThe chat color menu is currently disabled."
   no-permission-color: "&cYou don't have permission to use this color."
@@ -183,4 +209,5 @@ help:
   chatcolor: "&e/chat color &7- Choose the color of your own chat messages"
   togglepings: "&e/stonechat togglepings &7- Turn @mentions on/off for yourself"
   ignore: "&e/ignore <player|list> &7- Ignore/un-ignore a player's pings and messages"
+  chatlog: "&e/chatlog <player> [page] &7- See what a player wrote in chat and when"
   footer: "&6&l==========================="

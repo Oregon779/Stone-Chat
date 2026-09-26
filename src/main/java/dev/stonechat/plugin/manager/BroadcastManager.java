@@ -29,15 +29,20 @@ public class BroadcastManager {
     }
 
     public void broadcast(Type type, String rawMessage, Integer durationSeconds) {
-        render(type, rawMessage, durationSeconds, List.copyOf(Bukkit.getOnlinePlayers()));
+        render(type, rawMessage, durationSeconds, List.copyOf(Bukkit.getOnlinePlayers()), true);
+    }
+
+    /** Like {@link #broadcast(Type, String)}, but never adds the "[Broadcast]" prefix. */
+    public void broadcastWithoutPrefix(Type type, String rawMessage) {
+        render(type, rawMessage, null, List.copyOf(Bukkit.getOnlinePlayers()), false);
     }
 
     public void preview(Player player, Type type, String rawMessage, Integer durationSeconds) {
-        render(type, rawMessage, durationSeconds, List.of(player));
+        render(type, rawMessage, durationSeconds, List.of(player), true);
     }
 
-    private void render(Type type, String rawMessage, Integer durationSeconds, List<Player> targets) {
-        String withPrefix = (type == Type.CHAT && plugin.getConfigManager().isBroadcastUsePrefix())
+    private void render(Type type, String rawMessage, Integer durationSeconds, List<Player> targets, boolean allowPrefix) {
+        String withPrefix = (allowPrefix && type == Type.CHAT && plugin.getConfigManager().isBroadcastUsePrefix())
                 ? plugin.getLanguageManager().getRaw("broadcast.prefix") + rawMessage
                 : rawMessage;
         Component message = ColorUtil.parse(withPrefix);

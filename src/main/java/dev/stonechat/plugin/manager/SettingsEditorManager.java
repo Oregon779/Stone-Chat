@@ -162,14 +162,17 @@ public class SettingsEditorManager {
                 {"FIREWORK_STAR", "&eChat Color GUI", "&7The /chatcolor picker's settings"},
                 {"OAK_SIGN", "&ePrivate Messages", "&7/msg and /r formatting and sound"},
                 {"TNT", "&eChat Clear", "&7/chatclear behaviour"},
-                {"COMPASS", "&eUpdate Checker", "&7Automatic Modrinth update notifications"}
+                {"COMPASS", "&eUpdate Checker", "&7Automatic Modrinth update notifications"},
+                {"LECTERN", "&eChat Log", "&7/chatlog history: retention, blocked messages"},
+                {"REPEATER", "&eAuto Messages", "&7Messages posted automatically on an interval"}
         };
         Runnable[] actions = {
                 () -> openWordFilterMenu(player), () -> openChatMuteMenu(player), () -> openLinkBlockerMenu(player),
                 () -> openPingMenu(player), () -> openCooldownMenu(player), () -> openAntiCapsMenu(player),
                 () -> openJoinDelayMenu(player), () -> openMaxLengthMenu(player), () -> openChatFormatMenu(player),
                 () -> openChatGamesMenu(player), () -> openBroadcastMenu(player), () -> openChatColorGuiMenu(player),
-                () -> openPrivateMessagesMenu(player), () -> openChatClearMenu(player), () -> openUpdateCheckerMenu(player)
+                () -> openPrivateMessagesMenu(player), () -> openChatClearMenu(player), () -> openUpdateCheckerMenu(player),
+                () -> openChatLogMenu(player), () -> openAutoMessagesMenu(player)
         };
 
         placeGridCentered(categories.length, 1, (i, row, col) -> {
@@ -422,6 +425,56 @@ public class SettingsEditorManager {
 
         renderMenu(player, "<dark_gray>- <gradient:#55A8FE:#00C9FF><bold>" + SmallCaps.of("Update Checker") + "</bold></gradient> <dark_gray>-",
                 mainConfig(), () -> openUpdateCheckerMenu(player), fields, Material.LIGHT_GRAY_STAINED_GLASS_PANE);
+    }
+
+    private void openChatLogMenu(Player player) {
+        renderMenu(player, menuTitle("Chat Log"), mainConfig(), () -> openChatLogMenu(player), List.of(
+                Field.toggle("chat-log.enabled", "Enabled", Material.LIME_DYE, true),
+                Field.toggle("chat-log.log-blocked-messages", "Log Blocked Messages", Material.BARRIER, true),
+                Field.number("chat-log.retention-days", "Keep Entries (days, 0 = forever)", Material.CLOCK, 0, 3650, 1),
+                Field.number("chat-log.max-entries-per-player", "Max Entries Per Player", Material.CHEST, 10, 100000, 100),
+                Field.number("chat-log.entries-per-page", "Entries Per Page", Material.PAPER, 1, 50, 1),
+                Field.text("chat-log.date-format", "Date Format", Material.CLOCK)
+        ), Material.BLUE_STAINED_GLASS_PANE);
+    }
+
+    private void openAutoMessagesMenu(Player player) {
+        int messageCount = plugin.getConfigManager().getAutoMessages().size();
+
+        List<Field> fields = new ArrayList<>(List.of(
+                Field.toggle("auto-messages.enabled", "Enabled", Material.LIME_DYE),
+                Field.number("auto-messages.interval-seconds", "Interval (s)", Material.CLOCK, 5, 86400, 5),
+                Field.cycle("auto-messages.order", "Order", Material.HOPPER, new String[]{"SEQUENTIAL", "RANDOM"}),
+                Field.number("auto-messages.min-players-online", "Min Players Online", Material.PLAYER_HEAD, 0, 100, 1),
+                Field.cycle("auto-messages.display-type", "Display Type", Material.OAK_SIGN, notificationOptions()),
+                Field.text("auto-messages.prefix", "Chat Prefix", Material.NAME_TAG),
+                Field.toggle("auto-messages.sound.enabled", "Sound Enabled", Material.NOTE_BLOCK),
+                Field.text("auto-messages.sound.sound-name", "Sound Name", Material.JUKEBOX),
+                Field.action("Messages: " + messageCount,
+                        "&7Multi-line messages and wording are edited in config.yml -> auto-messages.messages.",
+                        Material.BOOKSHELF, () -> {
+                }),
+                Field.action("+ Add Message", "&7Type a new one-line message in chat.", Material.PAPER,
+                        () -> plugin.getAnvilInputManager().openTextInput(player, "New Auto Message", "", text -> {
+                            if (!text.isBlank()) {
+                                plugin.getAutoMessageManager().addMessage(text);
+                                plugin.reload();
+                            }
+                            openAutoMessagesMenu(player);
+                        })),
+                Field.action("▶ Send Next Now", "&7Posts the next automatic message to everyone right away.",
+                        Material.BELL, () -> plugin.getAutoMessageManager().sendNext())
+        ));
+        if (messageCount > 0) {
+            fields.add(Field.action("- Remove Last Message", "&7Deletes the last message in the list.", Material.BARRIER, () -> {
+                plugin.getAutoMessageManager().removeLastMessage();
+                plugin.reload();
+                openAutoMessagesMenu(player);
+            }));
+        }
+
+        renderMenu(player, menuTitle("Auto Messages"), mainConfig(), () -> openAutoMessagesMenu(player), fields,
+                Material.CYAN_STAINED_GLASS_PANE);
     }
 
     // =====================================================================

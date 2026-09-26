@@ -101,6 +101,21 @@ public class ConfigManager {
     private volatile boolean chatColorGuiEnabled;
     private volatile String chatColorGuiUsePermission;
 
+    private volatile boolean chatLogEnabled;
+    private volatile boolean chatLogBlockedMessages;
+    private volatile int chatLogRetentionDays;
+    private volatile int chatLogMaxEntries;
+    private volatile int chatLogEntriesPerPage;
+    private volatile String chatLogDateFormat;
+
+    private volatile boolean autoMessagesEnabled;
+    private volatile int autoMessagesIntervalSeconds;
+    private volatile boolean autoMessagesRandomOrder;
+    private volatile int autoMessagesMinPlayers;
+    private volatile BroadcastManager.Type autoMessagesDisplayType;
+    private volatile String autoMessagesPrefix;
+    private volatile List<List<String>> autoMessages;
+
     public ConfigManager(StoneChat plugin) {
         this.plugin = plugin;
         load();
@@ -183,10 +198,52 @@ public class ConfigManager {
 
         chatColorGuiEnabled = config.getBoolean("chat-color-gui.enabled", true);
         chatColorGuiUsePermission = config.getString("chat-color-gui.use-permission", "");
+
+        chatLogEnabled = config.getBoolean("chat-log.enabled", true);
+        chatLogBlockedMessages = config.getBoolean("chat-log.log-blocked-messages", true);
+        chatLogRetentionDays = config.getInt("chat-log.retention-days", 30);
+        chatLogMaxEntries = config.getInt("chat-log.max-entries-per-player", 1000);
+        chatLogEntriesPerPage = Math.max(1, config.getInt("chat-log.entries-per-page", 10));
+        chatLogDateFormat = config.getString("chat-log.date-format", "dd.MM.yyyy HH:mm:ss");
+
+        autoMessagesEnabled = config.getBoolean("auto-messages.enabled", false);
+        autoMessagesIntervalSeconds = config.getInt("auto-messages.interval-seconds", 60);
+        autoMessagesRandomOrder = "RANDOM".equalsIgnoreCase(config.getString("auto-messages.order", "SEQUENTIAL"));
+        autoMessagesMinPlayers = config.getInt("auto-messages.min-players-online", 1);
+        autoMessagesDisplayType = readBroadcastType("auto-messages.display-type");
+        autoMessagesPrefix = config.getString("auto-messages.prefix", "");
+        autoMessages = readAutoMessages();
     }
 
     private MessageDisplayType readNotificationType(String path) {
         return MessageDisplayType.fromConfig(config.getString(path, "CHAT"), MessageDisplayType.CHAT);
+    }
+
+    private BroadcastManager.Type readBroadcastType(String path) {
+        try {
+            return BroadcastManager.Type.valueOf(config.getString(path, "CHAT").trim().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return BroadcastManager.Type.CHAT;
+        }
+    }
+
+    /** Each entry is a block with a "lines" list; a plain string entry is accepted as a one-line message too. */
+    private List<List<String>> readAutoMessages() {
+        List<List<String>> messages = new java.util.ArrayList<>();
+        for (Object item : config.getList("auto-messages.messages", List.of())) {
+            List<String> lines = new java.util.ArrayList<>();
+            if (item instanceof String text) {
+                lines.add(text);
+            } else if (item instanceof java.util.Map<?, ?> map && map.get("lines") instanceof List<?> rawLines) {
+                for (Object line : rawLines) {
+                    if (line != null) lines.add(String.valueOf(line));
+                }
+            }
+            if (!lines.isEmpty()) {
+                messages.add(List.copyOf(lines));
+            }
+        }
+        return List.copyOf(messages);
     }
 
     /** Writes a single value and re-caches everything - used by the in-game settings editor, which edits one field at a time. */
@@ -431,5 +488,57 @@ public class ConfigManager {
 
     public String getChatColorGuiUsePermission() {
         return chatColorGuiUsePermission;
+    }
+
+    public boolean isChatLogEnabled() {
+        return chatLogEnabled;
+    }
+
+    public boolean isChatLogBlockedMessages() {
+        return chatLogBlockedMessages;
+    }
+
+    public int getChatLogRetentionDays() {
+        return chatLogRetentionDays;
+    }
+
+    public int getChatLogMaxEntries() {
+        return chatLogMaxEntries;
+    }
+
+    public int getChatLogEntriesPerPage() {
+        return chatLogEntriesPerPage;
+    }
+
+    public String getChatLogDateFormat() {
+        return chatLogDateFormat;
+    }
+
+    public boolean isAutoMessagesEnabled() {
+        return autoMessagesEnabled;
+    }
+
+    public int getAutoMessagesIntervalSeconds() {
+        return autoMessagesIntervalSeconds;
+    }
+
+    public boolean isAutoMessagesRandomOrder() {
+        return autoMessagesRandomOrder;
+    }
+
+    public int getAutoMessagesMinPlayers() {
+        return autoMessagesMinPlayers;
+    }
+
+    public BroadcastManager.Type getAutoMessagesDisplayType() {
+        return autoMessagesDisplayType;
+    }
+
+    public String getAutoMessagesPrefix() {
+        return autoMessagesPrefix;
+    }
+
+    public List<List<String>> getAutoMessages() {
+        return autoMessages;
     }
 }

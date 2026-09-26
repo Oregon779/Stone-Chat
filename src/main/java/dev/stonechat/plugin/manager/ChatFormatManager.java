@@ -88,12 +88,18 @@ public class ChatFormatManager {
             withPlayerPlaceholders = withPlayerPlaceholders.replace("%time%", LocalDateTime.now().format(timeFormatter));
         }
 
-        String colorCode = plugin.getPlayerColorManager().getColorCode(player.getUniqueId());
-        String coloredMessage = colorCode != null ? colorCode + processedMessage : processedMessage;
-
-        String withMessage = withPlayerPlaceholders.replace("%message%", coloredMessage);
+        String withMessage = withPlayerPlaceholders.replace("%message%", coloredMessage(player, processedMessage));
 
         return ColorUtil.parse(withMessage);
+    }
+
+    public Component buildMessageContent(Player player, String processedMessage) {
+        return ColorUtil.parse(coloredMessage(player, processedMessage));
+    }
+
+    private String coloredMessage(Player player, String processedMessage) {
+        String colorCode = plugin.getPlayerColorManager().getColorCode(player.getUniqueId());
+        return colorCode != null ? colorCode + processedMessage : processedMessage;
     }
 
     private String buildPlayerNameSnippet(Player player) {

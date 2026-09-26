@@ -614,6 +614,53 @@ chat-clear:
     volume: 1.0
     pitch: 1.0
 
+# /chatlog <player> [page] lets admins (permission stonechat.chatlog) look up
+# what a player wrote in public chat and when. Every player's log is stored
+# in its own file in the chatlogs/ folder of this plugin.
+chat-log:
+  enabled: true
+  # Also log messages that never reached the chat (word filter, link blocker,
+  # anti-caps, chat mute, cooldown, join delay, max length). They are shown
+  # with the reason they were blocked, and with the text the player typed.
+  log-blocked-messages: true
+  # Entries older than this many days are deleted automatically. 0 = keep forever.
+  retention-days: 30
+  # Maximum stored entries per player. The oldest entries are removed first.
+  max-entries-per-player: 1000
+  entries-per-page: 10
+  # Timestamp format shown in /chatlog (Java DateTimeFormatter syntax).
+  date-format: "dd.MM.yyyy HH:mm:ss"
+
+# Automatic messages: every interval-seconds, one of the messages below is
+# posted automatically - e.g. a reminder that players can join your Discord.
+auto-messages:
+  # Off by default so an update never starts posting messages on its own.
+  enabled: false
+  # Seconds between two automatic messages.
+  interval-seconds: 60
+  # SEQUENTIAL = one after another in the order listed below.
+  # RANDOM = a random message each time (never the same one twice in a row).
+  order: SEQUENTIAL
+  # Nothing is posted while fewer players than this are online.
+  min-players-online: 1
+  # Where the messages are shown. CHAT, ACTIONBAR, TITLE or BOSSBAR.
+  # ACTIONBAR, TITLE and BOSSBAR only show the first line of a message.
+  display-type: CHAT
+  # Put in front of the first line of every CHAT message. Leave empty for none.
+  prefix: "<gray>[</gray><gradient:#55A8FE:#00C9FF><bold>Info</bold></gradient><gray>]</gray> "
+  # Played to everyone online whenever an automatic message is posted.
+  sound:
+    enabled: false
+    sound-name: "BLOCK_NOTE_BLOCK_PLING"
+    volume: 1.0
+    pitch: 1.0
+  # Each entry is one automatic message with one or more lines. Supports
+  # &-codes, &#RRGGBB hex and MiniMessage tags - including clickable text via
+  # <click:run_command:'/discord'>...</click>. Add, remove or reorder freely.
+  messages:
+    - lines:
+        - "&7Want to chat with us on Discord? Type <click:run_command:'/discord'><hover:show_text:'&7Click to run &b/discord'>&b/discord</hover></click>&7!"
+
 # Checks https://modrinth.com/project/stone-chat for a newer plugin
 # version. Console feedback is always printed once right on startup and
 # again every check-interval-minutes. If a newer version is found,

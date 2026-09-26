@@ -45,6 +45,10 @@ commands:
   chat:
     description: Player hub for chat features - settings, color, ignore, private messages.
     usage: /chat <settings|color|ignore|msg|r> [args]
+  chatlog:
+    description: Shows what a player wrote in public chat and when.
+    usage: /chatlog <player> [page]
+    permission: stonechat.chatlog
 
 permissions:
   stonechat.admin:
@@ -97,4 +101,7 @@ permissions:
     default: false
   stonechat.clear:
     description: Allows clearing the chat for everyone online with /chatclear.
+    default: op
+  stonechat.chatlog:
+    description: Allows viewing any player's chat history with /chatlog.
     default: op
