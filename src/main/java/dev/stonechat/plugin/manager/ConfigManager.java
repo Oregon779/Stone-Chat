@@ -123,7 +123,7 @@ public class ConfigManager {
 
     public void load() {
         file = new File(plugin.getDataFolder(), "config.yml");
-        this.config = ConfigUpdater.updateFile(plugin, file, "config.yml");
+        this.config = ConfigUpdater.updateFile(plugin, file, "config.yml", java.util.Set.of("chat-color-gui.colors"));
         refreshCache();
     }
 
@@ -193,7 +193,7 @@ public class ConfigManager {
 
         privateMessagesEnabled = config.getBoolean("private-messages.enabled", true);
 
-        chatClearLines = config.getInt("chat-clear.lines", 100);
+        chatClearLines = Math.clamp(config.getInt("chat-clear.lines", 100), 1, 100);
         chatClearNotificationType = readNotificationType("chat-clear.notification-type");
 
         chatColorGuiEnabled = config.getBoolean("chat-color-gui.enabled", true);
@@ -250,7 +250,7 @@ public class ConfigManager {
     public void set(String path, Object value) {
         config.set(path, value);
         try {
-            config.save(file);
+            dev.stonechat.plugin.util.DataFiles.writeAtomically(file.toPath(), config.saveToString());
         } catch (java.io.IOException e) {
             plugin.getLogger().warning("Could not save config.yml: " + e.getMessage());
         }

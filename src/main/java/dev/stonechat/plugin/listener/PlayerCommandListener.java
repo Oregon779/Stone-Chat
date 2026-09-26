@@ -16,10 +16,14 @@ public class PlayerCommandListener implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onCommand(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
         String label = event.getMessage().substring(1).split(" ")[0].toLowerCase();
+        int namespaceEnd = label.indexOf(':');
+        if (namespaceEnd >= 0) {
+            label = label.substring(namespaceEnd + 1);
+        }
 
         if (label.equals("chatmute") || label.equals("stonechat") || label.equals("sc") || label.equals("stonechatplugin")) {
             return;

@@ -1,16 +1,15 @@
 package dev.stonechat.plugin.manager;
 
 import dev.stonechat.plugin.StoneChat;
+import dev.stonechat.plugin.util.DataFiles;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class IgnoreManager {
@@ -26,17 +25,9 @@ public class IgnoreManager {
 
     public void load() {
         file = new File(plugin.getDataFolder(), "ignorelist.yml");
-        if (!file.exists()) {
-            try {
-                file.getParentFile().mkdirs();
-                file.createNewFile();
-            } catch (IOException e) {
-                plugin.getLogger().log(Level.WARNING, "Could not create ignorelist.yml", e);
-            }
-        }
 
         ignoredPlayers.clear();
-        YamlConfiguration data = YamlConfiguration.loadConfiguration(file);
+        YamlConfiguration data = DataFiles.loadYaml(plugin.getLogger(), file);
         for (String key : data.getKeys(false)) {
             UUID owner;
             try {
@@ -78,21 +69,17 @@ public class IgnoreManager {
             set.add(target);
             nowIgnoring = true;
         }
-        save();
+        plugin.getDataFiles().writeLater(file.toPath(), this::serialize);
         return nowIgnoring;
     }
 
-    private void save() {
+    private String serialize() {
         YamlConfiguration data = new YamlConfiguration();
         for (var entry : ignoredPlayers.entrySet()) {
             if (entry.getValue().isEmpty()) continue;
-            List<String> list = entry.getValue().stream().map(UUID::toString).collect(Collectors.toList());
+            List<String> list = entry.getValue().stream().map(UUID::toString).sorted().collect(Collectors.toList());
             data.set(entry.getKey().toString(), list);
         }
-        try {
-            data.save(file);
-        } catch (IOException e) {
-            plugin.getLogger().log(Level.WARNING, "Could not save ignorelist.yml", e);
-        }
+        return data.saveToString();
     }
 }

@@ -395,7 +395,7 @@ public class SettingsEditorManager {
 
     private void openChatClearMenu(Player player) {
         renderMenu(player, menuTitle("Chat Clear"), mainConfig(), () -> openChatClearMenu(player), List.of(
-                Field.number("chat-clear.lines", "Blank Lines", Material.PAPER, 1, 500, 10),
+                Field.number("chat-clear.lines", "Blank Lines", Material.PAPER, 1, 100, 10),
                 Field.cycle("chat-clear.notification-type", "Notification Type", Material.OAK_SIGN, notificationOptions()),
                 Field.toggle("chat-clear.sound.enabled", "Sound Enabled", Material.NOTE_BLOCK),
                 Field.message("chat-clear.cleared.chat", "Message: Cleared (Chat)", Material.WRITTEN_BOOK)

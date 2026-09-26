@@ -1,14 +1,13 @@
 package dev.stonechat.plugin.manager;
 
 import dev.stonechat.plugin.StoneChat;
+import dev.stonechat.plugin.util.DataFiles;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 
 public class PlayerColorManager {
 
@@ -23,17 +22,9 @@ public class PlayerColorManager {
 
     public void load() {
         file = new File(plugin.getDataFolder(), "playercolors.yml");
-        if (!file.exists()) {
-            try {
-                file.getParentFile().mkdirs();
-                file.createNewFile();
-            } catch (IOException e) {
-                plugin.getLogger().log(Level.WARNING, "Could not create playercolors.yml", e);
-            }
-        }
 
         cache.clear();
-        YamlConfiguration data = YamlConfiguration.loadConfiguration(file);
+        YamlConfiguration data = DataFiles.loadYaml(plugin.getLogger(), file);
         for (String key : data.getKeys(false)) {
             try {
                 UUID uuid = UUID.fromString(key);
@@ -53,21 +44,21 @@ public class PlayerColorManager {
 
     public void setColor(UUID uuid, String colorCode) {
         cache.put(uuid, colorCode);
-        save(uuid, colorCode);
+        save();
     }
 
     public void clearColor(UUID uuid) {
         cache.remove(uuid);
-        save(uuid, null);
+        save();
     }
 
-    private void save(UUID uuid, String colorCode) {
-        YamlConfiguration data = YamlConfiguration.loadConfiguration(file);
-        data.set(uuid.toString(), colorCode);
-        try {
-            data.save(file);
-        } catch (IOException e) {
-            plugin.getLogger().log(Level.WARNING, "Could not save playercolors.yml", e);
-        }
+    private void save() {
+        plugin.getDataFiles().writeLater(file.toPath(), () -> {
+            YamlConfiguration data = new YamlConfiguration();
+            for (var entry : cache.entrySet()) {
+                data.set(entry.getKey().toString(), entry.getValue());
+            }
+            return data.saveToString();
+        });
     }
 }

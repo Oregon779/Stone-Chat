@@ -31,14 +31,17 @@ public class MathGame extends ChatGame {
 
     @Override
     public GameRound generateRound(Random random) {
-        int a = minNumber + random.nextInt(maxNumber - minNumber + 1);
-        int b = minNumber + random.nextInt(maxNumber - minNumber + 1);
+        long a = random.nextLong(minNumber, (long) maxNumber + 1);
+        long b = random.nextLong(minNumber, (long) maxNumber + 1);
         String op = operators.get(random.nextInt(operators.size()));
+        if (op.equals("/") && (b == 0 || a % b != 0)) {
+            op = "*"; // a whole-number answer isn't possible, so ask for the product instead
+        }
 
-        int result = switch (op) {
+        long result = switch (op) {
             case "+" -> a + b;
             case "-" -> a - b;
-            case "/" -> (b != 0 && a % b == 0) ? a / b : a * b; // avoid division by zero / non-integer results
+            case "/" -> a / b;
             default -> a * b;
         };
 

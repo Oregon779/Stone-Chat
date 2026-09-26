@@ -1,5 +1,6 @@
 package dev.stonechat.plugin.listener;
 
+import io.papermc.paper.chat.ChatRenderer;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -53,7 +54,7 @@ public class PlayerChatListener implements Listener {
             return Status.BLOCKED_MUTE;
         }
 
-        if (plugin.getConfigManager().isMaxLengthEnabled() && message.length() > plugin.getConfigManager().getMaxLength()) {
+        if (plugin.getConfigManager().isMaxLengthEnabled() && typed.length() > plugin.getConfigManager().getMaxLength()) {
             event.setCancelled(true);
             plugin.getNotificationManager().dispatch(player, plugin.getConfigManager().getMaxLengthNotificationType(),
                     "max-length.blocked", LanguageManager.placeholders("%max%", String.valueOf(plugin.getConfigManager().getMaxLength())));
@@ -70,7 +71,7 @@ public class PlayerChatListener implements Listener {
             return Status.BLOCKED_COOLDOWN;
         }
 
-        if (plugin.getChatGameManager().checkAnswer(player, message)) {
+        if (plugin.getChatGameManager().checkAnswer(player, typed)) {
             event.setCancelled(true);
             return Status.CHAT_GAME;
         }
@@ -118,8 +119,9 @@ public class PlayerChatListener implements Listener {
 
         // Render instead of cancel + broadcast: the message stays a real player chat message, so client
         // chat settings, player blocking and other chat listeners (e.g. Discord bridges) keep working.
+        // viewerUnaware: Paper renders once and reuses it for every viewer instead of once per player.
         event.message(plugin.getChatFormatManager().buildMessageContent(player, withPings));
-        event.renderer((source, sourceDisplayName, renderedMessage, viewer) -> formattedLine);
+        event.renderer(ChatRenderer.viewerUnaware((source, sourceDisplayName, renderedMessage) -> formattedLine));
 
         return censored ? Status.CENSORED : Status.SENT;
     }

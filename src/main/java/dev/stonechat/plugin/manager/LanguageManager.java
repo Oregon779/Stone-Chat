@@ -55,7 +55,7 @@ public class LanguageManager {
     public void set(String path, String value) {
         messages.set(path, value);
         try {
-            messages.save(messagesFile);
+            dev.stonechat.plugin.util.DataFiles.writeAtomically(messagesFile.toPath(), messages.saveToString());
         } catch (java.io.IOException e) {
             plugin.getLogger().warning("Could not save messages.yml: " + e.getMessage());
         }

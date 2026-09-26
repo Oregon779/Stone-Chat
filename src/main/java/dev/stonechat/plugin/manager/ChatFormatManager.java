@@ -20,6 +20,10 @@ public class ChatFormatManager {
     private volatile YamlConfiguration config;
     private volatile DateTimeFormatter dateFormatter;
     private volatile DateTimeFormatter timeFormatter;
+    private volatile String format;
+    private volatile boolean clickToMessage;
+    private volatile boolean hoverStats;
+    private volatile boolean usePlaceholderApi;
     private File file;
 
     public ChatFormatManager(StoneChat plugin) {
@@ -32,6 +36,10 @@ public class ChatFormatManager {
         this.config = ConfigUpdater.updateFile(plugin, file, "chatformat.yml");
         this.dateFormatter = safeFormatter(config.getString("date-format", "dd.MM.yyyy"), "dd.MM.yyyy");
         this.timeFormatter = safeFormatter(config.getString("time-format", "HH:mm"), "HH:mm");
+        this.format = config.getString("format", "%player_name%: %message%");
+        this.clickToMessage = config.getBoolean("name-interactions.click-to-message", true);
+        this.hoverStats = config.getBoolean("name-interactions.hover-stats", true);
+        this.usePlaceholderApi = config.getBoolean("use-placeholderapi", true);
     }
 
     public void reload() {
@@ -45,7 +53,7 @@ public class ChatFormatManager {
     public void set(String path, Object value) {
         config.set(path, value);
         try {
-            config.save(file);
+            dev.stonechat.plugin.util.DataFiles.writeAtomically(file.toPath(), config.saveToString());
         } catch (java.io.IOException e) {
             plugin.getLogger().warning("Could not save chatformat.yml: " + e.getMessage());
         }
@@ -61,15 +69,15 @@ public class ChatFormatManager {
     }
 
     public String getFormat() {
-        return config.getString("format", "%player_name%: %message%");
+        return format;
     }
 
     public boolean isClickToMessageEnabled() {
-        return config.getBoolean("name-interactions.click-to-message", true);
+        return clickToMessage;
     }
 
     public boolean isHoverStatsEnabled() {
-        return config.getBoolean("name-interactions.hover-stats", true);
+        return hoverStats;
     }
 
     public Component buildMessage(Player player, String processedMessage) {
@@ -79,7 +87,7 @@ public class ChatFormatManager {
             format = format.replace("%player_name%", buildPlayerNameSnippet(player));
         }
 
-        String withPlayerPlaceholders = PlaceholderUtil.apply(player, format);
+        String withPlayerPlaceholders = PlaceholderUtil.apply(player, format, usePlaceholderApi);
 
         if (withPlayerPlaceholders.contains("%date%")) {
             withPlayerPlaceholders = withPlayerPlaceholders.replace("%date%", LocalDateTime.now().format(dateFormatter));
@@ -99,7 +107,10 @@ public class ChatFormatManager {
 
     private String coloredMessage(Player player, String processedMessage) {
         String colorCode = plugin.getPlayerColorManager().getColorCode(player.getUniqueId());
-        return colorCode != null ? colorCode + processedMessage : processedMessage;
+        if (colorCode == null || !plugin.getChatColorGuiManager().mayUseColorCode(player, colorCode)) {
+            return processedMessage;
+        }
+        return colorCode + processedMessage;
     }
 
     private String buildPlayerNameSnippet(Player player) {

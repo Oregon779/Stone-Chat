@@ -44,10 +44,12 @@ import dev.stonechat.plugin.manager.SettingsEditorManager;
 import dev.stonechat.plugin.manager.SoundManager;
 import dev.stonechat.plugin.manager.UpdateChecker;
 import dev.stonechat.plugin.manager.WordFilterManager;
+import dev.stonechat.plugin.util.DataFiles;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class StoneChat extends JavaPlugin {
+public class StoneChat extends JavaPlugin {
 
+    private DataFiles dataFiles;
     private ConfigManager configManager;
     private LanguageManager languageManager;
     private WordFilterManager wordFilterManager;
@@ -78,6 +80,7 @@ public final class StoneChat extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        this.dataFiles = new DataFiles(getLogger());
         getLogger().info("Loading configuration...");
         this.configManager = new ConfigManager(this);
         this.languageManager = new LanguageManager(this);
@@ -141,13 +144,19 @@ public final class StoneChat extends JavaPlugin {
             chatGameManager.stopAutoScheduler();
         }
         if (updateChecker != null) {
-            updateChecker.stop();
+            updateChecker.shutdown();
+        }
+        if (notificationManager != null) {
+            notificationManager.hideAllBossbars();
         }
         if (autoMessageManager != null) {
             autoMessageManager.stop();
         }
         if (chatLogManager != null) {
             chatLogManager.shutdown();
+        }
+        if (dataFiles != null) {
+            dataFiles.shutdown();
         }
         getLogger().info("Stone Chat has been disabled.");
     }
@@ -164,6 +173,7 @@ public final class StoneChat extends JavaPlugin {
         linkFilterManager.reload();
         soundManager.reload();
         chatFormatManager.reload();
+        chatColorGuiManager.reload();
         updateChecker.start();
         autoMessageManager.start();
     }
@@ -176,7 +186,7 @@ public final class StoneChat extends JavaPlugin {
         pm.registerEvents(new PlayerQuitListener(this), this);
         pm.registerEvents(new PlayerCommandListener(this), this);
         pm.registerEvents(new ChatColorGuiListener(this), this);
-        pm.registerEvents(new EditorGuiListener(), this);
+        pm.registerEvents(new EditorGuiListener(this), this);
         pm.registerEvents(updateChecker, this);
         getLogger().info("Listeners registered (chat, join, quit, command preprocess, chat color GUI, settings editor GUI, update checker).");
     }
@@ -217,6 +227,10 @@ public final class StoneChat extends JavaPlugin {
         getCommand("chatlog").setTabCompleter(chatLogCommand);
 
         getLogger().info("Commands registered (/stonechat, /chatmute, /chatgame, /broadcast, /chatcolor, /msg, /r, /chatclear, /ignore, /settings, /chat, /chatlog).");
+    }
+
+    public DataFiles getDataFiles() {
+        return dataFiles;
     }
 
     public ConfigManager getConfigManager() {

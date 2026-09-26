@@ -53,6 +53,10 @@ public class ChatGameCommand implements CommandExecutor, TabCompleter {
                 sender.sendMessage(ColorUtil.parse("&cNo chat game found with id '" + args[1] + "'."));
                 return;
             }
+            if (!mayStart(sender, game)) {
+                sender.sendMessage(plugin.getLanguageManager().getPrefixed("general.no-permission"));
+                return;
+            }
             boolean started = plugin.getChatGameManager().start(game);
             sender.sendMessage(ColorUtil.parse(started
                     ? "&aStarted chat game '" + game.getId() + "'."
@@ -61,7 +65,9 @@ public class ChatGameCommand implements CommandExecutor, TabCompleter {
         }
 
         List<ChatGame> enabled = plugin.getChatGameManager().getGames().values().stream()
-                .filter(ChatGame::isEnabled).collect(Collectors.toList());
+                .filter(ChatGame::isEnabled)
+                .filter(game -> mayStart(sender, game))
+                .collect(Collectors.toList());
         if (enabled.isEmpty()) {
             sender.sendMessage(ColorUtil.parse("&cNo chat games are currently enabled."));
             return;
@@ -71,6 +77,11 @@ public class ChatGameCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(ColorUtil.parse(started
                 ? "&aStarted chat game '" + random.getId() + "'."
                 : "&cCould not start a chat game right now (already running or on cooldown)."));
+    }
+
+    /** A game's optional extra permission is required on top of stonechat.chatgame to start it by hand. */
+    private boolean mayStart(CommandSender sender, ChatGame game) {
+        return game.getPermission().isBlank() || sender.hasPermission(game.getPermission());
     }
 
     private void handleStop(CommandSender sender) {

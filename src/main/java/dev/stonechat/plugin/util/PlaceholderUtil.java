@@ -20,7 +20,7 @@ public final class PlaceholderUtil {
         return placeholderApiPresent;
     }
 
-    public static String apply(Player player, String text) {
+    public static String apply(Player player, String text, boolean allowPlaceholderApi) {
         String result = text;
 
         if (result.contains("%player_name%")) {
@@ -77,7 +77,7 @@ public final class PlaceholderUtil {
             result = result.replace("%suffix%", suffix != null ? suffix : "");
         }
 
-        if (isPlaceholderApiPresent()) {
+        if (allowPlaceholderApi && isPlaceholderApiPresent()) {
             result = setPlaceholders(player, result);
         }
         return result;

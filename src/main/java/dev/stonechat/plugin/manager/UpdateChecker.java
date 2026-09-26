@@ -22,7 +22,10 @@ public class UpdateChecker implements Listener {
     private static final String MODRINTH_PROJECT_SLUG = "stone-chat";
 
     private final StoneChat plugin;
+    private final HttpClient httpClient = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
     private BukkitTask task;
+    private Boolean scheduledEnabled;
+    private Integer scheduledIntervalMinutes;
     private volatile String latestKnownVersion = null;
 
     public String getLatestKnownVersion() {
@@ -34,14 +37,21 @@ public class UpdateChecker implements Listener {
         this.plugin = plugin;
     }
 
+    /** (Re)schedules the periodic check. A no-op if the settings didn't change, so plugin reloads don't re-query Modrinth. */
     public void start() {
-        stop();
-        if (!plugin.getConfigManager().isUpdateCheckerEnabled()) {
+        boolean enabled = plugin.getConfigManager().isUpdateCheckerEnabled();
+        int intervalMinutes = plugin.getConfigManager().getUpdateCheckerIntervalMinutes();
+        if (Boolean.valueOf(enabled).equals(scheduledEnabled) && Integer.valueOf(intervalMinutes).equals(scheduledIntervalMinutes)) {
+            return;
+        }
+        cancelTask();
+        scheduledEnabled = enabled;
+        scheduledIntervalMinutes = intervalMinutes;
+        if (!enabled) {
             plugin.getLogger().info("Update checker is turned off (update-checker.enabled: false in config.yml) - this is not an error, just a status note.");
             return;
         }
-        long intervalMinutes = Math.max(5, plugin.getConfigManager().getUpdateCheckerIntervalMinutes());
-        long intervalTicks = intervalMinutes * 60L * 20L;
+        long intervalTicks = Math.max(5, intervalMinutes) * 60L * 20L;
         task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::check, 100L, intervalTicks);
     }
 
@@ -50,22 +60,32 @@ public class UpdateChecker implements Listener {
     }
 
     public void stop() {
+        cancelTask();
+        scheduledEnabled = null;
+        scheduledIntervalMinutes = null;
+    }
+
+    private void cancelTask() {
         if (task != null) {
             task.cancel();
             task = null;
         }
     }
 
+    public void shutdown() {
+        stop();
+        httpClient.shutdownNow();
+    }
+
     private void check() {
         try {
-            HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create("https://api.modrinth.com/v2/project/" + MODRINTH_PROJECT_SLUG + "/version"))
                     .timeout(Duration.ofSeconds(10))
                     .header("User-Agent", "StonePlugins/StoneChat update-checker")
                     .GET()
                     .build();
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() != 200) {
                 plugin.getLogger().warning("Update checker: Modrinth responded with status " + response.statusCode() + " for project '" + MODRINTH_PROJECT_SLUG + "'.");

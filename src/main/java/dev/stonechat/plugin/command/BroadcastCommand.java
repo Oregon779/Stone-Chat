@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 
 public class BroadcastCommand implements CommandExecutor, TabCompleter {
 
+    private static final int MAX_DURATION_SECONDS = 3600;
+
     private final StoneChat plugin;
 
     public BroadcastCommand(StoneChat plugin) {
@@ -43,7 +45,7 @@ public class BroadcastCommand implements CommandExecutor, TabCompleter {
 
         if (args.length >= 2) {
             try {
-                durationSeconds = Integer.parseInt(args[1]);
+                durationSeconds = Math.clamp(Long.parseLong(args[1]), 1, MAX_DURATION_SECONDS);
                 if (args.length < 3) {
                     sender.sendMessage(plugin.getLanguageManager().getPrefixed("broadcast.usage"));
                     return true;

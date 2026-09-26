@@ -65,7 +65,7 @@ public class ChatGameManager {
 
     public void load() {
         file = new File(plugin.getDataFolder(), "chatgames.yml");
-        this.config = ConfigUpdater.updateFile(plugin, file, "chatgames.yml");
+        this.config = ConfigUpdater.updateFile(plugin, file, "chatgames.yml", java.util.Set.of("custom-games"));
 
         games.clear();
         loadSection("default-games");
@@ -79,7 +79,7 @@ public class ChatGameManager {
             ConfigurationSection gameSection = section.getConfigurationSection(id);
             if (gameSection == null) continue;
             ChatGame game = parseGame(id, gameSection);
-            if (game != null) games.put(id, game);
+            if (game != null) games.put(id.toLowerCase(), game);
         }
     }
 
@@ -226,7 +226,7 @@ public class ChatGameManager {
 
     private void save() {
         try {
-            config.save(file);
+            dev.stonechat.plugin.util.DataFiles.writeAtomically(file.toPath(), config.saveToString());
         } catch (Exception e) {
             plugin.getLogger().warning("Could not save chatgames.yml: " + e.getMessage());
         }
@@ -325,17 +325,17 @@ public class ChatGameManager {
 
         synchronized (roundLock) {
             if (activeRound != null) return false;
-            activeRound = new ActiveRound(game, round);
+            ActiveRound current = new ActiveRound(game, round);
+            activeRound = current;
 
-            activeRound.timeoutTask = Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            current.timeoutTask = Bukkit.getScheduler().runTaskLater(plugin, () -> {
                 synchronized (roundLock) {
-                    if (activeRound != null) {
-                        if (activeRound.hintTask != null) activeRound.hintTask.cancel();
-                        broadcast(notificationType, getMessage("timeout-message"));
-                        activeRound = null;
-                        lastGameEndedAtMillis = System.currentTimeMillis();
-                    }
+                    if (activeRound != current) return;
+                    if (current.hintTask != null) current.hintTask.cancel();
+                    activeRound = null;
+                    lastGameEndedAtMillis = System.currentTimeMillis();
                 }
+                broadcast(notificationType, getMessage("timeout-message"));
             }, game.getDurationSeconds() * 20L);
 
             boolean hintsGloballyEnabled = config.getBoolean("chat-games.hint.enabled", true);
@@ -343,15 +343,12 @@ public class ChatGameManager {
                 int afterSeconds = Math.max(1, config.getInt("chat-games.hint.after-seconds", 20));
                 if (afterSeconds < game.getDurationSeconds()) {
                     String firstAnswer = round.acceptedAnswers().isEmpty() ? "" : round.acceptedAnswers().get(0);
-                    activeRound.hintTask = Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                        synchronized (roundLock) {
-                            if (activeRound != null) {
-                                String hint = getMessage("hint-message")
-                                        .replace("%firstletter%", firstAnswer.isEmpty() ? "?" : String.valueOf(firstAnswer.charAt(0)))
-                                        .replace("%length%", String.valueOf(firstAnswer.length()));
-                                broadcast(notificationType, hint);
-                            }
-                        }
+                    current.hintTask = Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                        if (activeRound != current) return;
+                        String hint = getMessage("hint-message")
+                                .replace("%firstletter%", firstAnswer.isEmpty() ? "?" : String.valueOf(firstAnswer.charAt(0)))
+                                .replace("%length%", String.valueOf(firstAnswer.length()));
+                        broadcast(notificationType, hint);
                     }, afterSeconds * 20L);
                 }
             }
@@ -362,18 +359,17 @@ public class ChatGameManager {
         return true;
     }
 
-    public boolean checkAnswer(Player player, String message) {
+    /** Called from the async chat thread with the text exactly as the player typed it. */
+    public boolean checkAnswer(Player player, String typedMessage) {
         RewardConfig reward;
-        String answerText;
         MessageDisplayType notificationType;
 
         synchronized (roundLock) {
             if (activeRound == null) return false;
-            if (!activeRound.round.matches(message, activeRound.game.isCaseSensitive())) return false;
+            if (!activeRound.round.matches(typedMessage, activeRound.game.isCaseSensitive())) return false;
 
             reward = activeRound.game.getReward();
             notificationType = resolveNotificationType(activeRound.game);
-            answerText = message.trim();
 
             if (activeRound.timeoutTask != null) activeRound.timeoutTask.cancel();
             if (activeRound.hintTask != null) activeRound.hintTask.cancel();
@@ -383,11 +379,21 @@ public class ChatGameManager {
 
         String winMessage = getMessage("win-message")
                 .replace("%player%", player.getName())
-                .replace("%answer%", answerText);
-        broadcast(notificationType, winMessage);
-
-        giveReward(player, reward);
+                .replace("%answer%", ColorUtil.sanitizeUserInput(typedMessage.trim()));
+        // Economy deposits, particles and console commands must not run on the async chat thread.
+        runOnMainThread(() -> {
+            broadcast(notificationType, winMessage);
+            giveReward(player, reward);
+        });
         return true;
+    }
+
+    private void runOnMainThread(Runnable task) {
+        if (Bukkit.isPrimaryThread()) {
+            task.run();
+        } else {
+            Bukkit.getScheduler().runTask(plugin, task);
+        }
     }
 
     public boolean stop(String stoppedBy) {
@@ -398,7 +404,7 @@ public class ChatGameManager {
             activeRound = null;
             lastGameEndedAtMillis = System.currentTimeMillis();
         }
-        broadcast(getGlobalNotificationType(), "&cThe chat game was stopped by " + stoppedBy + ".");
+        broadcast(getGlobalNotificationType(), getMessage("stop-message").replace("%player%", stoppedBy));
         return true;
     }
 
@@ -436,18 +442,15 @@ public class ChatGameManager {
     private void giveReward(Player winner, RewardConfig reward) {
         if (reward == null) return;
 
-        if (!reward.consoleCommands().isEmpty()) {
-            Bukkit.getScheduler().runTask(plugin, () -> {
-                for (String command : reward.consoleCommands()) {
-                    String resolved = command.replace("%player%", winner.getName());
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), resolved);
-                }
-            });
+        for (String command : reward.consoleCommands()) {
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.replace("%player%", winner.getName()));
         }
 
         if (reward.vaultMoney() > 0) {
             VaultEconomyUtil.deposit(winner, reward.vaultMoney());
         }
+
+        if (!winner.isOnline()) return;
 
         if (reward.soundEnabled()) {
             try {

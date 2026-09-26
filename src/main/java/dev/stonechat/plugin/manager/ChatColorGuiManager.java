@@ -14,7 +14,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class ChatColorGuiManager {
@@ -26,9 +28,28 @@ public class ChatColorGuiManager {
     private final StoneChat plugin;
 
     private final java.util.Set<java.util.UUID> openedFromSettings = java.util.concurrent.ConcurrentHashMap.newKeySet();
+    private volatile Options options;
 
     public ChatColorGuiManager(StoneChat plugin) {
         this.plugin = plugin;
+        reload();
+    }
+
+    private record Options(List<ColorOption> all, Map<String, ColorOption> byId, Map<String, List<ColorOption>> byColorCode) {
+    }
+
+    /** Re-reads chat-color-gui.colors once; GUI opens, clicks and chat messages all use this snapshot. */
+    public void reload() {
+        List<ColorOption> all = readOptions();
+        Map<String, ColorOption> byId = new HashMap<>();
+        Map<String, List<ColorOption>> byColorCode = new HashMap<>();
+        for (ColorOption option : all) {
+            byId.put(option.id(), option);
+            if (!option.isReset()) {
+                byColorCode.computeIfAbsent(option.colorCode(), code -> new ArrayList<>()).add(option);
+            }
+        }
+        options = new Options(List.copyOf(all), Map.copyOf(byId), Map.copyOf(byColorCode));
     }
 
     public record ColorOption(String id, String displayName, String colorCode, Material material, String permission, boolean premium) {
@@ -43,6 +64,27 @@ public class ChatColorGuiManager {
     }
 
     public List<ColorOption> loadOptions() {
+        return options.all();
+    }
+
+    public ColorOption findOption(String id) {
+        return options.byId().get(id);
+    }
+
+    /**
+     * Whether a player may still chat in a color they picked earlier. A color that is gated behind a permission
+     * stops applying once the player loses that permission; codes no longer offered in the menu are left alone.
+     */
+    public boolean mayUseColorCode(Player player, String colorCode) {
+        List<ColorOption> matching = options.byColorCode().get(colorCode);
+        if (matching == null) return true;
+        for (ColorOption option : matching) {
+            if (option.permission().isBlank() || player.hasPermission(option.permission())) return true;
+        }
+        return false;
+    }
+
+    private List<ColorOption> readOptions() {
         List<ColorOption> options = new ArrayList<>();
         ConfigurationSection section = plugin.getConfigManager().getSection("chat-color-gui.colors");
         if (section == null) return options;

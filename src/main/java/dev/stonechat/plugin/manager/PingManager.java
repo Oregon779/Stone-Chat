@@ -54,6 +54,7 @@ public class PingManager {
         matcher.reset();
 
         StringBuilder result = new StringBuilder(message.length() + 16);
+        Set<UUID> notified = new java.util.HashSet<>();
         int lastEnd = 0;
 
         while (matcher.find()) {
@@ -84,7 +85,9 @@ public class PingManager {
             result.append(highlightTemplate.replace("%player%", trigger + target.getName()));
             lastEnd = matcher.end();
 
-            notifyTarget(sender, target);
+            if (notified.add(target.getUniqueId())) {
+                notifyTarget(sender, target);
+            }
         }
         result.append(message.substring(lastEnd));
 

@@ -6,7 +6,7 @@
 
     <groupId>dev.stonechat</groupId>
     <artifactId>stonechat</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <packaging>jar</packaging>
 
     <name>Stone Chat</name>
@@ -37,6 +37,20 @@
             <artifactId>paper-api</artifactId>
             <version>26.2.build.124-stable</version>
             <scope>provided</scope>
+        </dependency>
+
+        <!-- Tests only: MockBukkit simulates a server with players, never shipped in the plugin jar -->
+        <dependency>
+            <groupId>org.mockbukkit.mockbukkit</groupId>
+            <artifactId>mockbukkit-v26.2</artifactId>
+            <version>4.116.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>6.1.3</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -76,6 +90,11 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>3.3.1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.6.0</version>
             </plugin>
         </plugins>
     </build>

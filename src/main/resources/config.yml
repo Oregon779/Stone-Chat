@@ -605,6 +605,7 @@ private-messages:
 # /chatclear lets an admin wipe the chat for everyone online.
 chat-clear:
   # How many blank lines to push through - enough to scroll old messages out of view.
+  # Capped at 100: the Minecraft client never keeps more than 100 chat messages anyway.
   lines: 100
   # Where the "chat cleared by X" notice is shown to everyone. CHAT, ACTIONBAR, TITLE or BOSSBAR.
   notification-type: CHAT

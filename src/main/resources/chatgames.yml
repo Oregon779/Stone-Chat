@@ -58,6 +58,8 @@ chat-games:
     win-message: "&a&l%player% &fwon the chat game! The answer was &e%answer%&f!"
     # Shown when nobody answers in time.
     timeout-message: "&cTime's up! Nobody answered the chat game in time."
+    # Shown when an admin stops a running round with /chatgame stop. Placeholder: %player%
+    stop-message: "&cThe chat game was stopped by %player%."
     # Shown mid-round as a hint, if hints are enabled. Placeholders: %firstletter%, %length%
     hint-message: "&eHint: the answer starts with '&f%firstletter%&e' and is &f%length% &echaracters long."
 

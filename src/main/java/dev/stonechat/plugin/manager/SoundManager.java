@@ -11,17 +11,21 @@ import java.util.logging.Level;
 
 public class SoundManager {
 
+    /** A sound block from the config, resolved once. {@code sound == null} means "don't play anything". */
+    private record SoundSetting(Sound sound, float volume, float pitch) {
+    }
+
+    private static final SoundSetting SILENT = new SoundSetting(null, 0f, 0f);
+
     private final StoneChat plugin;
-    private final Map<String, Sound> resolvedSoundCache = new ConcurrentHashMap<>();
-    private final Map<String, Boolean> invalidSoundWarned = new ConcurrentHashMap<>();
+    private final Map<String, SoundSetting> settings = new ConcurrentHashMap<>();
 
     public SoundManager(StoneChat plugin) {
         this.plugin = plugin;
     }
 
     public void reload() {
-        resolvedSoundCache.clear();
-        invalidSoundWarned.clear();
+        settings.clear();
     }
 
     public void play(Player player, String configPath) {
@@ -34,48 +38,38 @@ public class SoundManager {
 
     public void play(Player player, YamlConfiguration source, String sourceTag, String configPath) {
         if (player == null || !player.isOnline()) return;
-        if (!source.getBoolean(configPath + ".enabled", false)) return;
-
-        Sound sound = resolveSound(source, sourceTag, configPath);
-        if (sound == null) return;
-
-        float volume = (float) source.getDouble(configPath + ".volume", 1.0);
-        float pitch = (float) source.getDouble(configPath + ".pitch", 1.0);
-        player.playSound(player.getLocation(), sound, volume, pitch);
+        SoundSetting setting = resolve(source, sourceTag, configPath);
+        if (setting.sound() == null) return;
+        player.playSound(player.getLocation(), setting.sound(), setting.volume(), setting.pitch());
     }
 
     public void playToAll(YamlConfiguration source, String sourceTag, String configPath) {
-        if (!source.getBoolean(configPath + ".enabled", false)) return;
-
-        Sound sound = resolveSound(source, sourceTag, configPath);
-        if (sound == null) return;
-
-        float volume = (float) source.getDouble(configPath + ".volume", 1.0);
-        float pitch = (float) source.getDouble(configPath + ".pitch", 1.0);
-
+        SoundSetting setting = resolve(source, sourceTag, configPath);
+        if (setting.sound() == null) return;
         for (Player online : plugin.getServer().getOnlinePlayers()) {
-            online.playSound(online.getLocation(), sound, volume, pitch);
+            online.playSound(online.getLocation(), setting.sound(), setting.volume(), setting.pitch());
         }
     }
 
-    private Sound resolveSound(YamlConfiguration source, String sourceTag, String configPath) {
-        String cacheKey = sourceTag + ':' + configPath;
-        Sound cached = resolvedSoundCache.get(cacheKey);
-        if (cached != null) return cached;
+    private SoundSetting resolve(YamlConfiguration source, String sourceTag, String configPath) {
+        return settings.computeIfAbsent(sourceTag + ':' + configPath, key -> read(source, configPath));
+    }
+
+    private SoundSetting read(YamlConfiguration source, String configPath) {
+        if (!source.getBoolean(configPath + ".enabled", false)) return SILENT;
 
         String soundName = source.getString(configPath + ".sound-name", "");
-        if (soundName == null || soundName.isBlank()) return null;
+        if (soundName == null || soundName.isBlank()) return SILENT;
 
         try {
             Sound sound = Sound.valueOf(soundName.trim().toUpperCase());
-            resolvedSoundCache.put(cacheKey, sound);
-            return sound;
+            return new SoundSetting(sound,
+                    (float) source.getDouble(configPath + ".volume", 1.0),
+                    (float) source.getDouble(configPath + ".pitch", 1.0));
         } catch (IllegalArgumentException e) {
-
-            if (invalidSoundWarned.putIfAbsent(cacheKey, Boolean.TRUE) == null) {
-                plugin.getLogger().log(Level.WARNING, "Invalid sound '" + soundName + "' configured at '" + configPath + ".sound-name' - no sound will be played there.");
-            }
-            return null;
+            plugin.getLogger().log(Level.WARNING, "Invalid sound '" + soundName + "' configured at '" + configPath
+                    + ".sound-name' - no sound will be played there.");
+            return SILENT;
         }
     }
 }

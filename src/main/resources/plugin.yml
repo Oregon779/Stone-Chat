@@ -5,6 +5,7 @@ api-version: '26.2'
 author: Stone Plugins
 description: Stone Chat is a full-featured chat management plugin with word filter, chat mute, link blocker, player pings, cooldowns, anti-caps, join delay, chat games, multi-channel broadcasts and a fully configurable chat format.
 folia-supported: false
+softdepend: [PlaceholderAPI, LuckPerms, Vault]
 
 commands:
   stonechat:
