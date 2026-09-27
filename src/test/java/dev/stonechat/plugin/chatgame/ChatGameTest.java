@@ -3,6 +3,7 @@ package dev.stonechat.plugin.chatgame;
 import dev.stonechat.plugin.PluginTestBase;
 import dev.stonechat.plugin.chatgame.games.MathGame;
 import io.papermc.paper.event.player.AsyncChatEvent;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.Test;
@@ -152,5 +153,15 @@ class ChatGameTest extends PluginTestBase {
         MathGame game = new MathGame("m", true, 60, "", false, 0, true, "DEFAULT", RewardConfig.none(),
                 1_000_000, 1_000_000, List.of("*"));
         assertEquals("1000000000000", game.generateRound(new Random()).acceptedAnswers().get(0));
+    }
+
+    @Test
+    void rewardParticleNamesResolveOnCurrentVersions() {
+        assertEquals(Particle.TOTEM_OF_UNDYING, ChatGameManager.resolveParticle("TOTEM"), "name used by older configs");
+        assertEquals(Particle.TOTEM_OF_UNDYING, ChatGameManager.resolveParticle(" totem_of_undying "));
+        assertNull(ChatGameManager.resolveParticle("NOT_A_PARTICLE"));
+
+        YamlConfiguration shipped = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "chatgames.yml"));
+        assertNotNull(ChatGameManager.resolveParticle(shipped.getString("chat-games.default-reward.particle.name")));
     }
 }

@@ -3,6 +3,7 @@ package dev.stonechat.plugin.listener;
 import dev.stonechat.plugin.PluginTestBase;
 import dev.stonechat.plugin.model.ChatColorGuiHolder;
 import dev.stonechat.plugin.model.EditorGuiHolder;
+import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.InventoryView;
@@ -10,7 +11,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockbukkit.mockbukkit.entity.PlayerMock;
 
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -89,5 +92,16 @@ class GuiTest extends PluginTestBase {
 
         assertNull(plugin.getPlayerColorManager().getColorCode(steve.getUniqueId()));
         assertTrue(inbox(steve).stream().anyMatch(m -> m.contains("don't have permission")));
+    }
+
+    @Test
+    void editorCategoryIconsExistOnThisMinecraftVersion() {
+        steve.setOp(true);
+        steve.performCommand("sc editor");
+        var items = Arrays.stream(steve.getOpenInventory().getTopInventory().getContents())
+                .filter(Objects::nonNull).map(item -> item.getType()).toList();
+
+        assertTrue(items.contains(Material.IRON_CHAIN), "Link Blocker icon");
+        assertEquals(1, items.stream().filter(type -> type == Material.BOOK).count(), "unknown icons fall back to BOOK");
     }
 }

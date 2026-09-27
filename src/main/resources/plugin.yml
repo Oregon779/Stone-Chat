@@ -9,8 +9,8 @@ softdepend: [PlaceholderAPI, LuckPerms, Vault]
 
 commands:
   stonechat:
-    description: Main Stone Chat command for reloading the plugin, viewing help and checking for updates.
-    usage: /stonechat <reload|help|checkupdate|togglepings>
+    description: Main Stone Chat command - help, personal settings, ping toggle and (for admins) reload, editor and update check.
+    usage: /stonechat <help|settings|togglepings|reload|editor|checkupdate>
     aliases: [sc, stonechatplugin]
   chatmute:
     description: Mutes or unmutes the entire server chat.
@@ -22,7 +22,7 @@ commands:
     permission: stonechat.chatgame
   broadcast:
     description: Sends a broadcast message via chat, action bar, title or boss bar.
-    usage: /broadcast <chat|actionbar|title|bossbar> <message>
+    usage: /broadcast <chat|actionbar|title|bossbar> [seconds] <message>
     permission: stonechat.broadcast
   msg:
     description: Sends a private message to another player. Replaces the vanilla /tell, /w, /whisper commands.
@@ -53,7 +53,7 @@ commands:
 
 permissions:
   stonechat.admin:
-    description: Grants access to the main /stonechat command (reload, help, checkupdate).
+    description: Grants the admin parts of /stonechat (reload, checkupdate, the in-game editor /sc editor) and update notifications.
     default: op
   stonechat.mute:
     description: Allows muting and unmuting the global chat.
@@ -86,13 +86,13 @@ permissions:
     description: Allows sending broadcasts via chat, action bar, title or boss bar.
     default: op
   stonechat.color.gold:
-    description: Allows picking the Gold chat color in /chatcolor.
+    description: Allows picking the Gold chat color in /chat color.
     default: op
   stonechat.color.red:
-    description: Allows picking the Red chat color in /chatcolor.
+    description: Allows picking the Red chat color in /chat color.
     default: op
   stonechat.color.rainbow:
-    description: Allows picking the Rainbow (gradient) chat color in /chatcolor.
+    description: Allows picking the Rainbow (gradient) chat color in /chat color.
     default: op
   stonechat.msg:
     description: Allows sending and replying to private messages (/msg, /tell, /w, /whisper, /r).

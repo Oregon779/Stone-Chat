@@ -150,7 +150,7 @@ public class SettingsEditorManager {
         String[][] categories = {
                 {"BOOK", "&eWord Filter", "&7Blocked words, censoring, evasion detection"},
                 {"BARRIER", "&eChat Mute", "&7Server-wide chat mute toggle and its sound/notification"},
-                {"CHAIN", "&eLink Blocker", "&7Blocks links in chat"},
+                {"IRON_CHAIN", "&eLink Blocker", "&7Blocks links in chat"},
                 {"BELL", "&ePing", "&7@mentions: trigger symbol, sound, who's immune"},
                 {"CLOCK", "&eCooldown", "&7Chat and command spam cooldown"},
                 {"WRITABLE_BOOK", "&eAnti-Caps", "&7Excessive CAPS LOCK blocking/auto-correct"},
@@ -159,7 +159,7 @@ public class SettingsEditorManager {
                 {"NAME_TAG", "&eChat Format", "&7How public chat messages are displayed"},
                 {"DIAMOND_SWORD", "&eChat Games", "&7Trivia/math/custom games, create & edit"},
                 {"BEACON", "&eBroadcast", "&7Send announcements via chat/actionbar/title/bossbar"},
-                {"FIREWORK_STAR", "&eChat Color GUI", "&7The /chatcolor picker's settings"},
+                {"FIREWORK_STAR", "&eChat Color GUI", "&7The /chat color picker's settings"},
                 {"OAK_SIGN", "&ePrivate Messages", "&7/msg and /r formatting and sound"},
                 {"TNT", "&eChat Clear", "&7/chatclear behaviour"},
                 {"COMPASS", "&eUpdate Checker", "&7Automatic Modrinth update notifications"},
@@ -373,8 +373,6 @@ public class SettingsEditorManager {
     private void openChatColorGuiMenu(Player player) {
         renderMenu(player, menuTitle("Chat Color GUI"), mainConfig(), () -> openChatColorGuiMenu(player), List.of(
                 Field.toggle("chat-color-gui.enabled", "Enabled", Material.LIME_DYE),
-                Field.number("chat-color-gui.size", "Inventory Size", Material.CHEST, 9, 54, 9),
-                Field.text("chat-color-gui.title", "Menu Title", Material.NAME_TAG),
                 Field.toggle("chat-color-gui.sound-select.enabled", "Select Sound Enabled", Material.NOTE_BLOCK),
                 Field.toggle("chat-color-gui.sound-denied.enabled", "Denied Sound Enabled", Material.NOTE_BLOCK),
                 Field.message("chat-color.selected", "Message: Color Selected", Material.WRITTEN_BOOK),

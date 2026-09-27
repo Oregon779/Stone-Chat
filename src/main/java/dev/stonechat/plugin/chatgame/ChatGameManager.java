@@ -166,7 +166,7 @@ public class ChatGameManager {
                 (float) section.getDouble("sound.volume", 1.0),
                 (float) section.getDouble("sound.pitch", 1.2),
                 section.getBoolean("particle.enabled", false),
-                section.getString("particle.name", "TOTEM"),
+                section.getString("particle.name", "TOTEM_OF_UNDYING"),
                 section.getInt("particle.count", 20)
         );
     }
@@ -182,7 +182,7 @@ public class ChatGameManager {
                 (float) section.getDouble("sound.volume", 1.0),
                 (float) section.getDouble("sound.pitch", 1.2),
                 section.getBoolean("particle.enabled", false),
-                section.getString("particle.name", "TOTEM"),
+                section.getString("particle.name", "TOTEM_OF_UNDYING"),
                 section.getInt("particle.count", 20)
         );
     }
@@ -461,11 +461,28 @@ public class ChatGameManager {
         }
 
         if (reward.particleEnabled()) {
+            Particle particle = resolveParticle(reward.particleName());
+            if (particle == null) {
+                plugin.getLogger().warning("Invalid chat game reward particle '" + reward.particleName() + "' - no particle is shown.");
+                return;
+            }
             try {
-                Particle particle = Particle.valueOf(reward.particleName().toUpperCase());
                 winner.getWorld().spawnParticle(particle, winner.getLocation().add(0, 1, 0), Math.max(1, reward.particleCount()));
             } catch (IllegalArgumentException ignored) {
+                // Particles that need extra data (DUST, ITEM, BLOCK, ...) can't be spawned from a name alone.
             }
+        }
+    }
+
+    /** "TOTEM" is the pre-1.20.5 name that older chatgames.yml files still contain. */
+    static Particle resolveParticle(String name) {
+        if (name == null || name.isBlank()) return null;
+        String key = name.trim().toUpperCase();
+        if (key.equals("TOTEM")) key = "TOTEM_OF_UNDYING";
+        try {
+            return Particle.valueOf(key);
+        } catch (IllegalArgumentException e) {
+            return null;
         }
     }
 

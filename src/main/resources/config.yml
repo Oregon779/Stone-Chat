@@ -5,11 +5,11 @@
 #
 # This file contains SETTINGS ONLY (switches, colors, times, sounds,
 # channels). All player-facing TEXT lives in messages.yml instead, per
-# language, under plugins/Stone Chat/languages/<language>/messages.yml.
+# language, under plugins/StoneChat/languages/<language>/messages.yml.
 #
 # Several features below have a "notification-type" option. It picks
-# WHERE that specific message is shown - CHAT, ACTIONBAR or TITLE - and
-# messages.yml already contains ready-made text for all three channels,
+# WHERE that specific message is shown - CHAT, ACTIONBAR, TITLE or BOSSBAR -
+# and messages.yml already contains ready-made text for all four channels,
 # so you can switch anytime without writing new text.
 #
 # Missing options are added automatically on plugin updates. Existing
@@ -18,7 +18,7 @@
 config-version: 1
 
 general:
-  # Default language used for a fresh install. Existing installs keep their chosen language.
+  # Language of all player-facing texts. Change it and run /stonechat reload to switch.
   # Available: en, de (folder name under languages/)
   default-language: en
 
@@ -225,7 +225,7 @@ broadcast:
     volume: 1.0
     pitch: 1.0
 
-# /chatcolor opens a GUI where players pick the color of their own chat
+# /chat color opens a GUI where players pick the color of their own chat
 # messages. Every color is a fully independent entry below - add, remove or
 # recolor as you like. "color-code" accepts &-codes, &#RRGGBB hex AND
 # MiniMessage tags (e.g. gradients), same as everywhere else in this plugin.

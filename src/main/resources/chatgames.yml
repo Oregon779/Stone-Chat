@@ -76,10 +76,11 @@ chat-games:
       name: "ENTITY_PLAYER_LEVELUP"
       volume: 1.0
       pitch: 1.2
-    # Particle effect played at the winner's location.
+    # Particle effect played at the winner's location. Any Bukkit particle name that
+    # needs no extra data works, e.g. TOTEM_OF_UNDYING, HAPPY_VILLAGER, FIREWORK, HEART.
     particle:
       enabled: false
-      name: "TOTEM"
+      name: "TOTEM_OF_UNDYING"
       count: 20
 
 # ---------------------------------------------------------------------
@@ -106,7 +107,7 @@ default-games:
       console-commands: []
       vault-money: 0
       sound: { enabled: true, name: "ENTITY_PLAYER_LEVELUP", volume: 1.0, pitch: 1.2 }
-      particle: { enabled: false, name: "TOTEM", count: 20 }
+      particle: { enabled: false, name: "TOTEM_OF_UNDYING", count: 20 }
     # The range numbers are picked from, and which operators can appear.
     # "/" falls back to multiplication whenever it wouldn't produce a whole
     # number, so the answer is always a simple integer.
@@ -128,7 +129,7 @@ default-games:
       console-commands: []
       vault-money: 0
       sound: { enabled: true, name: "ENTITY_PLAYER_LEVELUP", volume: 1.0, pitch: 1.2 }
-      particle: { enabled: false, name: "TOTEM", count: 20 }
+      particle: { enabled: false, name: "TOTEM_OF_UNDYING", count: 20 }
     # A random word from this list is scrambled each round (letters shuffled,
     # shown separated by hyphens, e.g. "e-l-p-p-a").
     words:
@@ -162,7 +163,7 @@ default-games:
       console-commands: []
       vault-money: 0
       sound: { enabled: true, name: "ENTITY_PLAYER_LEVELUP", volume: 1.0, pitch: 1.2 }
-      particle: { enabled: false, name: "TOTEM", count: 20 }
+      particle: { enabled: false, name: "TOTEM_OF_UNDYING", count: 20 }
     # A random word or phrase from this list is shown as-is; whoever types it
     # first (exactly) wins. Keep these short for a genuine speed challenge.
     phrases:
@@ -187,7 +188,7 @@ default-games:
       console-commands: []
       vault-money: 0
       sound: { enabled: true, name: "ENTITY_PLAYER_LEVELUP", volume: 1.0, pitch: 1.2 }
-      particle: { enabled: false, name: "TOTEM", count: 20 }
+      particle: { enabled: false, name: "TOTEM_OF_UNDYING", count: 20 }
     # Each entry needs a question and at least one accepted answer. Answers
     # are matched case-insensitively (unless case-sensitive: true above) and
     # whitespace-trimmed. Add as many entries and answers as you like.
@@ -217,7 +218,7 @@ default-games:
       console-commands: []
       vault-money: 0
       sound: { enabled: true, name: "ENTITY_PLAYER_LEVELUP", volume: 1.0, pitch: 1.2 }
-      particle: { enabled: false, name: "TOTEM", count: 20 }
+      particle: { enabled: false, name: "TOTEM_OF_UNDYING", count: 20 }
     # Percentage of each word's letters that get hidden (10-90). The first
     # and last letter always stay visible so the word's shape is recognizable.
     blank-percentage: 40

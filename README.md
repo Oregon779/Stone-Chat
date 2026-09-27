@@ -2,31 +2,23 @@
 
 Ein modulares Chat-Management-Plugin für Paper 26.2+ (Java 25) - ein Plugin von Stone Plugins.
 
-## ⚠️ Wichtig: Das hier ist der Quellcode, nicht die fertige .jar
-Dieses ZIP enthält den **Quellcode** des Plugins - er muss einmal kompiliert werden, bevor eine
-einzelne `.jar`-Datei dabei herauskommt, die du in `plugins/` legen kannst. Ich konnte das leider
-nicht für dich erledigen: Meine Umgebung hat keinen Zugriff auf die Maven-/PaperMC-Repositories, aus
-denen die benötigten Abhängigkeiten geladen werden (von dort aus direkt getestet: beide antworten mit
-"403 verboten"). Zwei Wege, wie du trotzdem in unter einer Minute an die eine `.jar`-Datei kommst:
+**Ausführliche Anleitung zu allen Features, Befehlen und Berechtigungen: [WIKI.md](WIKI.md)**
 
-**Weg 1 - Lokal, wenn Java + Maven installiert sind** (auf den meisten Servern, auf denen du eh schon
-einen Minecraft-Server betreibst, oft schon vorhanden):
-```
-mvn clean package
-```
-Die fertige Datei liegt danach unter `target/StoneChat-1.1.1.jar` - das ist die eine Datei, die du
-brauchst. In `plugins/` kopieren, Server neu starten, fertig.
+## Die fertige .jar bekommen
+**Weg 1 - GitHub Actions (ohne eigene Java-Installation):** Bei jedem Push baut
+`.github/workflows/build.yml` das Plugin automatisch. Im Reiter **Actions** auf den letzten Lauf klicken,
+unter **Artifacts** liegt `StoneChat` mit der `.jar`-Datei.
 
-**Weg 2 - Ohne eigene Java-Installation, über GitHub Actions** (baut die jar automatisch für dich):
-1. Dieses ZIP in ein neues (auch privates) GitHub-Repository hochladen/pushen
-2. GitHub baut automatisch über die mitgelieferte `.github/workflows/build.yml` - das dauert ca. 1 Minute
-3. Im Reiter **Actions** auf den letzten Lauf klicken, unter **Artifacts** liegt `StoneChat` zum Download bereit - das ist wieder die eine `.jar`-Datei
+**Weg 2 - Lokal mit JDK 25 und Maven:** `mvn clean package` ausführen, die Datei liegt danach unter
+`target/StoneChat-1.1.1.jar`.
+
+Die `.jar` in den `plugins/`-Ordner des Paper-Servers legen und den Server neu starten.
 
 ## Versionierung
 Die Version steht zentral in `pom.xml` (`<version>`) und wird automatisch in `plugin.yml` übernommen (Maven-Resource-Filtering). Das gebaute Jar heißt `StoneChat-<version>.jar` (z. B. `StoneChat-1.0.0.jar`), zu finden unter `target/` nach `mvn clean package`. Bei jeder gewünschten Änderung wird die Version in `pom.xml` erhöht - aktueller Stand: **1.1.1**.
 
 ## Features
-- **Neu in Version 1.1.1 (Bugfix- & Performance-Release):** **Datenverlust behoben** - ein einziger YAML-Fehler in `config.yml` (oder einer anderen Config) führte dazu, dass die komplette Datei beim Start mit Standardwerten überschrieben wurde; jetzt bleibt die Datei unangetastet, es wird eine Kopie `*.broken-<Zeit>` angelegt und das Plugin läuft mit Standardwerten weiter, bis der Fehler behoben ist. Gelöschte Chat-Farben kommen nicht mehr bei jedem Neustart zurück. **Chat-Games:** Belohnungen (Vault, Partikel, Sounds, Befehle) laufen nicht mehr im Async-Chat-Thread; Mathe-Aufgaben zeigen kein „/" mehr, wenn die Lösung eigentlich eine Multiplikation ist; keine Zahlenüberläufe bei großen Zahlen; die Extra-Permission pro Spiel wird jetzt wirklich geprüft; Antworten mit `&` oder `<` werden erkannt; Stopp-Nachricht in `chatgames.yml` einstellbar. **Daten:** `ignorelist.yml`/`playercolors.yml` werden atomar im Hintergrund gespeichert (kein Datenverlust bei Absturz, keine Datei-Zugriffe mehr im Main-Thread), kaputte Dateien werden beiseitegelegt statt überschrieben. **Weitere Fixes:** GUI-Klicks laufen im nächsten Tick (Bukkit-Vorgabe), permission-gebundene Chat-Farben wirken nach Rechteverlust nicht mehr, `use-placeholderapi` wird beachtet, Bossbar-Meldungen stapeln sich nicht mehr, mehrfache @Erwähnungen in einer Nachricht erzeugen nur eine Benachrichtigung, `/stonechat:befehl` umgeht keinen Cooldown mehr, `/broadcast` mit riesiger Dauer funktioniert, `chat-clear.lines` ist auf 100 begrenzt, der Update-Checker fragt nicht mehr bei jedem Editor-Klick Modrinth an, `softdepend` für PlaceholderAPI/LuckPerms/Vault. **Performance:** Chat wird einmal statt pro Empfänger gerendert, Inventar-Klicks erzeugen keine Block-Snapshots mehr, Format-/Sound-/Farbeinstellungen werden gecacht statt pro Nachricht aus YAML gelesen. Neu: 58 automatisierte Tests (MockBukkit)
+- **Neu in Version 1.1.1 (Bugfix- & Performance-Release):** **Datenverlust behoben** - ein einziger YAML-Fehler in `config.yml` (oder einer anderen Config) führte dazu, dass die komplette Datei beim Start mit Standardwerten überschrieben wurde; jetzt bleibt die Datei unangetastet, es wird eine Kopie `*.broken-<Zeit>` angelegt und das Plugin läuft mit Standardwerten weiter, bis der Fehler behoben ist. Gelöschte Chat-Farben kommen nicht mehr bei jedem Neustart zurück. **Chat-Games:** Belohnungen (Vault, Partikel, Sounds, Befehle) laufen nicht mehr im Async-Chat-Thread; Mathe-Aufgaben zeigen kein „/" mehr, wenn die Lösung eigentlich eine Multiplikation ist; keine Zahlenüberläufe bei großen Zahlen; die Extra-Permission pro Spiel wird jetzt wirklich geprüft; Antworten mit `&` oder `<` werden erkannt; Stopp-Nachricht in `chatgames.yml` einstellbar. **Daten:** `ignorelist.yml`/`playercolors.yml` werden atomar im Hintergrund gespeichert (kein Datenverlust bei Absturz, keine Datei-Zugriffe mehr im Main-Thread), kaputte Dateien werden beiseitegelegt statt überschrieben. **Weitere Fixes:** GUI-Klicks laufen im nächsten Tick (Bukkit-Vorgabe), permission-gebundene Chat-Farben wirken nach Rechteverlust nicht mehr, `use-placeholderapi` wird beachtet, Bossbar-Meldungen stapeln sich nicht mehr, mehrfache @Erwähnungen in einer Nachricht erzeugen nur eine Benachrichtigung, `/stonechat:befehl` umgeht keinen Cooldown mehr, `/broadcast` mit riesiger Dauer funktioniert, `chat-clear.lines` ist auf 100 begrenzt, der Update-Checker fragt nicht mehr bei jedem Editor-Klick Modrinth an, `softdepend` für PlaceholderAPI/LuckPerms/Vault. **Performance:** Chat wird einmal statt pro Empfänger gerendert, Inventar-Klicks erzeugen keine Block-Snapshots mehr, Format-/Sound-/Farbeinstellungen werden gecacht statt pro Nachricht aus YAML gelesen. **Aktualisierte Namen:** der Standard-Partikel für Chat-Game-Belohnungen heißt jetzt `TOTEM_OF_UNDYING` (das alte `TOTEM` gibt es in aktuellen Versionen nicht mehr und wird weiterhin erkannt), das Link-Blocker-Icon im Editor ist wieder eine Kette (`IRON_CHAIN`). Neu: 60 automatisierte Tests (MockBukkit) und eine ausführliche [WIKI.md](WIKI.md)
 - **Neu in Version 1.1.0:** **Chatformat-Bugfix** - öffentliche Chat-Nachrichten werden nicht mehr abgebrochen und per `Bukkit.broadcast` als Systemnachricht neu verschickt, sondern über Papers `ChatRenderer` als echte Spieler-Chatnachricht ausgeliefert. Dadurch greifen wieder Client-Chateinstellungen und das Ausblenden von Spielern über „Soziale Interaktionen", und Chat-Bridges (z. B. Discord-Plugins), die abgebrochene Chat-Events überspringen, bekommen die Nachrichten wieder mit. **Neu: `/chatlog <spieler> [seite]`** (Permission `stonechat.chatlog`, Standard OP) zeigt, was ein Spieler wann im Chat geschrieben hat - inkl. blockierter Versuche mit Grund (Wortfilter, Link, Caps, Mute, Cooldown, ...). Gespeichert pro Spieler unter `chatlogs/`, Aufbewahrungsdauer und Maximalanzahl in `config.yml` → `chat-log`. **Neu: automatische Nachrichten** (`config.yml` → `auto-messages`, standardmäßig aus) - postet im festen Intervall (z. B. alle 60 Sekunden einen Hinweis auf `/discord`) nacheinander oder zufällig eine Nachricht, per Chat/Actionbar/Title/Bossbar, auch mehrzeilig und klickbar per MiniMessage. Beide Features haben eine eigene Kategorie im In-Game-Editor (`/sc editor`)
 - **Neu in Version 1.0.1:** Bug behoben - `chat-color-gui.enabled` und `use-permission` wurden geladen, aber nirgends geprüft, daher ließ sich das Farben-GUI weder für Spieler ausschalten noch per Permission einschränken; jetzt korrekt geprüft in `ChatColorGuiManager.open()`. Neuer vollständig anpassbarer `gui/`-Ordner (`gui/chatcolor-gui.yml`, `gui/settings-gui.yml`) - jeder Titel, jedes Material, jeder Name und jede Lore-Zeile im Farben-GUI und im Spieler-Settings-Menü ist jetzt ohne Code-Änderung konfigurierbar
 - **Version 1.2.0 - Editor-Redesign:** neues, einheitliches Small-Caps-Header-System (echte Unicode-Small-Caps-Glyphen über neues `SmallCaps`-Utility) mit blau-cyanem Marken-Gradient (`#55A8FE` → `#00C9FF`) für alle Menü-Titel im Admin-Editor, Farben-GUI und Spieler-Settings-Menü; Tooltips überarbeitet - jetzt mit dezenten Trennlinien, aktuellem Wert in Gold-Gradient hervorgehoben, Default-Wert-Anzeige bei Schaltern, und klar strukturierten Klick-Hinweisen (▶ Left-Click / Right-Click)
@@ -55,7 +47,7 @@ Die Version steht zentral in `pom.xml` (`<version>`) und wird automatisch in `pl
 - **Neu in dieser Version:** Editor-Titel nutzen jetzt echte, kräftige Mehrfarben-Gradients (vorher: Hauptmenü-Titel war gar kein Gradient, Untermenü-Gradients waren zu farbähnlich und wirkten wie eine Farbe); An/Aus-Schalter zeigen jetzt Farbstoff-Items (Dye) statt grüner/roter Beton-Blöcke, die zwischen den anderen Items wie Fremdkörper wirkten; alle Menüs zentrieren jetzt konsequent die letzte, unvollständige Reihe statt sie links kleben zu lassen (kein einsames Item mehr in der Ecke)
 - **Neu in dieser Version:** Join-/Leave-Nachrichten sind jetzt komplett entfernt (weder Vanilla noch eigene Nachricht - Beitritt/Verlassen ist still); Broadcasts lassen sich jetzt direkt aus dem Editor heraus per Chat verschicken (`/stonechat edit` → Broadcast → "Send Broadcast Now" - kein Amboss-Zeichenlimit mehr für die Nachricht selbst); alle Editor-Menüs haben jetzt themenfarbige Glasscheiben-Füllung statt überall grau (Rot für Wortfilter, Orange für Mute/Broadcast, Lila für private Nachrichten, Gold für Chat-Games, ...) für ein deutlich aufgeräumteres, systematisches Erscheinungsbild
 - **Neu in dieser Version:** Broadcast hat jetzt einen eigenen, per Gradient gestylten Prefix (an/abschaltbar); der Standard-Prefix aller Nachrichten nutzt jetzt ebenfalls einen Gradient; der Broadcast-Editor ist jetzt dynamisch - der gewählte Anzeigetyp (Chat/Actionbar/Title/Bossbar) bestimmt automatisch, welche Einstellfelder angezeigt werden; sämtliche Editor-Menüs (inkl. Chat-Color-GUI) haben jetzt ein zentriertes, symmetrisches Layout mit Rahmen statt Feldern direkt am Rand, Gradient-Titel und passendere Icons; die doppelte Join-/Leave-Nachricht wurde behoben (Listener laufen jetzt auf `MONITOR`-Priority, garantiert die letzte Priorität - nichts kann die Unterdrückung mehr überschreiben)
-- **In-Game-Editor (`/sc editor`):** öffnet ein GUI-Menü mit einer Kategorie pro Feature (Wortfilter, Chat-Mute, Link-Blocker, Ping, Cooldown, Anti-Caps, Join-Delay, Max-Länge, Chat-Format, Chat-Games, Broadcast, Chat-Color-GUI, Private Nachrichten, Chat-Clear, Update-Checker). Schalter per Klick umschalten, Zahlenwerte per Links-/Rechtsklick (Shift = ×10) anpassen, Optionen (z. B. `notification-type`) per Klick durchschalten, kurze Texte **und Nachrichtentexte** (24+ Message-Felder über alle Kategorien verteilt) direkt im Chat eingeben (kein Zeichenlimit mehr). Jede Änderung wird sofort gespeichert und per vollständigem Reload aktiv - kein manuelles `/stonechat reload` nötig. Bei Chat-Games lässt sich zusätzlich jedes einzelne Game im Detail erstellen, bearbeiten und löschen.
+- **In-Game-Editor (`/sc editor`):** öffnet ein GUI-Menü mit einer Kategorie pro Feature (Wortfilter, Chat-Mute, Link-Blocker, Ping, Cooldown, Anti-Caps, Join-Delay, Max-Länge, Chat-Format, Chat-Games, Broadcast, Chat-Color-GUI, Private Nachrichten, Chat-Clear, Update-Checker, Chatlog, Automatische Nachrichten). Schalter per Klick umschalten, Zahlenwerte per Links-/Rechtsklick (Shift = ×10) anpassen, Optionen (z. B. `notification-type`) per Klick durchschalten, kurze Texte **und Nachrichtentexte** (24+ Message-Felder über alle Kategorien verteilt) direkt im Chat eingeben (kein Zeichenlimit mehr). Jede Änderung wird sofort gespeichert und per vollständigem Reload aktiv - kein manuelles `/stonechat reload` nötig. Bei Chat-Games lässt sich zusätzlich jedes einzelne Game im Detail erstellen, bearbeiten und löschen.
 - Konfigurationsbasierter Wortfilter (blockieren oder zensieren) mit Admin-Benachrichtigung (zeigt Spieler + Original-Nachricht, auch bei Zensur)
 - **Unicode-Umgehungserkennung:** erkennt Versuche, den Wortfilter mit unsichtbaren Zeichen, Look-alike-Buchstaben aus anderen Alphabeten (Kyrillisch, Griechisch, Fullwidth) oder Akzenten zu umgehen (z. B. `b​a​d` mit Zero-Width-Spaces, oder `ѕсаm` mit kyrillischen Buchstaben) und normalisiert sie zurück, bevor geprüft wird. Optional zusätzlich Leetspeak (`4`→`a`, `3`→`e` usw.), standardmäßig aus wegen höherem False-Positive-Risiko. Admins bekommen bei einem erkannten Umgehungsversuch eine eigene Benachrichtigung
 - Globale Chat-Stummschaltung (`/chatmute`) mit Bypass-Permission
@@ -75,13 +67,13 @@ Die Version steht zentral in `pom.xml` (`<version>`) und wird automatisch in `pl
 - **Spieler-Settings-Menü (`/chat` oder `/stonechat settings`, für alle):** kein Admin-Tool - jeder Spieler kann hier Pings an/aus schalten, direkt zur Chat-Farbe springen und sehen, wie viele Spieler er gerade ignoriert
 - **`/chatclear`:** leert den Chat für alle Online-Spieler (konfigurierbare Zeilenanzahl + Sound), meldet wer geleert hat
 - **Chat-Color-GUI (`/chat color`):** Spieler öffnen ein dreigeteiltes Menü (Normal / Gradient / ✦ Premium ✦) und wählen die Farbe ihrer eigenen Chat-Nachrichten selbst aus, seitenweise navigierbar. Jede Farbe ist frei in `config.yml` definierbar (Name, Material, Farbcode inkl. MiniMessage-Gradients, optional `premium: true`) und kann optional an eine Permission gekoppelt werden (z. B. braucht man für Rot `stonechat.color.red`, standardmäßig automatisch für OP) - die Wahl wird dauerhaft gespeichert
-- **Straf-Befehle:** bei Wortfilter-, Link-Blocker-, Anti-Caps- und Mute-Verstößen kann ein Admin in `config.yml` je einen `punish-command` hinterlegen (z. B. für ein Warn- oder Mute-Plugin), der automatisch im Hintergrund als Konsole ausgeführt wird - `%player%` wird durch den Namen des Spielers ersetzt. Leer lassen deaktiviert es
-- **Eingeschränkte Command-Sichtbarkeit:** normale Spieler sehen in Tab-Completion und im vanilla `/help` nur `/stonechat` (mit begrenztem Hilfe-Menü), `/chat`, `/msg`/`/r` und `/ignore` - `/chatmute`, `/chatgame`, `/broadcast` und `/chatclear` bleiben für sie komplett unsichtbar, da sie in `plugin.yml` an eine Admin-Permission gebunden sind
+- **Straf-Befehle:** bei Wortfilter-, Link-Blocker- und Anti-Caps-Verstößen kann ein Admin in `config.yml` je einen `punish-command` hinterlegen (z. B. für ein Warn- oder Mute-Plugin), der automatisch im Hintergrund als Konsole ausgeführt wird - `%player%` wird durch den Namen des Spielers ersetzt. Leer lassen deaktiviert es
+- **Eingeschränkte Command-Sichtbarkeit:** normale Spieler sehen in Tab-Completion und im vanilla `/help` nur `/stonechat` (mit begrenztem Hilfe-Menü), `/chat`, `/msg`/`/r` und `/ignore` - `/chatmute`, `/chatgame`, `/broadcast`, `/chatclear` und `/chatlog` bleiben für sie komplett unsichtbar, da sie in `plugin.yml` an eine Admin-Permission gebunden sind
 - **Wählbares Benachrichtigungssystem, jetzt überall:** praktisch jede spielerseitige Meldung (Mute-Umschaltung, Ping, Wortfilter, Link-Blocker, Cooldown, Anti-Caps, Join-Delay, Max-Länge, Chat-Games, Chat leeren) lässt sich in der jeweiligen Config einzeln auf **Chat, Actionbar, Title mit Subtitle oder Bossbar** umstellen (`notification-type`) - der passende Text für alle vier Kanäle liegt bereits fertig in `messages.yml`
 - **Update-Checker:** prüft automatisch [modrinth.com/project/stone-chat](https://modrinth.com/project/stone-chat) auf neue Versionen, meldet sich einmal beim Start und danach im konfigurierbaren Intervall in der Konsole, und erinnert Spieler mit `stonechat.admin` (oder OP) beim Beitritt, bis aktualisiert wurde. Manuell prüfbar über `/stonechat checkupdate`
 - Alle Farben unterstützen `&`-Codes, `&#RRGGBB`-Hex **und** MiniMessage-Tags (z. B. `<gradient>`) gleichzeitig, im selben String
 - Vollständige Englisch-/Deutsch-Unterstützung (`languages/en/`, `languages/de/`), Neuinstallationen starten standardmäßig auf Englisch
-- **Konfigurierbare Minecraft-Sounds:** an allen sinnvollen Stellen wird ein Sound gespielt - z. B. wenn ein Spieler gepingt wird, gegen eine Regel verstößt (Wortfilter, Link-Blocker, Cooldown, Anti-Caps, Join-Delay, Max-Länge, stummgeschalteter Chat), wenn die Chat-Stummschaltung umgeschaltet wird, wenn ein Chat-Game startet/gewonnen wird, oder im Chat-Color-GUI ausgewählt/verweigert wird. Jeder Sound ist einzeln in `config.yml` ein-/ausschaltbar, mit Sound-Name, Lautstärke und Tonhöhe
+- **Konfigurierbare Minecraft-Sounds:** an allen sinnvollen Stellen wird ein Sound gespielt - z. B. wenn ein Spieler gepingt wird, gegen eine Regel verstößt (Wortfilter, Link-Blocker, Cooldown, Anti-Caps, Join-Delay, Max-Länge, stummgeschalteter Chat), wenn die Chat-Stummschaltung umgeschaltet wird, wenn ein Chat-Game gewonnen wird, bei privaten Nachrichten, beim Leeren des Chats, oder im Chat-Color-GUI ausgewählt/verweigert wird. Jeder Sound ist einzeln in `config.yml` ein-/ausschaltbar, mit Sound-Name, Lautstärke und Tonhöhe
 
 ## Performance & Nebenläufigkeit
 - Regex-Patterns (Wortfilter, Ping-Trigger) und Link-Muster werden **einmalig** beim Start bzw. bei `/stonechat reload` aufgebaut und danach nur noch wiederverwendet, statt bei jeder einzelnen Chat-Nachricht neu kompiliert/verarbeitet zu werden
@@ -99,14 +91,17 @@ src/main/java/dev/stonechat/plugin/
   model/                   -> reine Datenklassen (MessageDisplayType, ChatColorGuiHolder, EditorGuiHolder)
   chatgame/                -> komplett eigenständiges Chat-Games-Modul: ChatGameManager, GameType, GameRound, RewardConfig, abstrakte ChatGame-Basisklasse
   chatgame/games/          -> die sechs Spiel-Implementierungen: MathGame, UnscrambleGame, FastTypingGame, TriviaGame, FillBlanksGame, CustomGame
-  util/                    -> ColorUtil (gemischtes Farb-Parsing), PlaceholderUtil, LuckPermsUtil, VaultEconomyUtil, TextNormalizer (Unicode-Umgehungserkennung)
+  util/                    -> ColorUtil (gemischtes Farb-Parsing), PlaceholderUtil, LuckPermsUtil, VaultEconomyUtil, TextNormalizer (Unicode-Umgehungserkennung), DataFiles (absturzsicheres Speichern), SmallCaps (Menü-Titel)
 src/main/resources/
   plugin.yml
   config.yml
   chatformat.yml           -> Chat-Format-Settings + Placeholder-Doku (eigene Datei)
   chatgames.yml            -> komplettes Chat-Games-Modul: globale Einstellungen, Broadcast-Texte, Standard-Reward, alle 5 Default-Games + Custom Games (eigene Datei, vollständig englisch dokumentiert)
+  gui/chatcolor-gui.yml    -> Aussehen des Chat-Farben-Menüs
+  gui/settings-gui.yml     -> Aussehen des Spieler-Einstellungsmenüs
   languages/en/messages.yml
   languages/de/messages.yml
+src/test/java/             -> automatisierte Tests mit MockBukkit (simulierter Server mit Spielern)
 ```
 
 ## Kompilieren
@@ -118,17 +113,14 @@ mvn clean package
 
 Die fertige jar liegt danach unter `target/StoneChat-1.1.1.jar`. Einfach in den `plugins/`-Ordner deines Paper-Servers legen und neu starten.
 
-> Hinweis: Dieses Projekt wurde von Hand geschrieben und geprüft, konnte in der Umgebung, in der es
-> entstanden ist, aber nicht selbst kompiliert werden (kein Zugriff auf Maven Central / das
-> PaperMC-Repository). Bitte führe `mvn clean package` einmal selbst aus und melde dich, falls dabei
-> Compile-Fehler auftauchen - die behebe ich dann sofort.
-
 ## Berechtigungen
 Die vollständige Liste steht in `plugin.yml`. Alle Admin-Permissions sind standardmäßig auf `op`
 gesetzt; `stonechat.ping.immune` ist standardmäßig `false` (muss pro Team-Mitglied vergeben werden).
-Für das Chat-Color-GUI gilt dasselbe Prinzip: `stonechat.color.gold`, `stonechat.color.red` und
-`stonechat.color.rainbow` sind als Beispiele standardmäßig `false` - jede Farbe in `config.yml` kann
-über ihr `permission`-Feld frei mit einer eigenen (oder gar keiner) Berechtigung versehen werden.
+`stonechat.ignore.immune` ist ebenfalls standardmäßig `false`, `stonechat.msg` haben alle Spieler.
+Die Beispiel-Farbrechte `stonechat.color.gold`, `stonechat.color.red` und `stonechat.color.rainbow` stehen
+auf `op` - jede Farbe in `config.yml` kann über ihr `permission`-Feld frei mit einer eigenen (oder gar
+keiner) Berechtigung versehen werden. Die vollständige Tabelle mit Erklärungen steht in der
+[WIKI.md](WIKI.md#berechtigungen).
 
 ## Soft-Abhängigkeiten
 - **LuckPerms** wird rein über Reflection angebunden (`util/LuckPermsUtil.java`) - keine harte Abhängigkeit, kein zusätzlicher Eintrag in `pom.xml` nötig. Ist LuckPerms nicht installiert, liefern die `%luckperms_*%`-Placeholder einfach einen leeren String.
@@ -139,7 +131,7 @@ Für das Chat-Color-GUI gilt dasselbe Prinzip: `stonechat.color.gold`, `stonecha
 - **Wortliste/Trivia/Custom Games:** komplett ohne Code-Änderung über `/sc editor` → Chat Games möglich (Default Games Management für die 5 eingebauten Typen, Custom Games Management für eigene). Direkt in `chatgames.yml` geht's genauso, unter `default-games.<id>.words`/`phrases`/`questions` bzw. `custom-games.<id>.questions`.
 - **Neuer Chat-Game-Typ:** in `chatgame/GameType.java` ergänzen, eine neue Klasse in `chatgame/games/` anlegen (erbt von `chatgame/ChatGame.java`, implementiert `generateRound(Random)`), und in `chatgame/ChatGameManager.java#parseGame()` einen neuen `case` im Switch hinzufügen.
 - **Neue Farbe im Chat-Color-GUI:** einfach einen neuen Eintrag unter `chat-color-gui.colors` in
-  `config.yml` anlegen - kein Code-Änderung nötig.
+  `config.yml` anlegen - keine Code-Änderung nötig.
 
 ## Update-Checker & Notification-System personalisieren
 - Der Update-Checker sucht aktuell nach dem Modrinth-Projekt `stone-chat`
@@ -147,7 +139,7 @@ Für das Chat-Color-GUI gilt dasselbe Prinzip: `stonechat.color.gold`, `stonecha
   einfach `MODRINTH_PROJECT_SLUG` in `manager/UpdateChecker.java` anpassen.
 - Das wählbare Benachrichtigungssystem (`manager/NotificationManager.java` + `model/MessageDisplayType.java`)
   lässt sich für weitere Features wiederverwenden: einfach in `messages.yml` einen Textblock mit
-  `<basePath>.chat`, `.actionbar`, `.title` und `.subtitle` anlegen und in `config.yml` ein passendes
+  `<basePath>.chat`, `.actionbar`, `.title`, `.subtitle` und `.bossbar` anlegen und in `config.yml` ein passendes
   `notification-type: CHAT` hinzufügen - der Rest übernimmt der `NotificationManager`.
 
 ## Erweitern

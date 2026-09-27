@@ -21,6 +21,6 @@ public record RewardConfig(
 ) {
 
     public static RewardConfig none() {
-        return new RewardConfig(List.of(), 0, false, "ENTITY_PLAYER_LEVELUP", 1f, 1f, false, "TOTEM", 20);
+        return new RewardConfig(List.of(), 0, false, "ENTITY_PLAYER_LEVELUP", 1f, 1f, false, "TOTEM_OF_UNDYING", 20);
     }
 }

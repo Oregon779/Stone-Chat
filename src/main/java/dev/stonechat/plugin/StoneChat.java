@@ -226,7 +226,7 @@ public class StoneChat extends JavaPlugin {
         getCommand("chatlog").setExecutor(chatLogCommand);
         getCommand("chatlog").setTabCompleter(chatLogCommand);
 
-        getLogger().info("Commands registered (/stonechat, /chatmute, /chatgame, /broadcast, /chatcolor, /msg, /r, /chatclear, /ignore, /settings, /chat, /chatlog).");
+        getLogger().info("Commands registered (/stonechat, /chat, /msg, /r, /ignore, /chatmute, /chatclear, /broadcast, /chatgame, /chatlog).");
     }
 
     public DataFiles getDataFiles() {
