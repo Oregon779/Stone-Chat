@@ -4,7 +4,7 @@ Stone Chat ist ein Chat-Plugin für **Paper 26.2+** (Java 25). Es bündelt alles
 Plugin: Chat-Format, Wortfilter, Link-Blocker, Anti-Spam, Pings, private Nachrichten, Chat-Games,
 Broadcasts, automatische Nachrichten, einen Chatlog für Admins und einen Einstellungs-Editor im Spiel.
 
-Diese Seite erklärt jedes Feature, jeden Befehl und jede Berechtigung. Sie gilt für **Version 1.1.1**.
+Diese Seite erklärt jedes Feature, jeden Befehl und jede Berechtigung. Sie gilt für **Version 1.1.1** und die Entwicklungs-Builds danach.
 Die Versionsgeschichte steht in der [README](README.md#features).
 
 ---
@@ -20,6 +20,7 @@ Die Versionsgeschichte steht in der [README](README.md#features).
 - [Features im Detail](#features-im-detail)
   - [Chat-Format und Placeholder](#chat-format-und-placeholder) ·
     [Chat-Farben](#chat-farben) ·
+    [Item im Chat zeigen](#item-im-chat-zeigen) ·
     [Wortfilter](#wortfilter) ·
     [Link-Blocker](#link-blocker) ·
     [Anti-Caps](#anti-caps) ·
@@ -125,14 +126,17 @@ Alles liegt unter `plugins/StoneChat/`:
 |---|---|---|
 | `config.yml` | Alle Einstellungen: Filter, Cooldowns, Pings, Broadcast, Chat-Farben, Chatlog, automatische Nachrichten, Update-Checker | Ja |
 | `chatformat.yml` | Aussehen einer öffentlichen Chat-Nachricht, Datums-/Zeitformat, klickbare Namen | Ja |
-| `chatgames.yml` | Chat-Games: Intervalle, Texte, Belohnungen, die fünf eingebauten Spiele, eigene Spiele | Ja |
+| `chatgames.yml` | Chat-Games: Intervalle, Texte, Belohnungen, die sieben eingebauten Spiele, eigene Spiele | Ja |
 | `languages/en/messages.yml` | Englische Texte | Ja |
 | `languages/de/messages.yml` | Deutsche Texte | Ja |
 | `gui/chatcolor-gui.yml` | Titel, Items, Namen und Beschreibungen des Chat-Farben-Menüs | Ja |
 | `gui/settings-gui.yml` | Titel, Items, Namen und Beschreibungen des Spieler-Einstellungsmenüs | Ja |
 | `playercolors.yml` | Gewählte Chat-Farbe pro Spieler | Nein (wird vom Plugin geschrieben) |
 | `ignorelist.yml` | Wer wen ignoriert | Nein (wird vom Plugin geschrieben) |
-| `chatlogs/<uuid>.log` | Chatverlauf pro Spieler für `/chatlog` | Nein (wird vom Plugin geschrieben) |
+| `chatlogs/<uuid>.log` | Chatverlauf und private Nachrichten pro Spieler für `/chatlog` | Nein (wird vom Plugin geschrieben) |
+| `chatmute.yml` | Ob der Chat gerade stumm geschaltet ist | Nein (wird vom Plugin geschrieben) |
+| `pingsettings.yml` | Wer Ping-Hinweise abgeschaltet hat | Nein (wird vom Plugin geschrieben) |
+| `socialspy.yml` | Wer `/socialspy` eingeschaltet hat | Nein (wird vom Plugin geschrieben) |
 | `<datei>.bak` | Stand einer Config vor dem letzten automatischen Update | Nein (nur zum Vergleichen oder Zurückholen) |
 
 `playercolors.yml` und `ignorelist.yml` werden im Hintergrund und absturzsicher gespeichert. Ist eine
@@ -153,6 +157,8 @@ die kaputte Datei zu überschreiben.
 | `/stonechat reload` | – | `stonechat.admin` | ja | Lädt alle Configs, Texte und GUI-Dateien neu. |
 | `/stonechat editor` | `/sc editor`, `/stonechat edit` | `stonechat.admin` | nein | Öffnet den [In-Game-Editor](#in-game-editor). |
 | `/stonechat checkupdate` | – | `stonechat.admin` | ja | Fragt sofort Modrinth nach einer neuen Version. Das Ergebnis steht in der Konsole. |
+| `/stonechat preview [text]` | – | `stonechat.admin` | nein | Zeigt dir eine Chatzeile im aktuellen Format, siehe [Vorschau](#chat-format-und-placeholder). |
+| `/stonechat preview format <format>` | – | `stonechat.admin` | nein | Zeigt ein Format, das noch nicht gespeichert ist. |
 | `/chat` | `/chat settings`, `/chat menu` | – | nein | Öffnet das Spieler-Einstellungsmenü. |
 | `/chat color` | `/chat colour` | optional, siehe [Chat-Farben](#chat-farben) | nein | Öffnet das Chat-Farben-Menü. |
 | `/chat ignore …`, `/chat msg …`, `/chat r …` | – | wie `/ignore`, `/msg`, `/r` | nein | Kurzformen, die an `/ignore`, `/msg` und `/r` weitergeben. |
@@ -166,7 +172,8 @@ die kaputte Datei zu überschreiben.
 | `/chatgame start [id]` | – | `stonechat.chatgame` | ja | Startet ein bestimmtes oder ein zufälliges Chat-Game. |
 | `/chatgame stop` | – | `stonechat.chatgame` | ja | Beendet die laufende Runde. |
 | `/chatgame list` | – | `stonechat.chatgame` | ja | Listet alle Chat-Games und ob sie aktiv sind. |
-| `/chatlog <spieler> [seite]` | – | `stonechat.chatlog` | ja | Zeigt, was ein Spieler wann im Chat geschrieben hat. Die Blätter-Links gibt es nur im Spiel. |
+| `/chatlog <spieler> [seite]` | – | `stonechat.chatlog` | ja | Zeigt, was ein Spieler wann im Chat und in privaten Nachrichten geschrieben hat. Die Blätter-Links gibt es nur im Spiel. |
+| `/socialspy` | `/spy` | `stonechat.socialspy` | nein | Eine Kopie jeder privaten Nachricht sehen (an/aus). |
 
 Befehle mit Berechtigung sind für Spieler ohne diese Berechtigung in der Tab-Vervollständigung unsichtbar.
 Normale Spieler sehen also nur `/stonechat`, `/chat`, `/msg`, `/r` und `/ignore`.
@@ -194,6 +201,7 @@ Normale Spieler sehen also nur `/stonechat`, `/chat`, `/msg`, `/r` und `/ignore`
 | `stonechat.broadcast` | OP | `/broadcast` |
 | `stonechat.clear` | OP | `/chatclear` |
 | `stonechat.chatlog` | OP | `/chatlog` |
+| `stonechat.socialspy` | OP | `/socialspy` |
 | `stonechat.color.gold` | OP | Chat-Farbe „Gold" |
 | `stonechat.color.red` | OP | Chat-Farben „Red" und „Dark Red" |
 | `stonechat.color.rainbow` | OP | Die meisten Farbverläufe und alle Premium-Farben |
@@ -250,8 +258,9 @@ die anschlägt, stoppt die Nachricht. Der Spieler bekommt dann den passenden Hin
 | 6 | [Anti-Caps](#anti-caps) | Zu viele Großbuchstaben → blockiert oder in Kleinbuchstaben umgewandelt |
 | 7 | [Wortfilter](#wortfilter) | Verbotenes Wort → blockiert oder mit `*` zensiert |
 | 8 | [Link-Blocker](#link-blocker) | Link gefunden → blockiert |
-| 9 | [Pings](#pings) | `@Name` wird hervorgehoben, der Spieler benachrichtigt |
-| 10 | [Chat-Format](#chat-format-und-placeholder) | Format und [Chat-Farbe](#chat-farben) werden angewendet, die Nachricht wird verschickt |
+| 9 | [Item im Chat](#item-im-chat-zeigen) | `[item]` wird durch das Item in der Hand ersetzt |
+| 10 | [Pings](#pings) | `@Name` wird hervorgehoben, der Spieler benachrichtigt |
+| 11 | [Chat-Format](#chat-format-und-placeholder) | Format und [Chat-Farbe](#chat-farben) werden angewendet, die Nachricht wird verschickt |
 
 Danach wird das Ergebnis im [Chatlog](#chatlog) gespeichert, auch bei blockierten Nachrichten.
 
@@ -310,6 +319,13 @@ und `use-placeholderapi: true` ist. Ohne LuckPerms bleiben die `%luckperms_*%`-,
 Die Texte im Namens-Hover stehen in `messages.yml` unter `chat-format.hover-rank`, `hover-playtime`,
 `hover-deaths`, `hover-kills` und `hover-no-rank` (Text für Spieler ohne Rang).
 
+**Vorschau:** `/stonechat preview [text]` zeigt dir eine Chatzeile genau so, wie andere sie sehen würden,
+mit deinem Namen, deiner Chat-Farbe und allen Placeholdern. Nur du siehst sie, und niemand wird gepingt.
+Mit `/stonechat preview format <format>` probierst du ein Format aus, **ohne** es zu speichern, z. B.
+`/stonechat preview format <gold>[%player_name%]</gold> %message%`. Gefällt es dir, trägst du es in
+`chatformat.yml` ein oder setzt es im Editor (`/sc editor` → Chat Format → Chat Format Line). Dort zeigt
+der Knopf „Preview in Chat" das aktuelle Format sofort an.
+
 Beispiel mit Rang in Klammern und Uhrzeit:
 
 ```yaml
@@ -355,6 +371,28 @@ chat-color-gui:
   Seine Nachrichten erscheinen wieder in der Standardfarbe.
 - **Farben löschen:** Einen Eintrag aus `colors` löschen und `/stonechat reload`. Gelöschte Farben
   kommen bei Updates nicht zurück.
+
+---
+
+### Item im Chat zeigen
+
+**Datei:** `chatformat.yml` → `item-showcase` · **Editor:** Chat Format
+
+Schreibt ein Spieler `[item]` in eine Nachricht, sehen alle anderen dort den Namen des Items in seiner
+Haupthand, in der Farbe seiner Seltenheit und bei Stapeln mit Anzahl (z. B. `[Diamant] x3`). Fährt man mit
+der Maus darüber, erscheint das komplette Item-Tooltip mit Verzauberungen und Beschreibung.
+
+| Einstellung | Standard | Bedeutung |
+|---|---|---|
+| `enabled` | `true` | An/aus |
+| `placeholder` | `"[item]"` | Der Text, der ersetzt wird (Groß-/Kleinschreibung egal) |
+| `permission` | `""` | Berechtigung zum Benutzen, leer = alle |
+
+- Mit leerer Hand erscheint `[leere Hand]` (`messages.yml` → `chat-format.item-empty-hand`).
+- **Schutz vor Umgehung:** Ein im Amboss umbenanntes Item, dessen Name oder Beschreibung der Wortfilter
+  oder der Link-Blocker blocken würde, wird nicht angezeigt; `[item]` bleibt dann einfach Text. Spieler
+  mit `stonechat.links.bypass` dürfen Items mit Links zeigen.
+- Spieler können die Item-Anzeige nicht selbst nachbauen oder fälschen.
 
 ---
 
@@ -477,7 +515,7 @@ Alle Online-Spieler sehen, wer den Chat stumm geschaltet hat.
 | `sound-toggle` | `BLOCK_ANVIL_LAND` | Sound für alle beim Umschalten |
 | `sound-blocked` | `ENTITY_VILLAGER_NO` | Sound für einen Spieler, der während des Mutes schreibt |
 
-Der Mute gilt bis zum Neustart. Nach einem Neustart ist der Chat wieder offen.
+Der Mute bleibt auch nach einem Neustart bestehen (`chatmute.yml`), bis jemand `/chatmute` erneut ausführt.
 
 ---
 
@@ -508,6 +546,7 @@ Schreibt jemand `@Name`, wird der Name hervorgehoben und der Spieler bekommt ein
 |---|---|---|
 | `enabled` | `true` | An/aus |
 | `trigger-symbol` | `"@"` | Zeichen vor dem Namen |
+| `tab-complete` | `true` | `@St` + **Tab** vervollständigt zu `@Steve` |
 | `highlight-template` | `"<yellow><bold>%player%</bold></yellow>"` | Aussehen des erwähnten Namens. `%player%` = Symbol + Name, z. B. `@Steve` |
 | `allow-self-ping` | `false` | Darf man sich selbst pingen? |
 | `immune-permission` | `stonechat.ping.immune` | Wer nicht gepingt werden kann |
@@ -519,6 +558,10 @@ Schreibt jemand `@Name`, wird der Name hervorgehoben und der Spieler bekommt ein
 - Hat ein Spieler Pings abgeschaltet oder ignoriert er den Absender, wird sein Name weiterhin
   hervorgehoben, er bekommt aber keinen Hinweis und keinen Sound.
 - Ist der Spieler immun (`stonechat.ping.immune`), wird sein Name gar nicht hervorgehoben.
+- **Tab-Vervollständigung:** Wer das Zeichen und den Anfang eines Namens tippt (`@St`) und **Tab** drückt,
+  bekommt den vollen Namen (`@Steve`). Vorgeschlagen werden alle Online-Spieler, die man pingen kann,
+  also keine immunen oder unsichtbaren. Das läuft im Client, beim Tippen wird nichts gesendet.
+- Wer Ping-Hinweise abschaltet, bleibt auch nach einem Neustart dabei (`pingsettings.yml`).
 
 Beispiel für ein anderes Aussehen:
 
@@ -549,9 +592,18 @@ Gut zu wissen:
 
 - Mit `private-messages.enabled: false` antworten `/msg` und `/r` mit „Unbekannter Unterbefehl". Die
   Vanilla-Befehle kommen dadurch **nicht** zurück, siehe [Befehlskonflikte](#zusammenspiel-mit-anderen-plugins).
-- Private Nachrichten werden derzeit **nicht** vom Wortfilter, Link-Blocker oder Anti-Caps geprüft.
+- Private Nachrichten werden wie der öffentliche Chat vom **Wortfilter, Link-Blocker und Anti-Caps**
+  geprüft, mit denselben Einstellungen, Hinweisen, Ausnahme-Rechten und Straf-Befehlen. Jede Prüfung lässt
+  sich für `/msg` einzeln abschalten (`private-messages.filter.word-filter`, `.link-blocker`, `.anti-caps`).
+- Private Nachrichten stehen im [Chatlog](#chatlog) des Absenders, mit Empfänger.
 - Während eines Chat-Mutes mit `block-commands: true` ist auch `/msg` gesperrt. Der Befehls-Cooldown gilt
   auch für `/msg`.
+
+**Social Spy:** Mit `/socialspy` (Alias `/spy`, Berechtigung `stonechat.socialspy`, Standard OP) sieht ein
+Teammitglied eine Kopie jeder privaten Nachricht, z. B. `[Spy] Steve -> Alex: wir treffen uns am Spawn`.
+Absender und Empfänger bekommen selbst keine Kopie. Erneutes `/socialspy` schaltet es ab, die Einstellung
+bleibt über Neustarts erhalten. Mit `private-messages.social-spy: false` ist der Befehl für alle gesperrt.
+Das Format steht in `messages.yml` → `private-message.spy-format`.
 
 ---
 
@@ -600,7 +652,8 @@ nicht im Chat, stattdessen verkündet Stone Chat den Gewinner.
 2. Die Frage wird angekündigt (`start-message`).
 3. Ist nach `hint.after-seconds` (Standard: 20 s) noch niemand richtig, kommt ein Hinweis: erster
    Buchstabe und Länge der Antwort.
-4. Die erste richtige Antwort gewinnt (`win-message`) und bekommt die Belohnung.
+4. Die erste richtige Antwort gewinnt (`win-message`, oder die eigene Gewinn-Nachricht des Spiels) und bekommt
+   die Belohnung.
 5. Antwortet niemand innerhalb der Antwortzeit, kommt die `timeout-message`.
 
 **Globale Einstellungen** (`chat-games`)
@@ -614,7 +667,7 @@ nicht im Chat, stattdessen verkündet Stone Chat den Gewinner.
 | `min-players-online` | `1` | Automatische Runden nur ab so vielen Spielern (gilt nicht für `/chatgame start`) |
 | `hint.enabled` / `hint.after-seconds` | `true` / `20` | Hinweis an/aus und wann er kommt |
 | `notification-type` | `CHAT` | Kanal für alle Chat-Game-Ansagen |
-| `broadcast.*` | – | Texte: `prefix`, `start-message` (`%question%`), `win-message` (`%player%`, `%answer%`), `timeout-message`, `stop-message` (`%player%`), `hint-message` (`%firstletter%`, `%length%`) |
+| `broadcast.*` | – | Texte: `prefix`, `start-message` (`%question%`), `win-message` (`%player%`, `%answer%`, `%time%` = Sekunden bis zur richtigen Antwort), `timeout-message`, `stop-message` (`%player%`), `hint-message` (`%firstletter%`, `%length%`) |
 | `default-reward` | siehe unten | Belohnung für alle Spiele ohne eigene |
 
 **Belohnung** (`default-reward` oder pro Spiel unter `reward` mit `override: true`)
@@ -626,7 +679,7 @@ nicht im Chat, stattdessen verkündet Stone Chat den Gewinner.
 | `sound` | Sound für den Gewinner (`enabled`, `name`, `volume`, `pitch`) |
 | `particle` | Partikel am Gewinner (`enabled`, `name`, `count`). Jeder Partikel ohne Zusatzdaten, z. B. `TOTEM_OF_UNDYING`, `HAPPY_VILLAGER`, `FIREWORK`, `HEART` |
 
-**Die fünf eingebauten Spiele** (`default-games`)
+**Die sieben eingebauten Spiele** (`default-games`)
 
 | ID | Typ | Was der Spieler tun muss | Eigene Einstellungen |
 |---|---|---|---|
@@ -635,6 +688,13 @@ nicht im Chat, stattdessen verkündet Stone Chat den Gewinner.
 | `fast_typing` | `FAST_TYPING` | Einen Text als Erster genau abtippen | `phrases` |
 | `trivia_quiz` | `TRIVIA` | Eine Quizfrage beantworten | `questions` (je `question` und eine Liste `answers`) |
 | `fill_blanks` | `FILL_BLANKS` | Ein Wort mit Lücken vervollständigen | `blank-percentage` (10–90), `words` |
+| `reverse_word` | `REVERSE` | Ein rückwärts geschriebenes Wort erkennen (`dnomaid` → `diamond`) | `question-format` (`%word%` = rückwärts geschriebenes Wort), `words`. Wörter, die vorwärts wie rückwärts gleich sind, werden übersprungen |
+| `reaction` | `REACTION` | Als Erster auf den Knopf im Chat klicken | `button`, `button-hover`, `win-message`. Läuft immer im Chat und ohne Hinweis, Standarddauer 15 s |
+
+**Reaktion im Detail:** Jede Runde bekommt einen geheimen Zufallscode. Der Knopf führt beim Klicken
+`/stonechat react <code>` aus, deshalb kann niemand vor dem Erscheinen des Knopfes antworten, und ein alter
+Knopf gewinnt keine neue Runde. Wer zu spät klickt, bekommt `reaction-too-late` angezeigt. Die mitgelieferte
+Gewinn-Nachricht zeigt die Reaktionszeit: „Steve was the fastest and clicked after 0.8s!".
 
 **Einstellungen, die jedes Spiel hat**
 
@@ -648,6 +708,7 @@ nicht im Chat, stattdessen verkündet Stone Chat den Gewinner.
 | `hint-enabled` | Hinweise für dieses Spiel |
 | `notification-type` | `DEFAULT` = globaler Kanal, sonst `CHAT`, `ACTIONBAR`, `TITLE` oder `BOSSBAR` |
 | `reward` | Eigene Belohnung mit `override: true`, sonst gilt `default-reward` |
+| `win-message` | Eigene Gewinn-Nachricht nur für dieses Spiel (`%player%`, `%answer%`, `%time%`); fehlt sie, gilt die globale |
 
 **Eigene Spiele** funktionieren wie das Quiz: eine Sammlung von Fragen mit erlaubten Antworten, pro Runde
 wird eine zufällig gewählt. Am einfachsten legt man sie im Editor an (`/sc editor` → Chat Games →
@@ -768,7 +829,7 @@ auch der Chat von Admins wird geleert. Kanal: `notification-type` (`CHAT`), Soun
 
 **Befehl:** `/chatlog <spieler> [seite]` · **Berechtigung:** `stonechat.chatlog` · **Datei:** `config.yml` → `chat-log`
 
-Zeigt, was ein Spieler wann im öffentlichen Chat geschrieben hat, mit Datum und Uhrzeit.
+Zeigt, was ein Spieler wann im Chat und in privaten Nachrichten geschrieben hat, mit Datum und Uhrzeit.
 
 - Seite 1 zeigt die neuesten Einträge. Mit **« Ältere | Neuere »** unter der Liste blättert man per Klick.
 - Funktioniert auch für Spieler, die gerade offline sind, solange der Server sie kennt.
@@ -777,12 +838,15 @@ Zeigt, was ein Spieler wann im öffentlichen Chat geschrieben hat, mit Datum und
   `[Blockiert: Join-Delay]` oder `[Blockiert: zu lang]`. Außerdem markiert: `[Zensiert]` und
   `[Chat-Game-Antwort]`. Gespeichert wird immer der Text, den der Spieler **getippt** hat, auch bei
   zensierten Nachrichten.
-- Nur der öffentliche Chat wird geloggt, keine privaten Nachrichten und keine Befehle.
+- **Private Nachrichten** stehen im Log des Absenders mit `[PN an <Empfänger>]` davor, auch blockierte.
+  Abschaltbar mit `log-private-messages: false`.
+- Befehle werden nicht geloggt.
 
 | Einstellung | Standard | Bedeutung |
 |---|---|---|
 | `enabled` | `true` | An/aus |
 | `log-blocked-messages` | `true` | Auch blockierte Nachrichten speichern |
+| `log-private-messages` | `true` | Auch private Nachrichten (`/msg`, `/r`) speichern |
 | `retention-days` | `30` | Ältere Einträge werden automatisch gelöscht, `0` = für immer behalten |
 | `max-entries-per-player` | `1000` | Höchstens so viele Einträge pro Spieler, die ältesten fliegen zuerst raus |
 | `entries-per-page` | `10` | Einträge pro Seite |
@@ -960,10 +1024,11 @@ Bedienung:
 
 Jede Änderung wird **sofort gespeichert und aktiv**. `/stonechat reload` ist danach nicht nötig.
 
-Nur in den Dateien lassen sich ändern: die verbotenen Wörter, die Link-Muster, die Liste der Chat-Farben,
-die Zeile `format` in `chatformat.yml` (der Editor stellt dort nur die Optionen ein) und das Aussehen der
-Menüs in `gui/`.
-Unter „Chat Games" gibt es Untermenüs für die globalen Einstellungen, die fünf eingebauten Spiele und die
+Nur in den Dateien lassen sich ändern: die verbotenen Wörter, die Link-Muster, die Liste der Chat-Farben
+und das Aussehen der Menüs in `gui/`. Die Format-Zeile des Chats lässt sich unter „Chat Format" bearbeiten,
+der Knopf „Preview in Chat" zeigt das Ergebnis sofort.
+
+Unter „Chat Games" gibt es Untermenüs für die globalen Einstellungen, die sieben eingebauten Spiele und die
 eigenen Spiele (anlegen mit Assistent, Fragen hinzufügen, die letzte Frage entfernen, löschen durch
 Eintippen von `DELETE`). Eingebaute Spiele lassen sich abschalten, aber nicht löschen.
 
@@ -975,16 +1040,32 @@ Alle drei Plugins sind optional. Stone Chat läuft ohne sie.
 
 | Plugin | Wofür |
 |---|---|
-| **PlaceholderAPI** | Alle PAPI-Placeholder im Chat-Format (`chatformat.yml` → `use-placeholderapi`) |
+| **PlaceholderAPI** | Alle PAPI-Placeholder im Chat-Format (`chatformat.yml` → `use-placeholderapi`), und Stone Chats eigene Placeholder für andere Plugins (siehe unten) |
 | **LuckPerms** | `%luckperms_rank%`, `%prefix%`, `%suffix%` im Format und der Rang im Namens-Hover |
 | **Vault** + Economy-Plugin | Geld-Belohnungen für Chat-Games (`vault-money`) |
+
+**Stone-Chat-Placeholder für andere Plugins:** Ist PlaceholderAPI installiert, stellt Stone Chat eigene
+Placeholder bereit, z. B. für Scoreboards, Tab-Listen oder Hologramme. Sie bleiben auch nach `/papi reload`
+erhalten.
+
+| Placeholder | Ergebnis |
+|---|---|
+| `%stonechat_chat_muted%` | Ob der Chat stumm geschaltet ist |
+| `%stonechat_chatgame_running%` | Ob gerade ein Chat-Game läuft |
+| `%stonechat_chatcolor%` | Die gewählte Chat-Farbe als Code (z. B. `&c` oder ein Farbverlauf), leer ohne Wahl |
+| `%stonechat_chatcolor_name%` | Der Name dieser Farbe aus dem Farben-Menü (z. B. `&cRed`) |
+| `%stonechat_pings_enabled%` | Ob der Spieler Ping-Hinweise bekommt |
+| `%stonechat_ignored_count%` | Wie viele Spieler er ignoriert |
+| `%stonechat_socialspy%` | Ob er `/socialspy` eingeschaltet hat |
+
+Ja/Nein-Werte verwenden die Texte, die in PlaceholderAPI eingestellt sind (Standard `yes`/`no`).
 
 **Discord- und andere Chat-Brücken** bekommen öffentliche Nachrichten mit, weil Stone Chat die Nachricht
 als normale Spieler-Nachricht durchlässt. Blockierte Nachrichten (Wortfilter, Link, Mute, …) werden
 abgebrochen und deshalb von Brücken, die abgebrochene Nachrichten überspringen, nicht weitergeleitet.
 
 **Befehlskonflikte:** Stone Chat registriert `/msg`, `/tell`, `/w`, `/whisper`, `/r`, `/reply`, `/ignore`,
-`/broadcast`, `/chat` und `/clearchat`. Andere Plugins (z. B. EssentialsX) haben teils dieselben Befehle.
+`/broadcast`, `/chat`, `/clearchat` und `/spy`. Andere Plugins (z. B. EssentialsX) haben teils dieselben Befehle.
 Welcher gewinnt, hängt von den Plugins ab. Die Stone-Chat-Version ist immer mit Plugin-Namen erreichbar,
 z. B. `/stonechat:msg`. Fest umbiegen lässt es sich in der `commands.yml` des Servers:
 
@@ -1003,10 +1084,13 @@ zeigen, z. B. `"essentials:msg $1-"`.
 
 | Bleibt erhalten | Wird zurückgesetzt |
 |---|---|
-| Gewählte Chat-Farben (`playercolors.yml`) | Chat-Mute (nach dem Neustart ist der Chat offen) |
-| Ignorier-Listen (`ignorelist.yml`) | Ping an/aus pro Spieler (`/stonechat togglepings`) |
-| Chatlog (`chatlogs/`) | Antwort-Ziel für `/r` |
-| Alle Einstellungen und Texte | Laufende Cooldowns, Join-Delays und Chat-Game-Runden |
+| Gewählte Chat-Farben (`playercolors.yml`) | Antwort-Ziel für `/r` |
+| Ignorier-Listen (`ignorelist.yml`) | Laufende Cooldowns und Join-Delays |
+| Chat-Mute (`chatmute.yml`) | Laufende Chat-Game-Runden |
+| Ping an/aus pro Spieler (`pingsettings.yml`) | |
+| Social Spy an/aus (`socialspy.yml`) | |
+| Chatlog (`chatlogs/`) | |
+| Alle Einstellungen und Texte | |
 
 ---
 
@@ -1088,9 +1172,10 @@ im Reiter **Actions** beim jeweiligen Lauf unter **Artifacts**.
 übernommen. Entwicklungs-Builds heißen `<hauptversion>-devN`, nur Releases tragen die reine Hauptversion
 (Regeln in [CLAUDE.md](CLAUDE.md)).
 
-**Tests:** `src/test/` enthält 74 Tests mit [MockBukkit](https://github.com/MockBukkit/MockBukkit), die einen
+**Tests:** `src/test/` enthält 114 Tests mit [MockBukkit](https://github.com/MockBukkit/MockBukkit), die einen
 Server mit Spielern simulieren. Sie decken u. a. die Chat-Pipeline, Chat-Games, Menüs, das sichere
-Speichern, das Config-Update samt Migrationen, den Chatlog und automatische Nachrichten ab. Nur Tests ausführen:
+Speichern, das Config-Update samt Migrationen, den Chatlog, private Nachrichten, `[item]`, die
+Tab-Vervollständigung, die Placeholder und automatische Nachrichten ab. Nur Tests ausführen:
 `mvn test`.
 
 **Projektstruktur**
@@ -1098,13 +1183,16 @@ Speichern, das Config-Update samt Migrationen, den Chatlog und automatische Nach
 ```
 src/main/java/dev/stonechat/plugin/
   StoneChat.java      Hauptklasse: Start, Reload, Herunterfahren
-  manager/            Die Logik, ein Manager pro Feature (inkl. Editor und Menüs)
+  manager/            Die Logik, ein Manager pro Feature (inkl. Editor und Menüs). ContentFilter
+                      bündelt Anti-Caps, Wortfilter und Link-Blocker für Chat und /msg
   command/            Befehle mit Tab-Vervollständigung
   listener/           Event-Listener (Chat, Befehle, Join/Quit, Menüklicks)
   chatgame/           Chat-Games: ChatGameManager, GameType, GameRound, RewardConfig
-  chatgame/games/     Die Spieltypen: Math, Unscramble, FastTyping, Trivia, FillBlanks, Custom
+  chatgame/games/     Die Spieltypen: Math, Unscramble, FastTyping, Trivia, FillBlanks, Reverse,
+                      Reaction, Custom
   config/             ConfigUpdater (ergänzt fehlende Optionen), ConfigMigrations (versionierte
                       Umbenennungen/Entfernungen), MigrationContext (Werkzeuge dafür)
+  hook/               PlaceholderAPI (StoneChatExpansion), nur geladen, wenn PlaceholderAPI läuft
   model/              Datenklassen (MessageDisplayType, Menü-Holder)
   util/               ColorUtil, PlaceholderUtil, LuckPermsUtil, VaultEconomyUtil,
                       TextNormalizer (Umgehungserkennung), DataFiles (absturzsicheres Speichern),
