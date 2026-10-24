@@ -38,7 +38,11 @@ public class SocialSpyManager {
     }
 
     public boolean isSpying(Player player) {
-        return spies.contains(player.getUniqueId());
+        return isSpying(player.getUniqueId());
+    }
+
+    public boolean isSpying(UUID uuid) {
+        return spies.contains(uuid);
     }
 
     /** @return true if social spy is on now */

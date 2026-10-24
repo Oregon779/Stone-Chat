@@ -23,9 +23,19 @@
     </properties>
 
     <repositories>
+        <!-- Listed first so every other artifact is looked up there before the two repositories below -->
+        <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2/</url>
+        </repository>
         <repository>
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
+        </repository>
+        <!-- PlaceholderAPI only -->
+        <repository>
+            <id>jitpack</id>
+            <url>https://jitpack.io</url>
         </repository>
     </repositories>
 
@@ -37,6 +47,20 @@
             <artifactId>paper-api</artifactId>
             <version>26.2.build.124-stable</version>
             <scope>provided</scope>
+        </dependency>
+
+        <!-- PlaceholderAPI is optional and provided by the server; only needed to compile StoneChatExpansion -->
+        <dependency>
+            <groupId>com.github.PlaceholderAPI</groupId>
+            <artifactId>PlaceholderAPI</artifactId>
+            <version>2.11.6</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Tests only: MockBukkit simulates a server with players, never shipped in the plugin jar -->

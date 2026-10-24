@@ -130,7 +130,11 @@ public class PingManager {
     }
 
     public boolean isIgnoringPings(Player player) {
-        return ignoringPings.contains(player.getUniqueId());
+        return isIgnoringPings(player.getUniqueId());
+    }
+
+    public boolean isIgnoringPings(UUID uuid) {
+        return ignoringPings.contains(uuid);
     }
 
     public boolean toggleIgnorePings(Player player) {

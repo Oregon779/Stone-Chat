@@ -12,6 +12,7 @@ import dev.stonechat.plugin.command.MessageCommand;
 import dev.stonechat.plugin.command.ReplyCommand;
 import dev.stonechat.plugin.command.SocialSpyCommand;
 import dev.stonechat.plugin.command.StoneChatCommand;
+import dev.stonechat.plugin.hook.PlaceholderApiHook;
 import dev.stonechat.plugin.listener.BroadcastChatInputListener;
 import dev.stonechat.plugin.listener.ChatColorGuiListener;
 import dev.stonechat.plugin.listener.EditorGuiListener;
@@ -83,6 +84,7 @@ public class StoneChat extends JavaPlugin {
     private ContentFilter contentFilter;
     private ItemShowcase itemShowcase;
     private SocialSpyManager socialSpyManager;
+    private Runnable unregisterPlaceholders;
     private AutoMessageManager autoMessageManager;
 
     @Override
@@ -138,6 +140,8 @@ public class StoneChat extends JavaPlugin {
         getLogger().info("Checking soft dependencies...");
         if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
             getLogger().info("PlaceholderAPI found - placeholders in chat format will be resolved.");
+            this.unregisterPlaceholders = PlaceholderApiHook.register(this);
+            getLogger().info("Registered the %stonechat_...% placeholders for other plugins.");
         } else {
             getLogger().info("PlaceholderAPI not found - only built-in placeholders will be available.");
         }
@@ -150,6 +154,10 @@ public class StoneChat extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (unregisterPlaceholders != null) {
+            unregisterPlaceholders.run();
+            unregisterPlaceholders = null;
+        }
         if (pingManager != null) {
             pingManager.clearCompletions();
         }

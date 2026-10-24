@@ -75,6 +75,12 @@ public class ChatColorGuiManager {
      * Whether a player may still chat in a color they picked earlier. A color that is gated behind a permission
      * stops applying once the player loses that permission; codes no longer offered in the menu are left alone.
      */
+    /** The color entry a stored chat color belongs to, or {@code null} if none in the config uses it. */
+    public ColorOption findOptionByColorCode(String colorCode) {
+        List<ColorOption> matching = colorCode == null ? null : options.byColorCode().get(colorCode);
+        return matching == null || matching.isEmpty() ? null : matching.get(0);
+    }
+
     public boolean mayUseColorCode(Player player, String colorCode) {
         List<ColorOption> matching = options.byColorCode().get(colorCode);
         if (matching == null) return true;
