@@ -31,6 +31,7 @@ import dev.stonechat.plugin.manager.ContentFilter;
 import dev.stonechat.plugin.manager.CooldownManager;
 import dev.stonechat.plugin.manager.GuiConfigManager;
 import dev.stonechat.plugin.manager.IgnoreManager;
+import dev.stonechat.plugin.manager.ItemShowcase;
 import dev.stonechat.plugin.manager.JoinDelayManager;
 import dev.stonechat.plugin.manager.LanguageManager;
 import dev.stonechat.plugin.manager.LinkFilterManager;
@@ -80,6 +81,7 @@ public class StoneChat extends JavaPlugin {
     private UpdateChecker updateChecker;
     private ChatLogManager chatLogManager;
     private ContentFilter contentFilter;
+    private ItemShowcase itemShowcase;
     private SocialSpyManager socialSpyManager;
     private AutoMessageManager autoMessageManager;
 
@@ -121,6 +123,7 @@ public class StoneChat extends JavaPlugin {
         this.updateChecker = new UpdateChecker(this);
         this.chatLogManager = new ChatLogManager(this);
         this.contentFilter = new ContentFilter(this);
+        this.itemShowcase = new ItemShowcase(this);
         this.socialSpyManager = new SocialSpyManager(this);
         this.autoMessageManager = new AutoMessageManager(this);
         this.autoMessageManager.start();
@@ -347,6 +350,10 @@ public class StoneChat extends JavaPlugin {
 
     public ContentFilter getContentFilter() {
         return contentFilter;
+    }
+
+    public ItemShowcase getItemShowcase() {
+        return itemShowcase;
     }
 
     public SocialSpyManager getSocialSpyManager() {

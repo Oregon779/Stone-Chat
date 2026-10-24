@@ -43,3 +43,13 @@ name-interactions:
   click-to-message: true
   # Hovering a player's name in chat shows their rank, playtime, deaths and kills.
   hover-stats: true
+
+# Writing [item] in a chat message shows the item in your main hand: everyone
+# sees its name and can hover it for the full tooltip. Renamed items whose name
+# or lore would be blocked by the word filter or link blocker are not shown.
+item-showcase:
+  enabled: true
+  # The text that gets replaced (upper/lower case doesn't matter).
+  placeholder: "[item]"
+  # Leave empty so every player can use it.
+  permission: ""

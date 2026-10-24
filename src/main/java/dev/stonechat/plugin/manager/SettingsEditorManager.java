@@ -290,6 +290,8 @@ public class SettingsEditorManager {
                 Field.text("date-format", "Date Format", Material.CLOCK),
                 Field.text("time-format", "Time Format", Material.CLOCK),
                 Field.toggle("use-placeholderapi", "Use PlaceholderAPI", Material.STRUCTURE_VOID),
+                Field.toggle("item-showcase.enabled", "Item Showcase ([item])", Material.DIAMOND_SWORD),
+                Field.text("item-showcase.placeholder", "Item Showcase Placeholder", Material.NAME_TAG),
                 Field.message("chat-format.hover-rank", "Message: Hover Rank", Material.WRITTEN_BOOK),
                 Field.message("chat-format.hover-playtime", "Message: Hover Playtime", Material.WRITTEN_BOOK),
                 Field.message("chat-format.hover-deaths", "Message: Hover Deaths", Material.WRITTEN_BOOK),

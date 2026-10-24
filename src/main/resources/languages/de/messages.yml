@@ -125,6 +125,10 @@ chat-format:
   hover-deaths: "&7Tode: &f%deaths%"
   hover-kills: "&7Kills: &f%kills%"
   hover-no-rank: "&7Spieler"
+  # Wird für [item] mit leerer Hand gezeigt.
+  item-empty-hand: "&7[leere Hand]"
+  # Steht hinter dem Item-Namen, wenn mehr als eins gehalten wird. %amount%
+  item-amount: "&7 x%amount%"
 
 private-message:
   sender-format: "&7[&dDu &7-> &d%player%&7] &f%message%"

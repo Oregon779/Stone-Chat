@@ -2,6 +2,7 @@ package dev.stonechat.plugin.util;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 import java.util.regex.Pattern;
@@ -24,10 +25,15 @@ public final class ColorUtil {
     }
 
     public static Component parse(String raw) {
+        return parse(raw, TagResolver.empty());
+    }
+
+    /** Like {@link #parse(String)}, with extra tags the plugin itself inserted (e.g. a shown item). */
+    public static Component parse(String raw, TagResolver resolver) {
         if (raw == null || raw.isEmpty()) {
             return Component.empty();
         }
-        return MINI_MESSAGE.deserialize(toMiniMessageString(raw));
+        return MINI_MESSAGE.deserialize(toMiniMessageString(raw), resolver);
     }
 
     public static Component parse(String raw, java.util.Map<String, String> placeholders) {

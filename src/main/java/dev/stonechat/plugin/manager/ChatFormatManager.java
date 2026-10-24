@@ -6,6 +6,7 @@ import dev.stonechat.plugin.util.ColorUtil;
 import dev.stonechat.plugin.util.LuckPermsUtil;
 import dev.stonechat.plugin.util.PlaceholderUtil;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Statistic;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -13,6 +14,7 @@ import org.bukkit.entity.Player;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.regex.Pattern;
 
 public class ChatFormatManager {
 
@@ -24,6 +26,9 @@ public class ChatFormatManager {
     private volatile boolean clickToMessage;
     private volatile boolean hoverStats;
     private volatile boolean usePlaceholderApi;
+    private volatile boolean itemShowcaseEnabled;
+    private volatile Pattern itemShowcasePattern;
+    private volatile String itemShowcasePermission;
     private File file;
 
     public ChatFormatManager(StoneChat plugin) {
@@ -40,6 +45,10 @@ public class ChatFormatManager {
         this.clickToMessage = config.getBoolean("name-interactions.click-to-message", true);
         this.hoverStats = config.getBoolean("name-interactions.hover-stats", true);
         this.usePlaceholderApi = config.getBoolean("use-placeholderapi", true);
+        this.itemShowcaseEnabled = config.getBoolean("item-showcase.enabled", true);
+        String placeholder = config.getString("item-showcase.placeholder", "[item]");
+        this.itemShowcasePattern = placeholder.isBlank() ? null : Pattern.compile(Pattern.quote(placeholder), Pattern.CASE_INSENSITIVE);
+        this.itemShowcasePermission = config.getString("item-showcase.permission", "");
     }
 
     public void reload() {
@@ -80,7 +89,25 @@ public class ChatFormatManager {
         return hoverStats;
     }
 
+    public boolean isItemShowcaseEnabled() {
+        return itemShowcaseEnabled;
+    }
+
+    /** {@code null} when no placeholder is set. */
+    public Pattern getItemShowcasePattern() {
+        return itemShowcasePattern;
+    }
+
+    public String getItemShowcasePermission() {
+        return itemShowcasePermission;
+    }
+
     public Component buildMessage(Player player, String processedMessage) {
+        return buildMessage(player, processedMessage, TagResolver.empty());
+    }
+
+    /** @param resolver tags the plugin put into the message itself, e.g. the item from [item] */
+    public Component buildMessage(Player player, String processedMessage, TagResolver resolver) {
         String format = getFormat();
 
         if (format.contains("%player_name%")) {
@@ -98,11 +125,15 @@ public class ChatFormatManager {
 
         String withMessage = withPlayerPlaceholders.replace("%message%", coloredMessage(player, processedMessage));
 
-        return ColorUtil.parse(withMessage);
+        return ColorUtil.parse(withMessage, resolver);
     }
 
     public Component buildMessageContent(Player player, String processedMessage) {
-        return ColorUtil.parse(coloredMessage(player, processedMessage));
+        return buildMessageContent(player, processedMessage, TagResolver.empty());
+    }
+
+    public Component buildMessageContent(Player player, String processedMessage, TagResolver resolver) {
+        return ColorUtil.parse(coloredMessage(player, processedMessage), resolver);
     }
 
     private String coloredMessage(Player player, String processedMessage) {

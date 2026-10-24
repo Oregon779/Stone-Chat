@@ -7,6 +7,7 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import dev.stonechat.plugin.StoneChat;
 import dev.stonechat.plugin.manager.ChatLogManager.Status;
 import dev.stonechat.plugin.manager.ContentFilter;
+import dev.stonechat.plugin.manager.ItemShowcase;
 import dev.stonechat.plugin.manager.LanguageManager;
 import dev.stonechat.plugin.util.ColorUtil;
 import org.bukkit.entity.Player;
@@ -82,13 +83,14 @@ public class PlayerChatListener implements Listener {
         }
         message = outcome.message();
 
-        String withPings = plugin.getPingManager().applyPings(player, message);
-        Component formattedLine = plugin.getChatFormatManager().buildMessage(player, withPings);
+        ItemShowcase.Prepared showcase = plugin.getItemShowcase().prepare(player, message);
+        String withPings = plugin.getPingManager().applyPings(player, showcase.message());
+        Component formattedLine = plugin.getChatFormatManager().buildMessage(player, withPings, showcase.resolver());
 
         // Render instead of cancel + broadcast: the message stays a real player chat message, so client
         // chat settings, player blocking and other chat listeners (e.g. Discord bridges) keep working.
         // viewerUnaware: Paper renders once and reuses it for every viewer instead of once per player.
-        event.message(plugin.getChatFormatManager().buildMessageContent(player, withPings));
+        event.message(plugin.getChatFormatManager().buildMessageContent(player, withPings, showcase.resolver()));
         event.renderer(ChatRenderer.viewerUnaware((source, sourceDisplayName, renderedMessage) -> formattedLine));
 
         return outcome.status();
