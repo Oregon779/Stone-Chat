@@ -5,6 +5,8 @@ import dev.stonechat.plugin.chatgame.games.CustomGame;
 import dev.stonechat.plugin.chatgame.games.FastTypingGame;
 import dev.stonechat.plugin.chatgame.games.FillBlanksGame;
 import dev.stonechat.plugin.chatgame.games.MathGame;
+import dev.stonechat.plugin.chatgame.games.ReactionGame;
+import dev.stonechat.plugin.chatgame.games.ReverseGame;
 import dev.stonechat.plugin.chatgame.games.TriviaGame;
 import dev.stonechat.plugin.chatgame.games.UnscrambleGame;
 import dev.stonechat.plugin.config.ConfigUpdater;
@@ -21,6 +23,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +41,8 @@ public class ChatGameManager {
 
     private final StoneChat plugin;
     private final Map<String, ChatGame> games = new LinkedHashMap<>();
+    // Per-game "win-message" overrides, keyed like games (lower-case id).
+    private final Map<String, String> winMessages = new HashMap<>();
     private final Random random = new Random();
     private final Object roundLock = new Object();
 
@@ -54,6 +59,7 @@ public class ChatGameManager {
     public static class ActiveRound {
         public final ChatGame game;
         public final GameRound round;
+        public final long startedAtMillis = System.currentTimeMillis();
         public BukkitTask timeoutTask;
         public BukkitTask hintTask;
 
@@ -68,6 +74,7 @@ public class ChatGameManager {
         this.config = ConfigUpdater.updateFile(plugin, file, "chatgames.yml", java.util.Set.of("custom-games"));
 
         games.clear();
+        winMessages.clear();
         loadSection("default-games");
         loadSection("custom-games");
     }
@@ -101,6 +108,10 @@ public class ChatGameManager {
         boolean hintEnabled = section.getBoolean("hint-enabled", true);
         String notificationOverride = section.getString("notification-type", "DEFAULT");
         RewardConfig reward = parseReward(section.getConfigurationSection("reward"));
+        String winMessage = section.getString("win-message", "");
+        if (!winMessage.isBlank()) {
+            winMessages.put(id.toLowerCase(), winMessage);
+        }
 
         return switch (type) {
             case MATH -> new MathGame(id, enabled, duration, permission, caseSensitive, minPlayers, hintEnabled,
@@ -121,6 +132,14 @@ public class ChatGameManager {
                     notificationOverride, reward,
                     parseQuestionEntries(section.getMapList("questions")).stream()
                             .map(e -> new TriviaGame.TriviaEntry(e.question(), e.answers())).toList());
+
+            case REVERSE -> new ReverseGame(id, enabled, duration, permission, caseSensitive, minPlayers,
+                    hintEnabled, notificationOverride, reward, section.getStringList("words"),
+                    section.getString("question-format", "Read it backwards: %word%"));
+
+            case REACTION -> new ReactionGame(id, enabled, duration, permission, minPlayers, notificationOverride, reward,
+                    section.getString("button", "<green><bold>[ CLICK ME ]</bold></green>"),
+                    section.getString("button-hover", "Click as fast as you can!"));
 
             case CUSTOM -> new CustomGame(id, enabled, duration, permission, caseSensitive, minPlayers, hintEnabled,
                     notificationOverride, reward,
@@ -208,6 +227,9 @@ public class ChatGameManager {
     }
 
     private MessageDisplayType resolveNotificationType(ChatGame game) {
+        if (game.requiresChat()) {
+            return MessageDisplayType.CHAT;
+        }
         String override = game.getNotificationTypeOverride();
         if (override == null || override.equalsIgnoreCase("DEFAULT")) {
             return getGlobalNotificationType();
@@ -339,7 +361,7 @@ public class ChatGameManager {
             }, game.getDurationSeconds() * 20L);
 
             boolean hintsGloballyEnabled = config.getBoolean("chat-games.hint.enabled", true);
-            if (hintsGloballyEnabled && game.isHintEnabled()) {
+            if (hintsGloballyEnabled && game.isHintEnabled() && game.supportsHints()) {
                 int afterSeconds = Math.max(1, config.getInt("chat-games.hint.after-seconds", 20));
                 if (afterSeconds < game.getDurationSeconds()) {
                     String firstAnswer = round.acceptedAnswers().isEmpty() ? "" : round.acceptedAnswers().get(0);
@@ -363,13 +385,17 @@ public class ChatGameManager {
     public boolean checkAnswer(Player player, String typedMessage) {
         RewardConfig reward;
         MessageDisplayType notificationType;
+        ChatGame game;
+        long tookMillis;
 
         synchronized (roundLock) {
             if (activeRound == null) return false;
             if (!activeRound.round.matches(typedMessage, activeRound.game.isCaseSensitive())) return false;
 
-            reward = activeRound.game.getReward();
-            notificationType = resolveNotificationType(activeRound.game);
+            game = activeRound.game;
+            reward = game.getReward();
+            notificationType = resolveNotificationType(game);
+            tookMillis = System.currentTimeMillis() - activeRound.startedAtMillis;
 
             if (activeRound.timeoutTask != null) activeRound.timeoutTask.cancel();
             if (activeRound.hintTask != null) activeRound.hintTask.cancel();
@@ -377,15 +403,28 @@ public class ChatGameManager {
             lastGameEndedAtMillis = System.currentTimeMillis();
         }
 
-        String winMessage = getMessage("win-message")
+        String winMessage = winMessages.getOrDefault(game.getId().toLowerCase(), getMessage("win-message"))
                 .replace("%player%", player.getName())
-                .replace("%answer%", ColorUtil.sanitizeUserInput(typedMessage.trim()));
+                .replace("%time%", String.format(java.util.Locale.ROOT, "%.1f", tookMillis / 1000.0))
+                .replace("%answer%", ColorUtil.sanitizeUserInput(game.shownAnswer(typedMessage.trim())));
         // Economy deposits, particles and console commands must not run on the async chat thread.
         runOnMainThread(() -> {
             broadcast(notificationType, winMessage);
             giveReward(player, reward);
         });
         return true;
+    }
+
+    /**
+     * A click on a reaction game's button ("/stonechat react &lt;code&gt;"). Tells the player when the round is
+     * already over, so a late click doesn't look like it was ignored.
+     */
+    public void react(Player player, String code) {
+        ActiveRound round = activeRound;
+        if (round != null && round.game instanceof ReactionGame && checkAnswer(player, code)) {
+            return;
+        }
+        player.sendMessage(ColorUtil.parse(getMessage("reaction-too-late")));
     }
 
     private void runOnMainThread(Runnable task) {

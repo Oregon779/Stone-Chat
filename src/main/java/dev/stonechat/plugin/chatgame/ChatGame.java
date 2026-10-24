@@ -11,7 +11,9 @@ import java.util.Random;
  * {@link dev.stonechat.plugin.chatgame.games.UnscrambleGame},
  * {@link dev.stonechat.plugin.chatgame.games.FastTypingGame},
  * {@link dev.stonechat.plugin.chatgame.games.TriviaGame},
- * {@link dev.stonechat.plugin.chatgame.games.FillBlanksGame} and
+ * {@link dev.stonechat.plugin.chatgame.games.FillBlanksGame},
+ * {@link dev.stonechat.plugin.chatgame.games.ReverseGame},
+ * {@link dev.stonechat.plugin.chatgame.games.ReactionGame} and
  * {@link dev.stonechat.plugin.chatgame.games.CustomGame}.
  * <p>
  * Instances are immutable - every "edit" in the settings editor produces a
@@ -49,7 +51,22 @@ public abstract class ChatGame {
     /** Builds the question and accepted answers for one round of this game. */
     public abstract GameRound generateRound(Random random);
 
-    /** @return true if this game type is one of the five built-ins that ship with the plugin (as opposed to admin-created CUSTOM games). */
+    /** Whether the "first letter and length" hint makes sense for this game. */
+    public boolean supportsHints() {
+        return true;
+    }
+
+    /** Whether rounds can only be shown in chat, e.g. because players have to click them. */
+    public boolean requiresChat() {
+        return false;
+    }
+
+    /** What %answer% shows in the win message. */
+    public String shownAnswer(String typedAnswer) {
+        return typedAnswer;
+    }
+
+    /** @return true if this game type is one of the built-ins that ship with the plugin (as opposed to admin-created CUSTOM games). */
     public boolean isDefaultGame() {
         return type != GameType.CUSTOM;
     }

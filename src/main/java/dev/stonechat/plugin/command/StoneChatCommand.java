@@ -33,9 +33,17 @@ public class StoneChatCommand implements CommandExecutor, TabCompleter {
             case "togglepings" -> handleTogglePings(sender);
             case "edit", "editor" -> handleEdit(sender);
             case "settings", "menu" -> handleSettings(sender);
+            case "react" -> handleReact(sender, args);
             default -> sender.sendMessage(plugin.getLanguageManager().getPrefixed("general.unknown-command"));
         }
         return true;
+    }
+
+    /** Run by clicking a reaction chat game's button; not listed in help or tab completion. */
+    private void handleReact(CommandSender sender, String[] args) {
+        if (sender instanceof Player player && args.length >= 2) {
+            plugin.getChatGameManager().react(player, args[1]);
+        }
     }
 
     private void handleSettings(CommandSender sender) {

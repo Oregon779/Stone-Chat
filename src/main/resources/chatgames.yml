@@ -2,7 +2,7 @@
 #                  Stone Chat - Chat Games (chatgames.yml)
 # =====================================================================
 # This file configures the entire Chat Games module: global behaviour,
-# rewards, the five built-in games, and any custom games you create
+# rewards, the built-in games, and any custom games you create
 # through /sc editor -> Chat Games -> Custom Games Management.
 #
 # Missing keys are added automatically when the plugin updates; your
@@ -56,7 +56,9 @@ chat-games:
     prefix: "<gray>[</gray><gradient:#f7971e:#ffd200><bold>Chat Game</bold></gradient><gray>]</gray> "
     # Shown when a round starts. Placeholder: %question%
     start-message: "&aA new chat game has started! &f%question%"
-    # Shown when a player answers correctly. Placeholders: %player%, %answer%
+    # Shown when a player answers correctly. Placeholders: %player%, %answer%,
+    # %time% (seconds since the round started). A game can use its own text
+    # instead by setting "win-message" in its section (see reaction below).
     win-message: "&a&l%player% &fwon the chat game! The answer was &e%answer%&f!"
     # Shown when nobody answers in time.
     timeout-message: "&cTime's up! Nobody answered the chat game in time."
@@ -64,6 +66,8 @@ chat-games:
     stop-message: "&cThe chat game was stopped by %player%."
     # Shown mid-round as a hint, if hints are enabled. Placeholders: %firstletter%, %length%
     hint-message: "&eHint: the answer starts with '&f%firstletter%&e' and is &f%length% &echaracters long."
+    # Sent only to a player who clicks a reaction button after the round ended.
+    reaction-too-late: "&7Too late - that round is already over."
 
   # The reward every game hands out unless it defines its own override
   # (see each game's "reward.override" key below).
@@ -86,10 +90,10 @@ chat-games:
       count: 20
 
 # ---------------------------------------------------------------------
-# The five built-in games. Each supports the same common keys (enabled,
+# The built-in games. Each supports the same common keys (enabled,
 # duration-seconds, permission, case-sensitive, min-players-online,
-# hint-enabled, notification-type, reward) plus its own type-specific
-# settings explained below.
+# hint-enabled, notification-type, reward, and an optional win-message)
+# plus its own type-specific settings explained below.
 # ---------------------------------------------------------------------
 default-games:
   math_solver:
@@ -233,6 +237,57 @@ default-games:
       - "enderman"
       - "villager"
       - "netherite"
+
+  reverse_word:
+    type: REVERSE
+    enabled: true
+    duration-seconds: 0
+    permission: ""
+    case-sensitive: false
+    min-players-online: 0
+    hint-enabled: true
+    notification-type: "DEFAULT"
+    reward:
+      override: false
+      console-commands: []
+      vault-money: 0
+      sound: { enabled: true, name: "ENTITY_PLAYER_LEVELUP", volume: 1.0, pitch: 1.2 }
+      particle: { enabled: false, name: "TOTEM_OF_UNDYING", count: 20 }
+    # The question shown each round. %word% is a random entry from the list
+    # below, written backwards (e.g. "dnomaid" -> diamond). Words that read
+    # the same both ways (like "level") are skipped.
+    question-format: "Read it backwards: %word%"
+    words:
+      - "diamond"
+      - "creeper"
+      - "skeleton"
+      - "beacon"
+      - "elytra"
+      - "trident"
+      - "lantern"
+      - "nether star"
+
+  reaction:
+    type: REACTION
+    enabled: true
+    # Reaction rounds are short: whoever clicks first wins.
+    duration-seconds: 15
+    permission: ""
+    min-players-online: 0
+    # Always shown in chat, the only place a button can be clicked.
+    notification-type: "CHAT"
+    reward:
+      override: false
+      console-commands: []
+      vault-money: 0
+      sound: { enabled: true, name: "ENTITY_PLAYER_LEVELUP", volume: 1.0, pitch: 1.2 }
+      particle: { enabled: false, name: "TOTEM_OF_UNDYING", count: 20 }
+    # The clickable button, shown in the start message in place of %question%.
+    button: "<green><bold>[ CLICK ME ]</bold></green>"
+    # Shown when hovering the button.
+    button-hover: "Click as fast as you can!"
+    # This game's own win text. %player% %time% (seconds until the click)
+    win-message: "&a&l%player% &fwas the fastest and clicked after &e%time%s&f!"
 
 # ---------------------------------------------------------------------
 # Custom games you create via the editor GUI (or by hand here) show up

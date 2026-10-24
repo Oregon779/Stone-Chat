@@ -517,7 +517,7 @@ public class SettingsEditorManager {
         holder.setHandler(12, (p, click) -> openChatGamesSettingsMenu(p));
 
         ItemStack defaultItem = buildItem(Material.DIAMOND_SWORD, "&b&lDefault Games Management",
-                List.of("&7Math Solver, Unscramble Word, Fast Typing,", "&7Trivia / Quiz, Fill in the Blanks.", "&7Click to open"));
+                List.of("&7Math Solver, Unscramble Word, Fast Typing,", "&7Trivia / Quiz, Fill in the Blanks,", "&7Reverse Word, Reaction.", "&7Click to open"));
         inv.setItem(14, defaultItem);
         holder.setHandler(14, (p, click) -> openDefaultGamesMenu(p));
 
@@ -569,12 +569,12 @@ public class SettingsEditorManager {
         return fields;
     }
 
-    /** Lists the five built-in games; click one to edit it. Default games can be disabled but never deleted. */
+    /** Lists the built-in games; click one to edit it. Default games can be disabled but never deleted. */
     private void openDefaultGamesMenu(Player player) {
         List<dev.stonechat.plugin.chatgame.ChatGame> games = plugin.getChatGameManager().getDefaultGames();
 
         EditorGuiHolder holder = new EditorGuiHolder();
-        Inventory inv = Bukkit.createInventory(holder, 27,
+        Inventory inv = Bukkit.createInventory(holder, 36,
                 ColorUtil.parse("<dark_gray>- <gradient:#55A8FE:#00C9FF><bold>" + SmallCaps.of("Default Games") + "</bold></gradient> <dark_gray>-"));
         holder.setInventory(inv);
 
@@ -585,8 +585,8 @@ public class SettingsEditorManager {
             holder.setHandler(slot, (p, click) -> openGameDetailMenu(p, game.getId()));
         });
 
-        addNavButton(inv, holder, 26, Material.ARROW, "&7« Back to Chat Games", () -> openChatGamesMenu(player));
-        fillEmptySlots(inv, 27, Material.LIGHT_BLUE_STAINED_GLASS_PANE);
+        addNavButton(inv, holder, 35, Material.ARROW, "&7« Back to Chat Games", () -> openChatGamesMenu(player));
+        fillEmptySlots(inv, 36, Material.LIGHT_BLUE_STAINED_GLASS_PANE);
         player.openInventory(inv);
     }
 
@@ -625,6 +625,8 @@ public class SettingsEditorManager {
             case FAST_TYPING -> Material.FEATHER;
             case TRIVIA -> Material.BOOK;
             case FILL_BLANKS -> Material.NAME_TAG;
+            case REVERSE -> Material.COMPASS;
+            case REACTION -> Material.STONE_BUTTON;
             case CUSTOM -> Material.WRITABLE_BOOK;
         };
         return buildItem(icon, (game.isEnabled() ? "&a" : "&7") + game.getId(),
@@ -715,6 +717,15 @@ public class SettingsEditorManager {
             case FILL_BLANKS -> {
                 fields.add(Field.number(base + ".blank-percentage", "Blank Percentage", Material.NAME_TAG, 10, 90, 5));
                 fields.add(Field.stringList(base + ".words", "Word List", Material.PAPER));
+            }
+            case REVERSE -> {
+                fields.add(Field.text(base + ".question-format", "Question (%word% = reversed word)", Material.NAME_TAG));
+                fields.add(Field.stringList(base + ".words", "Word List", Material.PAPER));
+            }
+            case REACTION -> {
+                fields.add(Field.text(base + ".button", "Button Text", Material.STONE_BUTTON));
+                fields.add(Field.text(base + ".button-hover", "Button Hover Text", Material.OAK_SIGN));
+                fields.add(Field.text(base + ".win-message", "Win Message (%player% %time%)", Material.WRITTEN_BOOK));
             }
             case TRIVIA, CUSTOM -> {
                 int questionCount = game.getType() == dev.stonechat.plugin.chatgame.GameType.TRIVIA
