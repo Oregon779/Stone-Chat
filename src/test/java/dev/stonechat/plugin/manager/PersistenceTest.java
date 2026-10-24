@@ -80,4 +80,35 @@ class PersistenceTest extends PluginTestBase {
         assertEquals("&c", reloaded.getColorCode(keep));
         assertNull(reloaded.getColorCode(clear));
     }
+
+    @Test
+    void chatMuteSurvivesARestart() {
+        plugin.getMuteManager().setMuted(true);
+        stopPlugin();
+
+        assertTrue(new MuteManager(plugin).isMuted());
+    }
+
+    @Test
+    void unmutingIsSavedToo() {
+        plugin.getMuteManager().setMuted(true);
+        plugin.getMuteManager().toggle();
+        stopPlugin();
+
+        assertFalse(new MuteManager(plugin).isMuted());
+    }
+
+    @Test
+    void turnedOffPingsSurviveARestart() {
+        var steve = server.addPlayer("Steve");
+        var alex = server.addPlayer("Alex");
+        assertTrue(plugin.getPingManager().toggleIgnorePings(steve));
+        assertTrue(plugin.getPingManager().toggleIgnorePings(alex));
+        assertFalse(plugin.getPingManager().toggleIgnorePings(alex), "Alex turned them back on");
+        stopPlugin();
+
+        PingManager reloaded = new PingManager(plugin);
+        assertTrue(reloaded.isIgnoringPings(steve));
+        assertFalse(reloaded.isIgnoringPings(alex));
+    }
 }

@@ -89,7 +89,7 @@ public class StoneChat extends JavaPlugin {
 
         getLogger().info("Initializing managers...");
         this.wordFilterManager = new WordFilterManager(this);
-        this.muteManager = new MuteManager();
+        this.muteManager = new MuteManager(this);
         this.linkFilterManager = new LinkFilterManager(this);
         this.notificationManager = new NotificationManager(this);
         this.soundManager = new SoundManager(this);

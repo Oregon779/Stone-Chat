@@ -1,9 +1,12 @@
 package dev.stonechat.plugin.manager;
 
 import dev.stonechat.plugin.StoneChat;
+import dev.stonechat.plugin.util.DataFiles;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
+import java.io.File;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,11 +17,32 @@ public class PingManager {
 
     private final StoneChat plugin;
     private final Set<UUID> ignoringPings = ConcurrentHashMap.newKeySet();
+    private final File file;
     private volatile Pattern triggerPattern;
 
     public PingManager(StoneChat plugin) {
         this.plugin = plugin;
+        this.file = new File(plugin.getDataFolder(), "pingsettings.yml");
+        loadToggles();
         reload();
+    }
+
+    /** Who turned ping notifications off is kept in pingsettings.yml, so the choice survives restarts. */
+    private void loadToggles() {
+        for (String entry : DataFiles.loadYaml(plugin.getLogger(), file).getStringList("pings-off")) {
+            try {
+                ignoringPings.add(UUID.fromString(entry));
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+    }
+
+    private void saveToggles() {
+        plugin.getDataFiles().writeLater(file.toPath(), () -> {
+            YamlConfiguration data = new YamlConfiguration();
+            data.set("pings-off", ignoringPings.stream().map(UUID::toString).sorted().toList());
+            return data.saveToString();
+        });
     }
 
     public void reload() {
@@ -31,13 +55,12 @@ public class PingManager {
     }
 
     public boolean toggleIgnorePings(Player player) {
-        if (ignoringPings.contains(player.getUniqueId())) {
-            ignoringPings.remove(player.getUniqueId());
-            return false;
-        } else {
+        boolean nowIgnoring = !ignoringPings.remove(player.getUniqueId());
+        if (nowIgnoring) {
             ignoringPings.add(player.getUniqueId());
-            return true;
         }
+        saveToggles();
+        return nowIgnoring;
     }
 
     public String applyPings(Player sender, String message) {
