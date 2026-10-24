@@ -209,11 +209,19 @@ update:
   versions-behind-unknown: "einer unbekannten Anzahl an Versionen"
   check-triggered: "&e⟳ &7Prüfe Modrinth jetzt auf Updates... schau in die Konsole für das Ergebnis."
 
+preview:
+  header: "&6Vorschau &7(nur du siehst das):"
+  sample-message: "Hallo! So sieht der Chat aus."
+  try-other: "&7Anderes Format ausprobieren, ohne es zu speichern: <click:suggest_command:'/stonechat preview format '><hover:show_text:'&7Klicken, um den Befehl einzufügen'>&e/stonechat preview format <format></hover></click>"
+  not-saved: "&7Dieses Format ist &enicht gespeichert&7. Trag es in die chatformat.yml ein oder setz es unter /sc editor -> Chat Format."
+  usage: "&cVerwendung: /stonechat preview format <format>"
+
 help:
   header: "&6&l===== Stone Chat Hilfe ====="
   reload: "&e/stonechat reload &7- Config und Nachrichten neu laden"
   checkupdate: "&e/stonechat checkupdate &7- Modrinth sofort auf ein neues Update prüfen"
   edit: "&e/sc editor &7- Öffnet den Einstellungs-Editor im Spiel"
+  preview: "&e/stonechat preview [text|format <format>] &7- Zeigt, wie der Chat aussieht, nur für dich"
   settings: "&e/stonechat settings &7oder &e/chat &7- Öffnet dein persönliches Einstellungsmenü (Pings, Chat-Farbe, ignorierte Spieler)"
   help: "&e/stonechat help &7- Diese Hilfe anzeigen"
   chatmute: "&e/chatmute &7- Chat stummschalten oder freischalten"

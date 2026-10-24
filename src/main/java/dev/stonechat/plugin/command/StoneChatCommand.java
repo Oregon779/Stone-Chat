@@ -34,9 +34,34 @@ public class StoneChatCommand implements CommandExecutor, TabCompleter {
             case "edit", "editor" -> handleEdit(sender);
             case "settings", "menu" -> handleSettings(sender);
             case "react" -> handleReact(sender, args);
+            case "preview" -> handlePreview(sender, args);
             default -> sender.sendMessage(plugin.getLanguageManager().getPrefixed("general.unknown-command"));
         }
         return true;
+    }
+
+    /** /stonechat preview [text] or /stonechat preview format &lt;format&gt; - only the admin sees the result. */
+    private void handlePreview(CommandSender sender, String[] args) {
+        var lm = plugin.getLanguageManager();
+        if (!sender.hasPermission("stonechat.admin")) {
+            sender.sendMessage(lm.getPrefixed("general.no-permission"));
+            return;
+        }
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(lm.getPrefixed("general.player-only"));
+            return;
+        }
+        if (args.length >= 2 && args[1].equalsIgnoreCase("format")) {
+            if (args.length == 2) {
+                player.sendMessage(lm.getPrefixed("preview.usage"));
+                return;
+            }
+            String format = String.join(" ", java.util.Arrays.copyOfRange(args, 2, args.length));
+            plugin.getChatFormatManager().sendPreview(player, format, null);
+            return;
+        }
+        String text = String.join(" ", java.util.Arrays.copyOfRange(args, 1, args.length));
+        plugin.getChatFormatManager().sendPreview(player, null, text);
     }
 
     /** Run by clicking a reaction chat game's button; not listed in help or tab completion. */
@@ -102,6 +127,7 @@ public class StoneChatCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage(lm.get("help.reload"));
             sender.sendMessage(lm.get("help.checkupdate"));
             sender.sendMessage(lm.get("help.edit"));
+            sender.sendMessage(lm.get("help.preview"));
             sender.sendMessage(lm.get("help.settings"));
             sender.sendMessage(lm.get("help.help"));
             sender.sendMessage(lm.get("help.togglepings"));
@@ -150,6 +176,7 @@ public class StoneChatCommand implements CommandExecutor, TabCompleter {
                 options.add("reload");
                 options.add("checkupdate");
                 options.add("editor");
+                options.add("preview");
             }
             return options.stream()
                     .filter(o -> o.startsWith(args[0].toLowerCase()))

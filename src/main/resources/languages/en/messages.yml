@@ -209,11 +209,19 @@ update:
   versions-behind-unknown: "an unknown number of versions"
   check-triggered: "&e⟳ &7Checking Modrinth for updates now... watch the console for the result."
 
+preview:
+  header: "&6Preview &7(only you see this):"
+  sample-message: "Hello! This is how chat looks."
+  try-other: "&7Try another format without saving it: <click:suggest_command:'/stonechat preview format '><hover:show_text:'&7Click to fill in the command'>&e/stonechat preview format <format></hover></click>"
+  not-saved: "&7This format is &enot saved&7. Put it into chatformat.yml or set it in /sc editor -> Chat Format."
+  usage: "&cUsage: /stonechat preview format <format>"
+
 help:
   header: "&6&l===== Stone Chat Help ====="
   reload: "&e/stonechat reload &7- Reload config and messages"
   checkupdate: "&e/stonechat checkupdate &7- Check Modrinth for a new version right now"
   edit: "&e/sc editor &7- Open the in-game settings editor"
+  preview: "&e/stonechat preview [text|format <format>] &7- See how chat looks, only you see it"
   settings: "&e/stonechat settings &7or &e/chat &7- Open your personal settings menu (pings, chat color, ignored players)"
   help: "&e/stonechat help &7- Show this help menu"
   chatmute: "&e/chatmute &7- Mute or unmute the chat"

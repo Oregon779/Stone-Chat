@@ -108,8 +108,25 @@ public class ChatFormatManager {
 
     /** @param resolver tags the plugin put into the message itself, e.g. the item from [item] */
     public Component buildMessage(Player player, String processedMessage, TagResolver resolver) {
-        String format = getFormat();
+        return buildLine(getFormat(), player, processedMessage, resolver);
+    }
 
+    /**
+     * Shows {@code viewer} a chat line exactly as others would see it, without sending it to anyone else and
+     * without pinging anybody. {@code formatOverride} previews a format that is not saved yet.
+     */
+    public void sendPreview(Player viewer, String formatOverride, String text) {
+        LanguageManager lm = plugin.getLanguageManager();
+        String raw = text == null || text.isBlank() ? lm.getRaw("preview.sample-message") : text;
+        ItemShowcase.Prepared showcase = plugin.getItemShowcase().prepare(viewer, ColorUtil.sanitizeUserInput(raw));
+
+        viewer.sendMessage(lm.getPrefixed("preview.header"));
+        viewer.sendMessage(buildLine(formatOverride != null ? formatOverride : getFormat(), viewer,
+                showcase.message(), showcase.resolver()));
+        viewer.sendMessage(lm.getPrefixed(formatOverride != null ? "preview.not-saved" : "preview.try-other"));
+    }
+
+    private Component buildLine(String format, Player player, String processedMessage, TagResolver resolver) {
         if (format.contains("%player_name%")) {
             format = format.replace("%player_name%", buildPlayerNameSnippet(player));
         }

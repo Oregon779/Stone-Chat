@@ -285,6 +285,12 @@ public class SettingsEditorManager {
 
     private void openChatFormatMenu(Player player) {
         renderMenu(player, menuTitle("Chat Format"), chatFormatConfig(), () -> openChatFormatMenu(player), List.of(
+                Field.text("format", "Chat Format Line", Material.WRITABLE_BOOK),
+                Field.action("Preview in Chat", "&7Shows you a chat line in the current format. Only you see it.",
+                        Material.SPYGLASS, () -> {
+                            player.closeInventory();
+                            plugin.getChatFormatManager().sendPreview(player, null, null);
+                        }),
                 Field.toggle("name-interactions.click-to-message", "Click to Message", Material.PAPER),
                 Field.toggle("name-interactions.hover-stats", "Hover Stats", Material.BOOK),
                 Field.text("date-format", "Date Format", Material.CLOCK),
