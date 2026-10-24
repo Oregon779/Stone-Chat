@@ -113,6 +113,9 @@ ping:
   enabled: true
   # Character that triggers a ping, e.g. @PlayerName
   trigger-symbol: "@"
+  # Typing the trigger symbol plus the start of a name (e.g. @St) and pressing
+  # Tab completes it to an online player (@Steve). Immune players are left out.
+  tab-complete: true
   # Full template for how the mentioned name looks in chat. %player% is replaced with
   # the trigger symbol + player name (e.g. "@Steve"). Supports &-codes, hex and
   # MiniMessage tags (e.g. wrap it in a gradient, add brackets/arrows around it, etc.)

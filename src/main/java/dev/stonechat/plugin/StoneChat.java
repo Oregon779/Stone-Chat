@@ -140,6 +140,9 @@ public class StoneChat extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (pingManager != null) {
+            pingManager.clearCompletions();
+        }
         if (chatGameManager != null) {
             chatGameManager.stopAutoScheduler();
         }

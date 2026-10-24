@@ -51,6 +51,7 @@ public class ConfigManager {
 
     private volatile boolean pingEnabled;
     private volatile String pingTriggerSymbol;
+    private volatile boolean pingTabComplete;
     private volatile String pingHighlightTemplate;
     private volatile boolean allowSelfPing;
     private volatile String pingImmunePermission;
@@ -149,6 +150,7 @@ public class ConfigManager {
 
         pingEnabled = config.getBoolean("ping.enabled", true);
         pingTriggerSymbol = config.getString("ping.trigger-symbol", "@");
+        pingTabComplete = config.getBoolean("ping.tab-complete", true);
         pingHighlightTemplate = config.getString("ping.highlight-template", "<yellow><bold>%player%</bold></yellow>");
         allowSelfPing = config.getBoolean("ping.allow-self-ping", false);
         pingImmunePermission = config.getString("ping.immune-permission", "stonechat.ping.immune");
@@ -315,6 +317,10 @@ public class ConfigManager {
 
     public String getPingTriggerSymbol() {
         return pingTriggerSymbol;
+    }
+
+    public boolean isPingTabComplete() {
+        return pingTabComplete;
     }
 
     public String getPingHighlightTemplate() {

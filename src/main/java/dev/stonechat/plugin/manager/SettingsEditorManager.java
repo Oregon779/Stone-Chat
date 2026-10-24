@@ -228,6 +228,7 @@ public class SettingsEditorManager {
         renderMenu(player, menuTitle("Ping"), mainConfig(), () -> openPingMenu(player), List.of(
                 Field.toggle("ping.enabled", "Enabled", Material.LIME_DYE),
                 Field.text("ping.trigger-symbol", "Trigger Symbol", Material.NAME_TAG),
+                Field.toggle("ping.tab-complete", "Tab-Complete @Names", Material.WRITABLE_BOOK),
                 Field.toggle("ping.allow-self-ping", "Allow Self-Ping", Material.PLAYER_HEAD),
                 Field.toggle("ping.ignorable", "Ignorable", Material.BARRIER),
                 Field.cycle("ping.notification-type", "Notification Type", Material.OAK_SIGN, notificationOptions()),
