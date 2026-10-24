@@ -5,10 +5,9 @@ import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import dev.stonechat.plugin.StoneChat;
-import dev.stonechat.plugin.manager.CapsManager;
 import dev.stonechat.plugin.manager.ChatLogManager.Status;
+import dev.stonechat.plugin.manager.ContentFilter;
 import dev.stonechat.plugin.manager.LanguageManager;
-import dev.stonechat.plugin.manager.WordFilterManager;
 import dev.stonechat.plugin.util.ColorUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -76,43 +75,12 @@ public class PlayerChatListener implements Listener {
             return Status.CHAT_GAME;
         }
 
-        CapsManager.CapsCheck capsCheck = plugin.getCapsManager().check(player, message);
-        if (capsCheck.result == CapsManager.Result.BLOCKED) {
+        ContentFilter.Outcome outcome = plugin.getContentFilter().check(player, message, true, true, true);
+        if (outcome.blocked()) {
             event.setCancelled(true);
-            plugin.getNotificationManager().dispatch(player, plugin.getConfigManager().getAntiCapsNotificationType(),
-                    "anti-caps.blocked", Map.of());
-            plugin.getSoundManager().play(player, "anti-caps.sound");
-            plugin.getPunishmentManager().execute(player, "anti-caps.punish-command");
-            return Status.BLOCKED_CAPS;
+            return outcome.status();
         }
-        message = capsCheck.correctedMessage;
-
-        boolean censored = false;
-        WordFilterManager.FilterResult filterResult = plugin.getWordFilterManager().check(message);
-        if (filterResult.triggered) {
-            plugin.getSoundManager().play(player, "word-filter.sound");
-            plugin.getPunishmentManager().execute(player, "word-filter.punish-command");
-            if (!plugin.getConfigManager().isWordFilterCensorMode()) {
-                event.setCancelled(true);
-                plugin.getNotificationManager().dispatch(player, plugin.getConfigManager().getWordFilterNotificationType(),
-                        "word-filter.blocked", Map.of());
-                plugin.getWordFilterManager().notifyAdmins(player, message, filterResult.viaEvasionDetection);
-                return Status.BLOCKED_WORD_FILTER;
-            }
-            plugin.getWordFilterManager().notifyAdmins(player, message, filterResult.viaEvasionDetection);
-            message = filterResult.filteredMessage;
-            censored = true;
-        }
-
-        if (!player.hasPermission(plugin.getConfigManager().getLinkBypassPermission())
-                && plugin.getLinkFilterManager().containsLink(message)) {
-            event.setCancelled(true);
-            plugin.getNotificationManager().dispatch(player, plugin.getConfigManager().getLinkBlockerNotificationType(),
-                    "link-blocker.blocked", Map.of());
-            plugin.getSoundManager().play(player, "link-blocker.sound");
-            plugin.getPunishmentManager().execute(player, "link-blocker.punish-command");
-            return Status.BLOCKED_LINK;
-        }
+        message = outcome.message();
 
         String withPings = plugin.getPingManager().applyPings(player, message);
         Component formattedLine = plugin.getChatFormatManager().buildMessage(player, withPings);
@@ -123,6 +91,6 @@ public class PlayerChatListener implements Listener {
         event.message(plugin.getChatFormatManager().buildMessageContent(player, withPings));
         event.renderer(ChatRenderer.viewerUnaware((source, sourceDisplayName, renderedMessage) -> formattedLine));
 
-        return censored ? Status.CENSORED : Status.SENT;
+        return outcome.status();
     }
 }

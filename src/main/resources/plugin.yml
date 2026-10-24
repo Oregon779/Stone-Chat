@@ -47,9 +47,14 @@ commands:
     description: Player hub for chat features - settings, color, ignore, private messages.
     usage: /chat <settings|color|ignore|msg|r> [args]
   chatlog:
-    description: Shows what a player wrote in public chat and when.
+    description: Shows what a player wrote in chat and in private messages, and when.
     usage: /chatlog <player> [page]
     permission: stonechat.chatlog
+  socialspy:
+    description: Turns on/off seeing a copy of every private message.
+    usage: /socialspy
+    aliases: [spy]
+    permission: stonechat.socialspy
 
 permissions:
   stonechat.admin:
@@ -105,4 +110,7 @@ permissions:
     default: op
   stonechat.chatlog:
     description: Allows viewing any player's chat history with /chatlog.
+    default: op
+  stonechat.socialspy:
+    description: Allows /socialspy to see a copy of every private message.
     default: op

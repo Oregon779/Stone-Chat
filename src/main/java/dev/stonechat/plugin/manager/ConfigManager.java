@@ -95,6 +95,10 @@ public class ConfigManager {
     private volatile int updateCheckerIntervalMinutes;
 
     private volatile boolean privateMessagesEnabled;
+    private volatile boolean privateMessagesWordFilter;
+    private volatile boolean privateMessagesLinkBlocker;
+    private volatile boolean privateMessagesAntiCaps;
+    private volatile boolean socialSpyEnabled;
 
     private volatile int chatClearLines;
     private volatile MessageDisplayType chatClearNotificationType;
@@ -104,6 +108,7 @@ public class ConfigManager {
 
     private volatile boolean chatLogEnabled;
     private volatile boolean chatLogBlockedMessages;
+    private volatile boolean chatLogPrivateMessages;
     private volatile int chatLogRetentionDays;
     private volatile int chatLogMaxEntries;
     private volatile int chatLogEntriesPerPage;
@@ -194,6 +199,10 @@ public class ConfigManager {
         updateCheckerIntervalMinutes = config.getInt("update-checker.check-interval-minutes", 60);
 
         privateMessagesEnabled = config.getBoolean("private-messages.enabled", true);
+        privateMessagesWordFilter = config.getBoolean("private-messages.filter.word-filter", true);
+        privateMessagesLinkBlocker = config.getBoolean("private-messages.filter.link-blocker", true);
+        privateMessagesAntiCaps = config.getBoolean("private-messages.filter.anti-caps", true);
+        socialSpyEnabled = config.getBoolean("private-messages.social-spy", true);
 
         chatClearLines = Math.clamp(config.getInt("chat-clear.lines", 100), 1, 100);
         chatClearNotificationType = readNotificationType("chat-clear.notification-type");
@@ -203,6 +212,7 @@ public class ConfigManager {
 
         chatLogEnabled = config.getBoolean("chat-log.enabled", true);
         chatLogBlockedMessages = config.getBoolean("chat-log.log-blocked-messages", true);
+        chatLogPrivateMessages = config.getBoolean("chat-log.log-private-messages", true);
         chatLogRetentionDays = config.getInt("chat-log.retention-days", 30);
         chatLogMaxEntries = config.getInt("chat-log.max-entries-per-player", 1000);
         chatLogEntriesPerPage = Math.max(1, config.getInt("chat-log.entries-per-page", 10));
@@ -484,6 +494,22 @@ public class ConfigManager {
         return privateMessagesEnabled;
     }
 
+    public boolean isPrivateMessagesWordFilter() {
+        return privateMessagesWordFilter;
+    }
+
+    public boolean isPrivateMessagesLinkBlocker() {
+        return privateMessagesLinkBlocker;
+    }
+
+    public boolean isPrivateMessagesAntiCaps() {
+        return privateMessagesAntiCaps;
+    }
+
+    public boolean isSocialSpyEnabled() {
+        return socialSpyEnabled;
+    }
+
     public int getChatClearLines() {
         return chatClearLines;
     }
@@ -502,6 +528,10 @@ public class ConfigManager {
 
     public boolean isChatLogBlockedMessages() {
         return chatLogBlockedMessages;
+    }
+
+    public boolean isChatLogPrivateMessages() {
+        return chatLogPrivateMessages;
     }
 
     public int getChatLogRetentionDays() {

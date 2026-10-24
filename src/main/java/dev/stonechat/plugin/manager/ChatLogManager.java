@@ -24,9 +24,11 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 
 /**
- * Stores every public chat message per player in chatlogs/&lt;uuid&gt;.log, one
- * tab-separated line per message. All file access runs on a single background
- * thread, so chat never waits on disk and reads always see completed writes.
+ * Stores every chat message and private message per player in chatlogs/&lt;uuid&gt;.log,
+ * one tab-separated line per message: time, status, player, receiver (empty for public
+ * chat), message. Lines written before receivers were logged have no receiver column.
+ * All file access runs on a single background thread, so chat never waits on disk and
+ * reads always see completed writes.
  */
 public class ChatLogManager {
 
@@ -53,9 +55,18 @@ public class ChatLogManager {
         public String messageKey() {
             return messageKey;
         }
+
+        public boolean isBlocked() {
+            return blocked;
+        }
     }
 
-    public record Entry(long timestamp, Status status, String playerName, String message) {
+    /** {@code receiver} is the receiver of a private message, empty for public chat. */
+    public record Entry(long timestamp, Status status, String playerName, String message, String receiver) {
+
+        public boolean isPrivate() {
+            return !receiver.isEmpty();
+        }
     }
 
     public record Page(List<Entry> entries, int page, int totalPages, int totalEntries) {
@@ -80,14 +91,28 @@ public class ChatLogManager {
     }
 
     public void record(Player player, String message, Status status) {
+        write(player, "", message, status);
+    }
+
+    /** A private message, stored in the sender's log together with its receiver. */
+    public void recordPrivate(Player sender, String receiver, String message, Status status) {
+        if (!plugin.getConfigManager().isChatLogPrivateMessages()) return;
+        write(sender, receiver, message, status);
+    }
+
+    private void write(Player player, String receiver, String message, Status status) {
         ConfigManager config = plugin.getConfigManager();
         if (!config.isChatLogEnabled()) return;
         if (status.blocked && !config.isChatLogBlockedMessages()) return;
 
         UUID uuid = player.getUniqueId();
         String line = System.currentTimeMillis() + "\t" + status.name() + "\t" + player.getName() + "\t"
-                + message.replace('\t', ' ').replace('\n', ' ').replace('\r', ' ');
+                + receiver + "\t" + oneLine(message);
         submit(() -> append(uuid, line));
+    }
+
+    private static String oneLine(String text) {
+        return text.replace('\t', ' ').replace('\n', ' ').replace('\r', ' ');
     }
 
     /** Page 1 holds the newest entries; entries within a page are oldest-first, like chat. */
@@ -230,10 +255,15 @@ public class ChatLogManager {
     }
 
     private Entry parse(String line) {
-        String[] parts = line.split("\t", 4);
+        // Messages never contain tabs, so 5 parts is the current format and 4 the one without a receiver.
+        String[] parts = line.split("\t", 5);
         if (parts.length < 4) return null;
         try {
-            return new Entry(Long.parseLong(parts[0]), Status.valueOf(parts[1]), parts[2], parts[3]);
+            long timestamp = Long.parseLong(parts[0]);
+            Status status = Status.valueOf(parts[1]);
+            return parts.length == 5
+                    ? new Entry(timestamp, status, parts[2], parts[4], parts[3])
+                    : new Entry(timestamp, status, parts[2], parts[3], "");
         } catch (IllegalArgumentException e) {
             return null;
         }

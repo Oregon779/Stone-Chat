@@ -124,4 +124,19 @@ class ChatLogTest extends PluginTestBase {
         assertTrue(hasClickCommand(lines.get(11), "/chatlog Bob 2"));
         assertFalse(hasClickCommand(lines.get(11), "/chatlog Bob 0"));
     }
+
+    @Test
+    void linesWrittenBeforeReceiversWereLoggedAreStillRead() throws Exception {
+        PlayerMock bob = server.addPlayer("Bob");
+        Path file = plugin.getDataFolder().toPath().resolve("chatlogs").resolve(bob.getUniqueId() + ".log");
+        Files.createDirectories(file.getParent());
+        Files.writeString(file, System.currentTimeMillis() + "\tSENT\tBob\tfrom an older version\n");
+        plugin.getChatLogManager().record(bob, "new line", ChatLogManager.Status.SENT);
+
+        List<ChatLogManager.Entry> entries = page(plugin.getChatLogManager(), bob.getUniqueId(), 1, 10).entries();
+
+        assertEquals(List.of("from an older version", "new line"), entries.stream().map(ChatLogManager.Entry::message).toList());
+        assertFalse(entries.get(0).isPrivate());
+        assertFalse(entries.get(1).isPrivate());
+    }
 }

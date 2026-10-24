@@ -90,6 +90,9 @@ public class ChatLogCommand implements CommandExecutor, TabCompleter {
         for (ChatLogManager.Entry entry : page.entries()) {
             String time = formatter.format(Instant.ofEpochMilli(entry.timestamp()).atZone(ZoneId.systemDefault()));
             String status = lm.getRaw("chat-log.status." + entry.status().messageKey());
+            if (entry.isPrivate()) {
+                status = lm.getRaw("chat-log.private", LanguageManager.placeholders("%receiver%", entry.receiver())) + status;
+            }
             String template = ColorUtil.toMiniMessageString(lm.getRaw("chat-log.entry",
                             LanguageManager.placeholders("%time%", time, "%status%", status)))
                     .replace("%message%", "<chatlog_message>");

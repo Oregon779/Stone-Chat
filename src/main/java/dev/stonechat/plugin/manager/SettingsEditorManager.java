@@ -385,6 +385,10 @@ public class SettingsEditorManager {
     private void openPrivateMessagesMenu(Player player) {
         renderMenu(player, menuTitle("Private Messages"), mainConfig(), () -> openPrivateMessagesMenu(player), List.of(
                 Field.toggle("private-messages.enabled", "Enabled", Material.LIME_DYE),
+                Field.toggle("private-messages.filter.word-filter", "Word Filter for /msg", Material.BOOK),
+                Field.toggle("private-messages.filter.link-blocker", "Link Blocker for /msg", Material.IRON_CHAIN),
+                Field.toggle("private-messages.filter.anti-caps", "Anti-Caps for /msg", Material.WRITABLE_BOOK),
+                Field.toggle("private-messages.social-spy", "Social Spy (/socialspy)", Material.SPYGLASS),
                 Field.toggle("private-messages.sound.enabled", "Sound Enabled", Material.NOTE_BLOCK),
                 Field.text("private-messages.sound.sound-name", "Sound Name", Material.JUKEBOX),
                 Field.message("private-message.sender-format", "Message: Sender Format", Material.WRITTEN_BOOK),
@@ -430,6 +434,7 @@ public class SettingsEditorManager {
         renderMenu(player, menuTitle("Chat Log"), mainConfig(), () -> openChatLogMenu(player), List.of(
                 Field.toggle("chat-log.enabled", "Enabled", Material.LIME_DYE, true),
                 Field.toggle("chat-log.log-blocked-messages", "Log Blocked Messages", Material.BARRIER, true),
+                Field.toggle("chat-log.log-private-messages", "Log Private Messages", Material.OAK_SIGN, true),
                 Field.number("chat-log.retention-days", "Keep Entries (days, 0 = forever)", Material.CLOCK, 0, 3650, 1),
                 Field.number("chat-log.max-entries-per-player", "Max Entries Per Player", Material.CHEST, 10, 100000, 100),
                 Field.number("chat-log.entries-per-page", "Entries Per Page", Material.PAPER, 1, 50, 1),

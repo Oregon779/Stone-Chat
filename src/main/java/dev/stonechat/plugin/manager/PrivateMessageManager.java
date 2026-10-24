@@ -36,7 +36,15 @@ public class PrivateMessageManager {
             return false;
         }
 
-        String message = ColorUtil.sanitizeUserInput(rawMessage);
+        // Same content checks as public chat (each one can be switched off for /msg), logged in the sender's log.
+        ConfigManager config = plugin.getConfigManager();
+        ContentFilter.Outcome outcome = plugin.getContentFilter().check(sender, ColorUtil.sanitizeUserInput(rawMessage),
+                config.isPrivateMessagesAntiCaps(), config.isPrivateMessagesWordFilter(), config.isPrivateMessagesLinkBlocker());
+        plugin.getChatLogManager().recordPrivate(sender, target.getName(), rawMessage, outcome.status());
+        if (outcome.blocked()) {
+            return false;
+        }
+        String message = outcome.message();
 
         var senderPlaceholders = LanguageManager.placeholders("%player%", target.getName(), "%message%", message);
         var targetPlaceholders = LanguageManager.placeholders("%player%", sender.getName(), "%message%", message);
@@ -51,6 +59,7 @@ public class PrivateMessageManager {
 
         lastMessagedBy.put(target.getUniqueId(), sender.getUniqueId());
         lastMessagedBy.put(sender.getUniqueId(), target.getUniqueId());
+        plugin.getSocialSpyManager().relay(sender, target, message);
         return true;
     }
 

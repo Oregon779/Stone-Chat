@@ -1,14 +1,16 @@
 package dev.stonechat.plugin;
 
+import dev.stonechat.plugin.chatgame.ChatGameManager;
 import dev.stonechat.plugin.command.BroadcastCommand;
 import dev.stonechat.plugin.command.ChatClearCommand;
+import dev.stonechat.plugin.command.ChatCommand;
 import dev.stonechat.plugin.command.ChatGameCommand;
 import dev.stonechat.plugin.command.ChatLogCommand;
 import dev.stonechat.plugin.command.ChatMuteCommand;
 import dev.stonechat.plugin.command.IgnoreCommand;
 import dev.stonechat.plugin.command.MessageCommand;
-import dev.stonechat.plugin.command.ChatCommand;
 import dev.stonechat.plugin.command.ReplyCommand;
+import dev.stonechat.plugin.command.SocialSpyCommand;
 import dev.stonechat.plugin.command.StoneChatCommand;
 import dev.stonechat.plugin.listener.BroadcastChatInputListener;
 import dev.stonechat.plugin.listener.ChatColorGuiListener;
@@ -24,23 +26,24 @@ import dev.stonechat.plugin.manager.CapsManager;
 import dev.stonechat.plugin.manager.ChatColorGuiManager;
 import dev.stonechat.plugin.manager.ChatFormatManager;
 import dev.stonechat.plugin.manager.ChatLogManager;
-import dev.stonechat.plugin.manager.GuiConfigManager;
-import dev.stonechat.plugin.chatgame.ChatGameManager;
 import dev.stonechat.plugin.manager.ConfigManager;
+import dev.stonechat.plugin.manager.ContentFilter;
 import dev.stonechat.plugin.manager.CooldownManager;
+import dev.stonechat.plugin.manager.GuiConfigManager;
 import dev.stonechat.plugin.manager.IgnoreManager;
 import dev.stonechat.plugin.manager.JoinDelayManager;
 import dev.stonechat.plugin.manager.LanguageManager;
 import dev.stonechat.plugin.manager.LinkFilterManager;
 import dev.stonechat.plugin.manager.MuteManager;
 import dev.stonechat.plugin.manager.NotificationManager;
+import dev.stonechat.plugin.manager.PendingBroadcastManager;
 import dev.stonechat.plugin.manager.PingManager;
 import dev.stonechat.plugin.manager.PlayerColorManager;
 import dev.stonechat.plugin.manager.PlayerSettingsGuiManager;
-import dev.stonechat.plugin.manager.PendingBroadcastManager;
 import dev.stonechat.plugin.manager.PrivateMessageManager;
 import dev.stonechat.plugin.manager.PunishmentManager;
 import dev.stonechat.plugin.manager.SettingsEditorManager;
+import dev.stonechat.plugin.manager.SocialSpyManager;
 import dev.stonechat.plugin.manager.SoundManager;
 import dev.stonechat.plugin.manager.UpdateChecker;
 import dev.stonechat.plugin.manager.WordFilterManager;
@@ -76,6 +79,8 @@ public class StoneChat extends JavaPlugin {
     private SettingsEditorManager settingsEditorManager;
     private UpdateChecker updateChecker;
     private ChatLogManager chatLogManager;
+    private ContentFilter contentFilter;
+    private SocialSpyManager socialSpyManager;
     private AutoMessageManager autoMessageManager;
 
     @Override
@@ -115,6 +120,8 @@ public class StoneChat extends JavaPlugin {
         this.settingsEditorManager = new SettingsEditorManager(this);
         this.updateChecker = new UpdateChecker(this);
         this.chatLogManager = new ChatLogManager(this);
+        this.contentFilter = new ContentFilter(this);
+        this.socialSpyManager = new SocialSpyManager(this);
         this.autoMessageManager = new AutoMessageManager(this);
         this.autoMessageManager.start();
         getLogger().info("Managers initialized (word filter, mute, links, notifications, sounds, ping, cooldown, anti-caps, join delay, chat format, broadcast, chat games, chat colors, chat log, auto messages).");
@@ -229,7 +236,9 @@ public class StoneChat extends JavaPlugin {
         getCommand("chatlog").setExecutor(chatLogCommand);
         getCommand("chatlog").setTabCompleter(chatLogCommand);
 
-        getLogger().info("Commands registered (/stonechat, /chat, /msg, /r, /ignore, /chatmute, /chatclear, /broadcast, /chatgame, /chatlog).");
+        getCommand("socialspy").setExecutor(new SocialSpyCommand(this));
+
+        getLogger().info("Commands registered (/stonechat, /chat, /msg, /r, /ignore, /chatmute, /chatclear, /broadcast, /chatgame, /chatlog, /socialspy).");
     }
 
     public DataFiles getDataFiles() {
@@ -334,6 +343,14 @@ public class StoneChat extends JavaPlugin {
 
     public UpdateChecker getUpdateChecker() {
         return updateChecker;
+    }
+
+    public ContentFilter getContentFilter() {
+        return contentFilter;
+    }
+
+    public SocialSpyManager getSocialSpyManager() {
+        return socialSpyManager;
     }
 
     public ChatLogManager getChatLogManager() {

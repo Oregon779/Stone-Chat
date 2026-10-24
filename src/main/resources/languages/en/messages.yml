@@ -136,6 +136,13 @@ private-message:
   player-offline: "&cThat player is not online."
   no-reply-target: "&cYou have no one to reply to yet."
   ignored: "&cYou cannot message %player% right now."
+  # What /socialspy shows. %sender% %receiver% %message%
+  spy-format: "&8[&7Spy&8] &7%sender% &8-> &7%receiver%&8: &f%message%"
+
+social-spy:
+  enabled: "&aSocial spy is on. You now see a copy of every private message."
+  disabled: "&7Social spy is off."
+  disabled-in-config: "&cSocial spy is turned off in config.yml."
 
 ignore:
   usage: "&cUsage: /ignore <player|list>"
@@ -167,6 +174,8 @@ chat-log:
   newer: "&eNewer »"
   separator: " &8| "
   nav-hover: "&7Open page %page%"
+  # Put in front of private messages. %receiver%
+  private: "&d[PM to %receiver%] "
   # Shown in front of an entry, depending on what happened to the message.
   status:
     sent: ""
@@ -210,4 +219,5 @@ help:
   togglepings: "&e/stonechat togglepings &7- Turn @mentions on/off for yourself"
   ignore: "&e/ignore <player|list> &7- Ignore/un-ignore a player's pings and messages"
   chatlog: "&e/chatlog <player> [page] &7- See what a player wrote in chat and when"
+  socialspy: "&e/socialspy &7- See a copy of every private message"
   footer: "&6&l==========================="

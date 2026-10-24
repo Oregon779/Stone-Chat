@@ -600,6 +600,16 @@ chat-color-gui:
 # messages.yml under "private-message".
 private-messages:
   enabled: true
+  # Private messages go through the same checks as public chat. Each check
+  # uses its own settings from above (word list, link patterns, caps limit,
+  # bypass permissions, punish commands). Set one to false to skip it for /msg.
+  filter:
+    word-filter: true
+    link-blocker: true
+    anti-caps: true
+  # Lets players with stonechat.socialspy turn on /socialspy to see a copy of
+  # every private message. false disables the command for everyone.
+  social-spy: true
   # Played to the RECEIVER when they get a private message.
   sound:
     enabled: true
@@ -621,7 +631,7 @@ chat-clear:
     pitch: 1.0
 
 # /chatlog <player> [page] lets admins (permission stonechat.chatlog) look up
-# what a player wrote in public chat and when. Every player's log is stored
+# what a player wrote in chat (and in private messages, see below) and when. Every player's log is stored
 # in its own file in the chatlogs/ folder of this plugin.
 chat-log:
   enabled: true
@@ -629,6 +639,8 @@ chat-log:
   # anti-caps, chat mute, cooldown, join delay, max length). They are shown
   # with the reason they were blocked, and with the text the player typed.
   log-blocked-messages: true
+  # Also log private messages (/msg, /r) in the sender's log, with the receiver.
+  log-private-messages: true
   # Entries older than this many days are deleted automatically. 0 = keep forever.
   retention-days: 30
   # Maximum stored entries per player. The oldest entries are removed first.
