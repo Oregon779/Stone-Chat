@@ -10,12 +10,12 @@ Ein modulares Chat-Management-Plugin für Paper 26.2+ (Java 25) - ein Plugin von
 unter **Artifacts** liegt `StoneChat` mit der `.jar`-Datei.
 
 **Weg 2 - Lokal mit JDK 25 und Maven:** `mvn clean package` ausführen, die Datei liegt danach unter
-`target/StoneChat-1.1.1.jar`.
+`target/StoneChat-<version>.jar`.
 
 Die `.jar` in den `plugins/`-Ordner des Paper-Servers legen und den Server neu starten.
 
 ## Versionierung
-Die Version steht zentral in `pom.xml` (`<version>`) und wird automatisch in `plugin.yml` übernommen (Maven-Resource-Filtering). Das gebaute Jar heißt `StoneChat-<version>.jar` (z. B. `StoneChat-1.0.0.jar`), zu finden unter `target/` nach `mvn clean package`. Bei jeder gewünschten Änderung wird die Version in `pom.xml` erhöht - aktueller Stand: **1.1.1**.
+Die Version steht zentral in `pom.xml` (`<version>`) und wird automatisch in `plugin.yml` übernommen (Maven-Resource-Filtering). Das gebaute Jar heißt `StoneChat-<version>.jar`, zu finden unter `target/` nach `mvn clean package`. Entwicklungs-Builds tragen das Suffix `-devN` (z. B. `StoneChat-1.1.1-dev2.jar`), das bei jedem Build hochgezählt wird; erst ein Release für Modrinth bekommt die reine Hauptversion (z. B. `1.1.1`). Die genauen Regeln stehen in [CLAUDE.md](CLAUDE.md).
 
 ## Features
 - **Neu in Version 1.1.1 (Bugfix- & Performance-Release):** **Datenverlust behoben** - ein einziger YAML-Fehler in `config.yml` (oder einer anderen Config) führte dazu, dass die komplette Datei beim Start mit Standardwerten überschrieben wurde; jetzt bleibt die Datei unangetastet, es wird eine Kopie `*.broken-<Zeit>` angelegt und das Plugin läuft mit Standardwerten weiter, bis der Fehler behoben ist. Gelöschte Chat-Farben kommen nicht mehr bei jedem Neustart zurück. **Chat-Games:** Belohnungen (Vault, Partikel, Sounds, Befehle) laufen nicht mehr im Async-Chat-Thread; Mathe-Aufgaben zeigen kein „/" mehr, wenn die Lösung eigentlich eine Multiplikation ist; keine Zahlenüberläufe bei großen Zahlen; die Extra-Permission pro Spiel wird jetzt wirklich geprüft; Antworten mit `&` oder `<` werden erkannt; Stopp-Nachricht in `chatgames.yml` einstellbar. **Daten:** `ignorelist.yml`/`playercolors.yml` werden atomar im Hintergrund gespeichert (kein Datenverlust bei Absturz, keine Datei-Zugriffe mehr im Main-Thread), kaputte Dateien werden beiseitegelegt statt überschrieben. **Weitere Fixes:** GUI-Klicks laufen im nächsten Tick (Bukkit-Vorgabe), permission-gebundene Chat-Farben wirken nach Rechteverlust nicht mehr, `use-placeholderapi` wird beachtet, Bossbar-Meldungen stapeln sich nicht mehr, mehrfache @Erwähnungen in einer Nachricht erzeugen nur eine Benachrichtigung, `/stonechat:befehl` umgeht keinen Cooldown mehr, `/broadcast` mit riesiger Dauer funktioniert, `chat-clear.lines` ist auf 100 begrenzt, der Update-Checker fragt nicht mehr bei jedem Editor-Klick Modrinth an, `softdepend` für PlaceholderAPI/LuckPerms/Vault. **Performance:** Chat wird einmal statt pro Empfänger gerendert, Inventar-Klicks erzeugen keine Block-Snapshots mehr, Format-/Sound-/Farbeinstellungen werden gecacht statt pro Nachricht aus YAML gelesen. **Aktualisierte Namen:** der Standard-Partikel für Chat-Game-Belohnungen heißt jetzt `TOTEM_OF_UNDYING` (das alte `TOTEM` gibt es in aktuellen Versionen nicht mehr und wird weiterhin erkannt), das Link-Blocker-Icon im Editor ist wieder eine Kette (`IRON_CHAIN`). **Config-Updates:** neue Optionen landen samt Beschreibung an ihrer richtigen Stelle statt am Dateiende, umbenannte oder entfernte Optionen werden über versionierte Migrationen umgezogen (`config/ConfigMigrations.java`), vor jedem automatischen Update wird `<datei>.bak` angelegt, und ein Wert mit falschem Typ wird nicht mehr durch den Standard ersetzt. Neu: 74 automatisierte Tests (MockBukkit) und eine ausführliche [WIKI.md](WIKI.md)
@@ -111,7 +111,7 @@ Benötigt JDK 25 und Maven. `mvn clean package` führt dabei automatisch die Tes
 mvn clean package
 ```
 
-Die fertige jar liegt danach unter `target/StoneChat-1.1.1.jar`. Einfach in den `plugins/`-Ordner deines Paper-Servers legen und neu starten.
+Die fertige jar liegt danach unter `target/StoneChat-<version>.jar`. Einfach in den `plugins/`-Ordner deines Paper-Servers legen und neu starten.
 
 ## Berechtigungen
 Die vollständige Liste steht in `plugin.yml`. Alle Admin-Permissions sind standardmäßig auf `op`

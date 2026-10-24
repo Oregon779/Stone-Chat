@@ -1080,12 +1080,13 @@ abgelaufen.
 mvn clean package
 ```
 
-Das erzeugt `target/StoneChat-1.1.1.jar` und führt dabei alle automatischen Tests aus. Ohne eigene
+Das erzeugt `target/StoneChat-<version>.jar` und führt dabei alle automatischen Tests aus. Ohne eigene
 Java-Installation baut GitHub Actions (`.github/workflows/build.yml`) die jar bei jedem Push. Sie liegt dann
 im Reiter **Actions** beim jeweiligen Lauf unter **Artifacts**.
 
 **Version:** steht nur in `pom.xml` (`<version>`) und wird beim Bauen automatisch in `plugin.yml`
-übernommen.
+übernommen. Entwicklungs-Builds heißen `<hauptversion>-devN`, nur Releases tragen die reine Hauptversion
+(Regeln in [CLAUDE.md](CLAUDE.md)).
 
 **Tests:** `src/test/` enthält 74 Tests mit [MockBukkit](https://github.com/MockBukkit/MockBukkit), die einen
 Server mit Spielern simulieren. Sie decken u. a. die Chat-Pipeline, Chat-Games, Menüs, das sichere
