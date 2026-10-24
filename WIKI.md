@@ -86,10 +86,29 @@ Optional: [PlaceholderAPI](#zusammenspiel-mit-anderen-plugins), LuckPerms, Vault
 **Update**
 
 1. Alte jar durch die neue ersetzen und den Server neu starten.
-2. Fehlende neue Optionen werden automatisch in die Dateien eingetragen. In der Konsole steht dann
-   `Added missing options to <datei> (existing values were kept untouched).`
-3. Deine eigenen Werte, Farben und Custom-Games bleiben unverändert. Gelöschte Chat-Farben und
-   Custom-Games kommen **nicht** zurück.
+2. Stone Chat bringt beim Start alle Dateien (`config.yml`, `chatformat.yml`, `chatgames.yml`,
+   `messages.yml`, `gui/`) automatisch auf den neuen Stand, **bevor** es sie einliest:
+   - **Neue Optionen** werden mit ihrem Standardwert und ihrer Beschreibung eingetragen, und zwar an der
+     Stelle, an der sie auch in der Standarddatei stehen, also neben den verwandten Optionen. Das
+     funktioniert auch tief verschachtelt.
+   - **Deine Werte, Kommentare, Reihenfolge und eigenen Einträge bleiben unverändert.** Gelöschte
+     Chat-Farben und Custom-Games kommen nicht zurück.
+   - Wurde eine Option in der neuen Version **umbenannt oder entfernt**, erledigt das eine versionierte
+     Migration (gesteuert über `config-version` bzw. `messages-version` in der Datei). Dein Wert wandert
+     dabei mit.
+3. Vorher wird die bisherige Datei als `<datei>.bak` gesichert. Die Konsole zeigt genau, was passiert ist:
+   ```
+   Migrated config.yml: removed chat-color-gui.size, removed chat-color-gui.title, config-version 1 -> 2
+   Added 2 new option(s) to config.yml: chat-log.retention-days, auto-messages. Your existing values were kept.
+   The previous config.yml was saved as config.yml.bak.
+   ```
+   Ist eine Datei schon aktuell, wird sie gar nicht angefasst.
+
+Beim Zurückschreiben vereinheitlicht YAML die Schreibweise (z. B. Anführungszeichen, Einrückung von
+Listen), genau wie beim Speichern über `/sc editor`. Inhalt und Kommentare ändern sich dadurch nicht.
+
+> **Älteres Plugin auf neuerer Config?** Stammt eine Datei von einer neueren Stone-Chat-Version, wird nichts
+> migriert oder entfernt, nur Fehlendes ergänzt, und die Konsole weist darauf hin.
 
 > **Kaputte YAML-Datei?** Enthält eine Config einen Syntaxfehler (z. B. falsche Einrückung), wird sie
 > **nicht** überschrieben. Stone Chat legt eine Kopie `<datei>.broken-<datum-uhrzeit>` an, meldet den
@@ -114,6 +133,7 @@ Alles liegt unter `plugins/StoneChat/`:
 | `playercolors.yml` | Gewählte Chat-Farbe pro Spieler | Nein (wird vom Plugin geschrieben) |
 | `ignorelist.yml` | Wer wen ignoriert | Nein (wird vom Plugin geschrieben) |
 | `chatlogs/<uuid>.log` | Chatverlauf pro Spieler für `/chatlog` | Nein (wird vom Plugin geschrieben) |
+| `<datei>.bak` | Stand einer Config vor dem letzten automatischen Update | Nein (nur zum Vergleichen oder Zurückholen) |
 
 `playercolors.yml` und `ignorelist.yml` werden im Hintergrund und absturzsicher gespeichert. Ist eine
 davon beschädigt, wird sie als `<datei>.corrupt-<zeitstempel>` beiseitegelegt und leer neu begonnen, statt
@@ -1002,6 +1022,15 @@ Nach dem Bearbeiten `/stonechat reload` ausführen. Steht in der Konsole ein Feh
 oder ein fehlendes Anführungszeichen). Die Datei wird nicht überschrieben, eine Kopie liegt als
 `*.broken-<datum>` daneben.
 
+**Im Plugin-Ordner liegt eine `config.yml.bak` (oder eine andere `.bak`-Datei).**
+Das ist der Stand vor dem letzten automatischen Update nach einem Plugin-Update. Wenn alles läuft, kann sie
+gelöscht werden.
+
+**In der Konsole steht `should be a section in this version but is a single value`.**
+Eine Option hat in der neuen Version eine andere Form (z. B. ist aus einem einzelnen Wert ein Abschnitt mit
+mehreren Einstellungen geworden). Dein alter Wert bleibt stehen, bis du ihn anpasst. Am einfachsten die
+Zeile löschen und `/stonechat reload` ausführen, dann trägt Stone Chat die neue Form mit Standardwerten ein.
+
 **Im Plugin-Ordner liegt eine `playercolors.yml.corrupt-…` oder `ignorelist.yml.corrupt-…`.**
 Die Datei war beschädigt (z. B. nach einem Absturz beim Speichern mit einer älteren Version). Stone Chat hat
 sie beiseitegelegt und leer neu angefangen. Aus der Kopie lassen sich Einträge von Hand zurückholen.
@@ -1058,9 +1087,9 @@ im Reiter **Actions** beim jeweiligen Lauf unter **Artifacts**.
 **Version:** steht nur in `pom.xml` (`<version>`) und wird beim Bauen automatisch in `plugin.yml`
 übernommen.
 
-**Tests:** `src/test/` enthält 60 Tests mit [MockBukkit](https://github.com/MockBukkit/MockBukkit), die einen
+**Tests:** `src/test/` enthält 74 Tests mit [MockBukkit](https://github.com/MockBukkit/MockBukkit), die einen
 Server mit Spielern simulieren. Sie decken u. a. die Chat-Pipeline, Chat-Games, Menüs, das sichere
-Speichern, das Config-Update, den Chatlog und automatische Nachrichten ab. Nur Tests ausführen:
+Speichern, das Config-Update samt Migrationen, den Chatlog und automatische Nachrichten ab. Nur Tests ausführen:
 `mvn test`.
 
 **Projektstruktur**
@@ -1073,7 +1102,8 @@ src/main/java/dev/stonechat/plugin/
   listener/           Event-Listener (Chat, Befehle, Join/Quit, Menüklicks)
   chatgame/           Chat-Games: ChatGameManager, GameType, GameRound, RewardConfig
   chatgame/games/     Die Spieltypen: Math, Unscramble, FastTyping, Trivia, FillBlanks, Custom
-  config/             ConfigUpdater: ergänzt fehlende Optionen, sichert kaputte Dateien
+  config/             ConfigUpdater (ergänzt fehlende Optionen), ConfigMigrations (versionierte
+                      Umbenennungen/Entfernungen), MigrationContext (Werkzeuge dafür)
   model/              Datenklassen (MessageDisplayType, Menü-Holder)
   util/               ColorUtil, PlaceholderUtil, LuckPermsUtil, VaultEconomyUtil,
                       TextNormalizer (Umgehungserkennung), DataFiles (absturzsicheres Speichern),
@@ -1085,8 +1115,16 @@ src/test/java/        MockBukkit-Tests
 **Erweitern**
 
 - **Neues Feature:** Manager in `manager/`, Einstellungen in `config.yml`, Texte in **beiden**
-  `languages/*/messages.yml`, bei Bedarf Befehl bzw. Listener. Neue Schlüssel landen bei bestehenden
-  Installationen automatisch in den Dateien.
+  `languages/*/messages.yml`, bei Bedarf Befehl bzw. Listener. Neue Schlüssel nur in die Standarddatei
+  unter `src/main/resources/` schreiben (mit Kommentar). `ConfigUpdater` trägt sie bei bestehenden
+  Installationen beim nächsten Start automatisch ein, mit Standardwert, Kommentar und an derselben Stelle.
+  Dafür ist kein Code nötig.
+- **Option umbenennen, verschieben oder entfernen:** In der Standarddatei `config-version` (bzw.
+  `messages-version`) um eins erhöhen und in `config/ConfigMigrations.java` einen Schritt unter der
+  **alten** Versionsnummer eintragen, z. B.
+  `2, migration -> migration.move("features.example", "features.demo")`. Werkzeuge in
+  `MigrationContext`: `move`, `remove`, `replaceValue`, `forEachChild`. Alle sind idempotent. Ein Test
+  prüft, dass jede Migration zu einer ausgelieferten Versionsnummer passt.
 - **Neuer Hinweis mit wählbarem Kanal:** in `messages.yml` einen Block mit `chat`, `actionbar`, `title`,
   `subtitle` und `bossbar` anlegen, in `config.yml` ein `notification-type` ergänzen und
   `NotificationManager#dispatch` aufrufen.

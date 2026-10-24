@@ -14,8 +14,10 @@
 #
 # Missing options are added automatically on plugin updates. Existing
 # values you changed are never overwritten, even in nested sections.
+# Before such an update the previous file is kept as config.yml.bak.
 # =====================================================================
-config-version: 1
+# Used by Stone Chat to update this file - please don't change it.
+config-version: 2
 
 general:
   # Language of all player-facing texts. Change it and run /stonechat reload to switch.

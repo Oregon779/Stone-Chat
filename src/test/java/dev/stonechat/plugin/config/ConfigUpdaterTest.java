@@ -8,7 +8,9 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -62,5 +64,79 @@ class ConfigUpdaterTest extends PluginTestBase {
 
         assertTrue(merged.contains("chat-color-gui.colors.rainbow"));
         assertTrue(merged.contains("chat-color-gui.colors.default"));
+    }
+
+    @Test
+    void anOldConfigIsMigratedCompletedAndBackedUpBeforeItIsRead() throws Exception {
+        YamlConfiguration old = YamlConfiguration.loadConfiguration(configFile().toFile());
+        old.set("config-version", 1);
+        old.set("chat-color-gui.size", 27);              // written by the editor of 1.1.1 and older, never read
+        old.set("chat-color-gui.title", "Colors");
+        old.set("cooldown.chat-seconds", 9);
+        old.setComments("cooldown.chat-seconds", List.of("Raised after the spam wave in May"));
+        old.set("auto-messages", null);                  // a whole section that version did not have yet
+        old.set("chat-log.retention-days", null);        // and a single nested option
+        old.save(configFile().toFile());
+        String oldText = Files.readString(configFile());
+
+        plugin.reload();
+
+        String newText = Files.readString(configFile());
+        YamlConfiguration now = YamlConfiguration.loadConfiguration(configFile().toFile());
+        assertEquals(2, now.getInt("config-version"));
+        assertFalse(now.contains("chat-color-gui.size"));
+        assertFalse(now.contains("chat-color-gui.title"));
+        assertEquals(9, now.getInt("cooldown.chat-seconds"), "the admin's value stays");
+        assertEquals(List.of("Raised after the spam wave in May"), now.getComments("cooldown.chat-seconds"));
+        assertEquals(30, now.getInt("chat-log.retention-days"), "new options get the default of this version");
+        assertTrue(now.getComments("auto-messages").contains(
+                "Automatic messages: every interval-seconds, one of the messages below is"), "with its documentation");
+        assertTrue(newText.indexOf("\nchat-log:") < newText.indexOf("\nauto-messages:")
+                && newText.indexOf("\nauto-messages:") < newText.indexOf("\nupdate-checker:"), "at its place from the default");
+        assertTrue(newText.indexOf("entries-per-page:") > newText.indexOf("retention-days:"));
+
+        assertEquals(oldText, Files.readString(configFile().resolveSibling("config.yml.bak")));
+        assertEquals(9, plugin.getConfigManager().getChatCooldownSeconds(), "the plugin reads the updated file");
+        assertFalse(plugin.getConfigManager().getAutoMessages().isEmpty());
+    }
+
+    @Test
+    void chatGamesFromOlderVersionsGetTheCurrentParticleName() throws Exception {
+        File file = new File(plugin.getDataFolder(), "chatgames.yml");
+        YamlConfiguration old = YamlConfiguration.loadConfiguration(file);
+        old.set("config-version", 2);
+        old.set("chat-games.default-reward.particle.name", "TOTEM");
+        old.set("default-games.math_solver.reward.particle.name", "TOTEM");
+        old.set("default-games.trivia_quiz.reward.particle.name", "HEART");
+        old.save(file);
+
+        plugin.reload();
+
+        YamlConfiguration now = YamlConfiguration.loadConfiguration(file);
+        assertEquals(3, now.getInt("config-version"));
+        assertEquals("TOTEM_OF_UNDYING", now.getString("chat-games.default-reward.particle.name"));
+        assertEquals("TOTEM_OF_UNDYING", now.getString("default-games.math_solver.reward.particle.name"));
+        assertEquals("HEART", now.getString("default-games.trivia_quiz.reward.particle.name"), "an admin's own choice stays");
+    }
+
+    @Test
+    void upToDateFilesAreNeverRewritten() throws Exception {
+        Path folder = plugin.getDataFolder().toPath();
+        Map<Path, String> before = new HashMap<>();
+        try (var files = Files.walk(folder)) {
+            for (Path file : files.filter(p -> p.toString().endsWith(".yml")).toList()) {
+                before.put(file, Files.readString(file));
+            }
+        }
+        assertTrue(before.size() >= 6, before.keySet().toString());
+
+        plugin.reload();
+
+        for (var entry : before.entrySet()) {
+            assertEquals(entry.getValue(), Files.readString(entry.getKey()), entry.getKey().toString());
+        }
+        try (var files = Files.walk(folder)) {
+            assertTrue(files.noneMatch(p -> p.toString().endsWith(".bak")), "no backup without a change");
+        }
     }
 }

@@ -6,9 +6,11 @@
 # through /sc editor -> Chat Games -> Custom Games Management.
 #
 # Missing keys are added automatically when the plugin updates; your
-# existing values are never overwritten or removed.
+# existing values are never overwritten or removed. Before such an update
+# the previous file is kept as chatgames.yml.bak.
 # =====================================================================
-config-version: 2
+# Used by Stone Chat to update this file - please don't change it.
+config-version: 3
 
 # ---------------------------------------------------------------------
 # Global settings

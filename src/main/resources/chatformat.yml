@@ -5,6 +5,7 @@
 # from the general config.yml. Missing options are added automatically on
 # plugin updates, existing values are never overwritten.
 # =====================================================================
+# Used by Stone Chat to update this file - please don't change it.
 config-version: 1
 
 # Supports &-codes, &#RRGGBB hex and MiniMessage tags (e.g. <gradient>) at the same time.
