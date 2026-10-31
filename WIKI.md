@@ -4,7 +4,7 @@ Stone Chat ist ein Chat-Plugin für **Paper 26.2+** (Java 25). Es bündelt alles
 Plugin: Chat-Format, Wortfilter, Link-Blocker, Anti-Spam, Pings, private Nachrichten, Chat-Games,
 Broadcasts, automatische Nachrichten, einen Chatlog für Admins und einen Einstellungs-Editor im Spiel.
 
-Diese Seite erklärt jedes Feature, jeden Befehl und jede Berechtigung. Sie gilt für **Version 1.1.1**.
+Diese Seite erklärt jedes Feature, jeden Befehl und jede Berechtigung. Sie gilt für **Version 1.2**.
 Die Versionsgeschichte steht in der [README](README.md#features).
 
 ---
@@ -80,7 +80,7 @@ Optional: [PlaceholderAPI](#zusammenspiel-mit-anderen-plugins), LuckPerms, Vault
 
 **Installation**
 
-1. `StoneChat-1.1.1.jar` in den Ordner `plugins/` legen.
+1. `StoneChat-1.2.jar` in den Ordner `plugins/` legen.
 2. Server starten. Stone Chat legt `plugins/StoneChat/` mit allen Dateien an.
 3. Einstellungen im Spiel mit `/sc editor` anpassen oder die Dateien bearbeiten und `/stonechat reload` ausführen.
 

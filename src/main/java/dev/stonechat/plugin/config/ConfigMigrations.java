@@ -25,7 +25,7 @@ public final class ConfigMigrations {
 
     private static final Map<String, Map<Integer, Consumer<MigrationContext>>> STEPS = Map.of(
             "config.yml", Map.of(
-                    // The editor of 1.1.1 and older wrote these two, but nothing ever read them: the chat color GUI
+                    // The editor before 1.2 wrote these two, but nothing ever read them: the chat color GUI
                     // takes its size and titles from gui/chatcolor-gui.yml.
                     1, migration -> {
                         migration.remove("chat-color-gui.size");

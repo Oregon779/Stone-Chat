@@ -70,7 +70,7 @@ class ConfigUpdaterTest extends PluginTestBase {
     void anOldConfigIsMigratedCompletedAndBackedUpBeforeItIsRead() throws Exception {
         YamlConfiguration old = YamlConfiguration.loadConfiguration(configFile().toFile());
         old.set("config-version", 1);
-        old.set("chat-color-gui.size", 27);              // written by the editor of 1.1.1 and older, never read
+        old.set("chat-color-gui.size", 27);              // written by the editor before 1.2, never read
         old.set("chat-color-gui.title", "Colors");
         old.set("cooldown.chat-seconds", 9);
         old.setComments("cooldown.chat-seconds", List.of("Raised after the spam wave in May"));
