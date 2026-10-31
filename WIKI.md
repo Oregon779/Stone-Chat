@@ -4,7 +4,7 @@ Stone Chat ist ein Chat-Plugin für **Paper 26.2+** (Java 25). Es bündelt alles
 Plugin: Chat-Format, Wortfilter, Link-Blocker, Anti-Spam, Pings, private Nachrichten, Chat-Games,
 Broadcasts, automatische Nachrichten, einen Chatlog für Admins und einen Einstellungs-Editor im Spiel.
 
-Diese Seite erklärt jedes Feature, jeden Befehl und jede Berechtigung. Sie gilt für **Version 1.1.1** und die Entwicklungs-Builds danach.
+Diese Seite erklärt jedes Feature, jeden Befehl und jede Berechtigung. Sie gilt für **Version 1.1.1**.
 Die Versionsgeschichte steht in der [README](README.md#features).
 
 ---
